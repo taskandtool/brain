@@ -21,8 +21,7 @@ brain-lint/      the periodic health pass: citation audit, contradictions, super
 brain-sync/      keeping the brain current after the first build: sources, cadence, deltas
 browse/          the Obscura headless browser, as a CLI and an MCP server, for reading JavaScript sites
 settings.json    a Claude Code Stop hook that blocks the end of a turn once while raw material is un-ingested
-kit.json         the manifest Task & Tool reads: name, blurb, install directive
-                 (`kit` is the platform's internal word for a Starter App)
+starter-app.json the manifest Task & Tool reads: name, blurb, install directive
 ```
 
 Each `<skill>/SKILL.md` is a Claude Code skill. The scripts beside them are
