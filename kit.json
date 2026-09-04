@@ -1,0 +1,7 @@
+{
+  "name": "Company brain",
+  "blurb": "The business's knowledge, raw and distilled: its website and documents turned into notes the AI reasons over. Adds a headless browser that reads JavaScript sites and other websites.",
+  "order": 1,
+  "version": "0.1.0",
+  "directive": "The Company Brain Starter App is installed. Its skills are in ~/app/.claude/skills: brain-ingest (crawl the owner's site and take in documents), brain-distill (turn raw material into cited notes under brain/, following brain/SCHEMA.md), brain-lint (the periodic health pass), brain-sync (keeping it current), browse (the Obscura browser). Start by reading .claude/skills/brain-ingest/SKILL.md, then offer to build the brain: ask for the owner's website, crawl it (100 pages by default — say so if the limit was reached), ingest it in passes, and publish. On the first ingest, schedule the weekly lint reminder and, if other apps exist in this project (tools.taskandtool.project_apps), suggest which brain folders the owner might mirror to them from Settings."
+}

@@ -1,0 +1,15 @@
+{
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/skills/brain-distill/brain_status.py\" hook-stop",
+            "timeout": 30
+          }
+        ]
+      }
+    ]
+  }
+}

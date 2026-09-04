@@ -1,0 +1,20 @@
+# Never commit credentials or local state. Task & Tool delivers env to a
+# machine at install time; nothing in this repo should ever hold a key.
+.env
+.env.*
+!.env.template
+!.env.example
+.envrc
+*.pem
+*.key
+
+# Tool noise
+__pycache__/
+*.pyc
+.pytest_cache/
+.DS_Store
+
+# Working knowledge is the owner's, made on their machine, never in this repo
+raw/
+brain/
+
