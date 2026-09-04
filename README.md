@@ -6,8 +6,8 @@ chat, and turns them into cited, cross-linked notes that an AI reasons over.
 Nothing is served; the brain *is* the AI's working context, and the first
 thing a business's data should flow into.
 
-Built for Claude Code. Installed with one click on [Task & Tool](https://taskandtool.com),
-or dropped into any project by hand (below). MIT licensed.
+Built for Claude Code. Installed with one click on Task & Tool, or dropped
+into any project by hand (below). MIT licensed.
 
 ## What is in the box
 
@@ -66,8 +66,8 @@ report.
 
 ## Install
 
-**On Task & Tool.** Add the Brain from the Starter Apps list when creating a
-project, or from an existing app's Settings. The platform copies the skill
+**On Task & Tool.** Pick the Brain from the Starter Apps: as a new app in a
+project, or into an existing app from its Settings. The platform copies the skill
 folders into the app, merges the Stop hook into `.claude/settings.json`, runs
 `setup.sh`, and tells the AI what arrived. On machine replacement it runs
 `setup.sh` again and nothing else: the files are yours from the moment they
