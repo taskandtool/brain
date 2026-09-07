@@ -13,7 +13,7 @@ set -euo pipefail
 
 OBSCURA_VERSION="${OBSCURA_VERSION:-v0.2.1}"
 OBSCURA_REPO="https://github.com/h4ckf0r0day/obscura"
-CRAWLER_REF="${CRAWLER_REF:-v0.1.1}"
+CRAWLER_REF="${CRAWLER_REF:-v0.1.2}"
 
 echo "== tt-crawl $CRAWLER_REF (site reader) + python tools"
 python3 -m pip install --quiet --upgrade "git+https://github.com/taskandtool/crawler@$CRAWLER_REF" 2>&1 | tail -2 || true
