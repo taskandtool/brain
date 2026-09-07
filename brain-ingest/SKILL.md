@@ -73,6 +73,9 @@ Then the two follow-ups that make a site's material complete:
 ```bash
 tt-crawl docs --from raw/web --out raw/docs      # the PDFs, Word and Excel files the pages link to, as markdown
 tt-crawl wp https://theirsite.com                # a WordPress site's pages and posts through its REST API
+tt-crawl places "Business, City" --out raw/places   # the public Google listing: phone, address, hours, reviews
+                                                 # (needs GOOGLE_PLACES_API_KEY: a Google Places connection exposed to this app;
+                                                 #  ask with request_connection("google-places", why, auth="api_key", delivery="machine"))
                                                  # (with authors, dates, categories); says detected: false otherwise
 ```
 

@@ -106,6 +106,16 @@
           "is": "present"
         }
       ]
+    },
+    {
+      "label": "Add my Google listing to the brain",
+      "prompt": "Add my public Google listing to the brain: run tt-crawl places for my business (ask me for a Google Places connection with request_connection if this app has no GOOGLE_PLACES_API_KEY), then fold the phone, address, hours, and the public reviews into brain/public/business.md and proof.md, citing raw/places. Tell me anything on the listing that disagrees with my site.",
+      "when": [
+        {
+          "path": "raw/places",
+          "is": "missing"
+        }
+      ]
     }
   ]
 }

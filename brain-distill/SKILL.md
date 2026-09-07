@@ -113,8 +113,8 @@ A website in this project reads `brain/public` and `brain/brand` by mirror
 and renders facts from the typed frontmatter (`SCHEMA.md` → "Typed
 frontmatter"). Before the owner mirrors them, check: `business.md` exists
 with `type: business` and its fields filled from `raw/` (the structured
-harvest in `raw/structured/business.json` first, then `_common.md`, then
-the pages); one `offering` note per service with a summary paragraph;
+harvest in `raw/structured/business.json` first, then the Google listing
+in `raw/places/` when there is one, then `_common.md`, then the pages); one `offering` note per service with a summary paragraph;
 `faq.md` with `## ` questions; `proof.md` with real, sourced items or an
 empty list; `legal/` holding the verbatim terms and privacy pages with
 `path` set to their old URLs; and the brand notes named as the website
