@@ -3,5 +3,109 @@
   "blurb": "The business's knowledge, raw and distilled: its website and documents turned into notes the AI reasons over. Adds a headless browser that reads JavaScript sites and other websites.",
   "order": 1,
   "version": "0.1.0",
-  "directive": "The Company Brain Starter App is installed. Its skills are in ~/app/.claude/skills: brain-ingest (crawl the owner's site and take in documents), brain-distill (turn raw material into cited notes under brain/, following brain/SCHEMA.md), brain-lint (the periodic health pass), brain-sync (keeping it current), browse (the Obscura browser). Start by reading .claude/skills/brain-ingest/SKILL.md, then offer to build the brain: ask for the owner's website, crawl it (100 pages by default — say so if the limit was reached), ingest it in passes, and publish. On the first ingest, schedule the weekly lint reminder and, if other apps exist in this project (tools.taskandtool.project_apps), suggest which brain folders the owner might mirror to them from Settings."
+  "directive": "The Company Brain Starter App is installed. Its skills are in ~/app/.claude/skills: brain-ingest (crawl the owner's site with tt-crawl and take in documents), brain-distill (turn raw material into cited notes under brain/, following brain/SCHEMA.md), brain-lint (the periodic health pass), brain-sync (keeping it current), browse (the Obscura browser). Start by reading .claude/skills/brain-ingest/SKILL.md, then offer to build the brain: ask for the owner's website, crawl it (100 pages by default \u2014 say so if the limit was reached), ingest it in passes, and publish. On the first ingest, schedule the weekly lint reminder and, if other apps exist in this project (tools.taskandtool.project_apps), suggest which brain folders the owner might mirror to them from Settings.",
+  "suggestions": [
+    {
+      "label": "Read my website into the brain",
+      "prompt": "Read my whole website into the brain. Crawl it into raw/web with the brain-ingest skill (tt-crawl site with --styles and --screenshots: rendered pages, text and images, the inventory, the header and footer as structure, the site's own markup under raw/structured), then tt-crawl docs for the documents it links and tt-crawl wp if it is WordPress, tell me how many pages you found and whether you hit the 100-page limit, then distill it in passes by section into brain/ following brain/SCHEMA.md. Finish with what went in and the questions only I can answer. My site is ",
+      "when": [
+        {
+          "path": "raw/web/_manifest.json",
+          "is": "missing"
+        }
+      ]
+    },
+    {
+      "label": "Extract my brand",
+      "prompt": "Extract my brand from the site in raw/web (crawl it first with brain-ingest if raw/web is empty) and write it up under brain/brand/ as separate notes named the way a website in this project expects (positioning, voice, audience, visual-identity, do-and-dont; see the brain-distill skill): positioning (what we do, for whom, what makes us different, in our own words, plus our name, tagline, and contact details), voice (with three quoted examples from the site), audience, visual identity (the logo files copied into brain/brand/logo from raw/web/images, the colour palette as hex and the fonts as the site actually uses them, read with the browse skill), and a do-and-don't list. Cite the raw page for every claim, mark anything you inferred rather than read as a question for me, and update brain/overview.md.",
+      "when": [
+        {
+          "path": "raw/web/_manifest.json",
+          "is": "present"
+        },
+        {
+          "path": "brain/brand/visual-identity.md",
+          "is": "missing"
+        }
+      ]
+    },
+    {
+      "label": "Collect the facts about my company",
+      "prompt": "Collect the facts about my company from raw/web (crawl it first with brain-ingest if raw/web is empty) and write them under brain/public/ as one note per topic: each service or offering with its prices where stated, locations and service area, opening hours, phone and email, the team with bios and roles, FAQs, guarantees and policies. Cite the raw page for every fact, never fill a gap from general knowledge, update brain/overview.md and brain/index.md, and end with the list of facts you could not find so I can give them to you.",
+      "when": [
+        {
+          "path": "raw/web/_manifest.json",
+          "is": "present"
+        },
+        {
+          "path": "brain/public/business.md",
+          "is": "missing"
+        }
+      ]
+    },
+    {
+      "label": "Read the documents linked from my site",
+      "prompt": "Fetch the documents my website links to (price lists, brochures, menus, forms) into raw/docs with tt-crawl docs, tell me what you found and what could not be read, then fold their facts into the notes in brain/ with citations.",
+      "when": [
+        {
+          "path": "raw/web/_manifest.json",
+          "is": "present"
+        },
+        {
+          "path": "raw/docs",
+          "is": "missing"
+        }
+      ]
+    },
+    {
+      "label": "Add documents to the brain",
+      "prompt": "I have documents to add to the brain. Convert them into raw/docs with brain-ingest, then fold their facts into the existing notes in brain/ rather than making duplicates, citing each document. The documents are "
+    },
+    {
+      "label": "What does the brain know?",
+      "prompt": "Give me a tour of what the brain knows so far: the overview in a few lines, the notes by folder, the sources they came from, any conflicts or open questions in brain/log.md, and the three biggest gaps you would fill next."
+    },
+    {
+      "label": "Import my WordPress content",
+      "prompt": "My site runs on WordPress. Pull its pages and posts with `tt-crawl wp` into raw/structured/wp (authors, dates, categories, full content), tell me what it found, then fold the facts into brain/ the usual way, citing the export. My site is ",
+      "when": [
+        {
+          "path": "raw/web/_manifest.json",
+          "is": "present"
+        },
+        {
+          "path": "raw/structured/wp",
+          "is": "missing"
+        }
+      ]
+    },
+    {
+      "label": "Prepare my brain for the website",
+      "prompt": "This project has a website app. Prepare the brain for it as the brain-distill skill describes: check that brain/public/business.md has type: business and its typed frontmatter filled from raw/ (raw/structured/business.json first), one offering note per service with a summary, faq.md with ## questions, proof.md with sourced items or an empty list, legal/ holding the verbatim terms and privacy pages, and the brand notes named as the website expects. Report what is complete and what only I can supply; then tell me which folders to mirror to the website (brand, public, raw/web) from its Settings.",
+      "when": [
+        {
+          "sibling": "website",
+          "is": "present"
+        },
+        {
+          "path": "brain/public/business.md",
+          "is": "present"
+        }
+      ]
+    },
+    {
+      "label": "Note what I just told you",
+      "prompt": "Record what I am about to tell you as a dated transcript in raw/transcripts (my words), then fold it into the right notes in brain/ with citations, and tell me what changed. Here it is: "
+    },
+    {
+      "label": "What changed on my site since last time",
+      "prompt": "Re-crawl my site with tt-crawl into raw/web and use the brain-sync skill to tell me what changed since the last ingest: pages added, removed, or changed, facts that moved, and what in brain/ you updated as a result.",
+      "when": [
+        {
+          "path": "raw/web/_manifest.json",
+          "is": "present"
+        }
+      ]
+    }
+  ]
 }

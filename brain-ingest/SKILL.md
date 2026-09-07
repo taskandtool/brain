@@ -29,21 +29,37 @@ bash ~/app/.claude/skills/brain-ingest/setup.sh
 
 ## A the company website → markdown (the usual first step)
 
-`brain_scrape.py` (bundled) reads the whole site systematically: it seeds from
-the sitemap, renders every page in the browser so JavaScript-built pages and
-menus count, follows every same-site link it finds, extracts the content as
-markdown, and pulls the content images locally.
+`tt-crawl` (installed by setup; `python3 -m ttcrawl` if it is not on the
+PATH) reads the whole site systematically: it seeds from the sitemap, renders
+every page in the browser so JavaScript-built pages and menus count, follows
+every same-site link it finds, extracts the content as markdown, pulls the
+content images locally, and writes the records other apps build from.
 
 ```bash
-python3 ~/app/.claude/skills/brain-ingest/brain_scrape.py https://theirsite.com --out raw/web
+tt-crawl site https://theirsite.com --out raw/web --styles --screenshots
 ```
 
 What it does for you, so you don't have to:
 
-- **Strips the site furniture.** Lines that repeat across pages (the header
-  menu, the footer address, cookie notices, the logo) are removed from every
-  page and kept once in `raw/web/_common.md`, so the pages are the meat and the
-  site-wide facts (phone, address, hours in the footer) are still there, once.
+- **Reads the header and footer as structure.** The nav tree, footer groups,
+  the primary call to action, social and legal links, the copyright line, the
+  logo, badges: `raw/web/_furniture.json`. Their lines come out of every page
+  body and are kept once in `raw/web/_common.md`, so the pages are the meat
+  and the site-wide facts (phone, address, hours) are still there, once.
+- **Writes the inventory.** `raw/web/_inventory.json` and `.md`: one record
+  per URL it found, with status, title, description, h1, canonical, word
+  count, inbound links (sitewide and body counted separately), sitemap
+  membership, forms, embeds, tracking IDs, linked documents, and the file or
+  the skip reason. This is the ledger a website rebuild works from.
+- **Harvests the site's own markup.** JSON-LD, Open Graph, and microdata per
+  page under `raw/structured/`, and `raw/structured/business.json` merged
+  from any LocalBusiness or Organization markup: the best seed for
+  `public/business.md`'s frontmatter, exact and cited.
+- **Lists the media** (`_media.json`: every image, the pages using it, alt
+  text, the largest variant, a photo/logo/icon/stock/theme guess) and, with
+  `--styles`, reads the fonts and colours by role off the rendered pages
+  (`_styles.json`), the brand's raw material; `--screenshots` keeps a PNG per
+  page under `raw/web/pages/`.
 - **Dedupes.** Identical and near-identical pages are skipped; one picture
   served at five sizes is fetched once; identical bytes are stored once.
 - **Stops at 100 pages by default.** That is deliberate and visible: the
@@ -52,20 +68,30 @@ What it does for you, so you don't have to:
   the first 100") and offer to re-run with `--max-pages 300`. Re-runs are
   idempotent per page.
 
-Other knobs: `--static` (no browser, faster, misses JavaScript pages),
-`--keep-boilerplate`, `--ignore-robots` (only with the owner's say-so on their
-own site), `--delay 1` to go gentler. If `rendered` is 0 the browser was not
-found; run setup.
-
-Report the summary to the owner in plain words: pages read, pages found,
-images, and anything skipped as thin. Re-running later refreshes pages in
-place; the manifest and `brain_status.py` report which ones changed.
-
-**Someone else's site** (a competitor, a supplier, a directory listing) goes
-under `raw/external/<host>/`, never into `raw/web/`:
+Then the two follow-ups that make a site's material complete:
 
 ```bash
-python3 ~/app/.claude/skills/brain-ingest/brain_scrape.py https://competitor.com --out raw/external/competitor.com --max-pages 30
+tt-crawl docs --from raw/web --out raw/docs      # the PDFs, Word and Excel files the pages link to, as markdown
+tt-crawl wp https://theirsite.com                # a WordPress site's pages and posts through its REST API
+                                                 # (with authors, dates, categories); says detected: false otherwise
+```
+
+Other knobs: `--static` (no browser, faster, misses JavaScript pages),
+`--keep-boilerplate`, `--ignore-robots` (only with the owner's say-so on their
+own site), `--delay 1` to go gentler. If `renderer` is null in the summary
+the browser was not found; run setup.
+
+Report the summary to the owner in plain words: pages read, pages found,
+images, documents, whether the site is WordPress, and anything skipped as
+thin. Re-running later refreshes pages in place; the manifest and
+`brain_status.py` report which ones changed.
+
+**Someone else's site** (a competitor, a supplier, a directory listing, or a
+site the owner admires) goes under `raw/external/<host>/`, never into
+`raw/web/`:
+
+```bash
+tt-crawl site https://competitor.com --out raw/external/competitor.com --max-pages 30
 ```
 
 Those pages describe the world, not the owner: they can inform `brand/`

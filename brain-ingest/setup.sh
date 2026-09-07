@@ -5,21 +5,33 @@
 #
 #     bash ~/app/.claude/skills/brain-ingest/setup.sh
 #
-# Installs: trafilatura (site -> markdown), markitdown (docs -> markdown),
-# and the Obscura headless browser (the site crawler renders every page
-# through it; the browse skill uses it too). Nothing here touches the app's
-# code.
+# Installs: the tt-crawl site reader (github.com/taskandtool/crawler, which
+# brings trafilatura for site -> markdown and markitdown for docs -> markdown)
+# and the Obscura headless browser (the crawler renders every page through
+# it; the browse skill uses it too). Nothing here touches the app's code.
 set -euo pipefail
 
 OBSCURA_VERSION="${OBSCURA_VERSION:-v0.2.1}"
 OBSCURA_REPO="https://github.com/h4ckf0r0day/obscura"
+CRAWLER_REF="${CRAWLER_REF:-v0.1.0}"
 
-echo "== python tools"
-python3 -m pip install --quiet --upgrade "trafilatura>=1.8" "markitdown" 2>&1 | tail -3 || true
+echo "== tt-crawl $CRAWLER_REF (site reader) + python tools"
+python3 -m pip install --quiet --upgrade "git+https://github.com/taskandtool/crawler@$CRAWLER_REF" 2>&1 | tail -2 || true
+python3 -m ttcrawl --version
+
+# `tt-crawl` on the PATH, whatever pip did with its console script (a user
+# install lands in ~/.local/bin, which a service shell may not have).
+if ! command -v tt-crawl >/dev/null 2>&1; then
+  for d in /usr/local/bin "$HOME/.local/bin"; do
+    if [ -w "$d" ] || mkdir -p "$d" 2>/dev/null && [ -w "$d" ]; then
+      printf '#!/bin/sh\nexec python3 -m ttcrawl "$@"\n' > "$d/tt-crawl" && chmod +x "$d/tt-crawl" && echo "tt-crawl launcher -> $d/tt-crawl" && break
+    fi
+  done
+fi
 python3 -c "import trafilatura; print('trafilatura', trafilatura.__version__)"
 
 # Where the Obscura binary goes: system-wide when we can, else ~/.local/bin.
-# brain_scrape.py and the browse skill look in both places.
+# tt-crawl and the browse skill look in both places.
 if [ -w /usr/local/bin ]; then
   BIN=/usr/local/bin
 elif command -v sudo >/dev/null 2>&1 && sudo -n true 2>/dev/null; then

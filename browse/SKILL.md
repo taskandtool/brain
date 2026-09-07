@@ -6,7 +6,7 @@ description: "Browse the web with the Obscura headless browser: read JavaScript-
 
 The brain kit installs **Obscura**, a small headless browser (real JavaScript,
 no Chromium). Use it whenever a page needs JavaScript to show its content, or
-when the owner wants data from another site. `brain_scrape.py` (brain-ingest)
+when the owner wants data from another site. `tt-crawl site` (brain-ingest)
 already crawls a whole site through it; this skill is for everything else.
 
 The binary is `obscura` on the PATH, or at `/usr/local/bin/obscura` /

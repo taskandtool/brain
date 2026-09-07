@@ -12,9 +12,9 @@ into any project by hand (below). MIT licensed.
 ## What is in the box
 
 ```
-brain-ingest/    take material in: crawl the owner's site through a headless browser,
-                 convert uploaded documents, record pasted text and chat-stated facts → raw/
-                 (brain_scrape.py, setup.sh)
+brain-ingest/    take material in: crawl the owner's site with tt-crawl through a headless
+                 browser, convert uploaded documents, record pasted text and chat-stated facts → raw/
+                 (setup.sh installs tt-crawl, github.com/taskandtool/crawler, and the browser)
 brain-distill/   turn new raw material into cited notes under brain/, following brain/SCHEMA.md
                  (brain_status.py, the what-changed script; SCHEMA.md, the seed rulebook)
 brain-lint/      the periodic health pass: citation audit, contradictions, superseded claims, leakage
@@ -111,7 +111,7 @@ Data         — owns the knowledge files. Recommends the owner mirror
                platform feature, not part of this repo. No database.
 Auth         — none.
 Needs        — no connectors, no capabilities.
-Build        — skills plus two scripts (`brain_scrape.py`, `brain_status.py`).
+Build        — skills plus one script (`brain_status.py`) and the shared tt-crawl tool.
                Distilling and linting are the AI's job through the skills,
                triggered mechanically by the Stop hook and a scheduled
                reminder the AI sets up on the first ingest.
@@ -121,10 +121,8 @@ Add / remove — install drops the skills and the `raw/` and `brain/` folder
 
 ## Developing this Starter App
 
-- **Unit tests, no dependencies:** run each test file directly.
-  `python3 brain-ingest/test_brain_scrape.py` and
-  `python3 brain-distill/test_brain_status.py`. The crawler imports its heavy
-  dependency lazily so the tests need nothing installed.
+- **Unit tests, no dependencies:** `python3 brain-distill/test_brain_status.py`.
+  The crawler's own tests live in its repo (github.com/taskandtool/crawler).
 - **Try the skills:** install into any scratch repo as above and drive Claude
   Code there.
 - **On the platform:** Task & Tool's own repo clones this one into its packs

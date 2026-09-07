@@ -33,11 +33,11 @@ small, controlled deltas. This skill is how to think about that.
 
 | Source | How it reaches raw/ | Typical cadence |
 |---|---|---|
-| The owner's website | `brain_scrape.py` re-crawl (idempotent; changed pages show as *changed*) | monthly, or when they say they changed the site |
+| The owner's website | `tt-crawl site` re-crawl (idempotent; changed pages show as *changed*), then `tt-crawl docs` for linked documents | monthly, or when they say they changed the site |
 | Documents (PDF, docx, sheets) | the owner uploads; convert with markitdown into `raw/docs/YYYY-MM-DD-name.md` | as they arrive |
 | Calls and meetings | pasted or uploaded transcripts → `raw/transcripts/YYYY-MM-DD-name.md` | as they happen |
 | Things the owner tells you in chat | `raw/transcripts/YYYY-MM-DD-chat.md` (their words, dated), then cite it | immediately |
-| Other people's sites (competitors, suppliers, directories) | `brain_scrape.py <url> --out raw/external/<host>` or the `browse` skill; **external, never the owner's facts** | on request |
+| Other people's sites (competitors, suppliers, directories) | `tt-crawl site <url> --out raw/external/<host>` or the `browse` skill; **external, never the owner's facts** | on request |
 | Reviews (Google, Yelp, etc.) | usually blocked for automated visitors from here; the owner pastes or exports | on request |
 | YouTube and video | not automatic today: YouTube blocks most datacenter addresses. The owner can paste transcripts; a YouTube connection (API) or a proxy is a platform-level addition, not a workaround to attempt here | when the platform adds it |
 | Email newsletters, social posts, CRM notes, Google Drive, Notion | through a connection the platform provides (Connections in Settings) once available; until then the owner pastes or exports | case by case |
@@ -64,7 +64,7 @@ job (from the app dir; see the platform's jobs tooling). Point it at the same
 `raw/web` so pages update in place and the manifest reports changes:
 
 ```bash
-python3 .claude/skills/brain-ingest/brain_scrape.py https://theirsite.com --out raw/web
+tt-crawl site https://theirsite.com --out raw/web
 ```
 
 Then the next conversation ingests the delta. Tell the owner that's how it

@@ -74,9 +74,53 @@ cd ~ && python3 -c "from tools.taskandtool import schedule_reminder; print(sched
 - **Offer the brain to the other apps.** See which apps share this project
   (`from tools.taskandtool import project_apps`). If there is a website, a
   publisher, or anything that would benefit, tell the owner which folders to
-  mirror and where: usually `brain/public` to the website and `brain/public`
-  plus `brain/brand` to a publisher, never `brain/sops`. They set it up in
-  the other app's Settings → Mirrored folders; you can't do it for them.
+  mirror and where: `brain/brand` onto a website's `brand` folder (target
+  path exactly `brand`, so the brain owns the site's brand; see below),
+  `brain/public` to the website and a publisher, `brain/brand` to a
+  publisher, never `brain/sops`. They set it up in the other app's
+  Settings → Mirrored folders; you can't do it for them.
+
+## The brand folder a website consumes
+
+`brain/brand/` is markdown, nothing else, and a website in this project
+can mirror it onto its own `brand` folder and set its theme and pages from
+it (the Website Starter App's `BRAND.md`,
+<https://github.com/taskandtool/website>). So name the notes the way the
+site expects and state the visual facts precisely:
+
+```
+brain/brand/
+  positioning.md       what we do, for whom, what makes us different; the name as it should
+                       appear, the tagline, a one-paragraph description; contact details and
+                       social links (from _common.md and the contact page)
+  voice.md             the voice card + three quoted sentences from the site
+  audience.md          the actual people who buy and what convinces them
+  visual-identity.md   colours as 6-digit hex with where each is used (read the site's CSS
+                       with the browse skill), the display and body font families and where
+                       they load from, the logo files, the photography style
+  do-and-dont.md       observable rules; words used and never used
+  logo/                the logo files copied from raw/web/images (svg preferred)
+```
+
+Every value is cited to `raw/`; a gap stays a gap and goes in the owner's
+questions rather than being guessed. Extra notes are fine. The mirror
+replaces the website's whole `brand` folder, so nothing that is not brand
+belongs here.
+
+## Preparing the brain for a website
+
+A website in this project reads `brain/public` and `brain/brand` by mirror
+and renders facts from the typed frontmatter (`SCHEMA.md` → "Typed
+frontmatter"). Before the owner mirrors them, check: `business.md` exists
+with `type: business` and its fields filled from `raw/` (the structured
+harvest in `raw/structured/business.json` first, then `_common.md`, then
+the pages); one `offering` note per service with a summary paragraph;
+`faq.md` with `## ` questions; `proof.md` with real, sourced items or an
+empty list; `legal/` holding the verbatim terms and privacy pages with
+`path` set to their old URLs; and the brand notes named as the website
+expects (above). Report what is complete and what only the owner can
+supply. The website's own suggestions ("Mirror my brain's notes here",
+"Apply my brand from the brain") take it from there.
 
 ## Questions become pages
 
