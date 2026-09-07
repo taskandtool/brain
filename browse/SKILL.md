@@ -28,7 +28,12 @@ obscura fetch https://example.com --eval "document.title" --quiet
 
 Useful flags: `--wait-until networkidle0` for pages that load data after
 paint, `--selector ".prices"` to wait for an element, `--timeout 30`,
-`--screenshot out.png` when the owner wants to see it.
+`--screenshot out.png` when the owner wants to see it, and
+`--allow-private-network` for anything on this machine (`localhost:3000`,
+a sibling app), which Obscura refuses otherwise. To put a screenshot in
+front of the owner, attach it to your reply (`attach_files(["uploads/x.png"],
+"what it shows")` from `tools/taskandtool.py`; the file must sit under the
+app directory) rather than describing it.
 
 ## Many pages
 

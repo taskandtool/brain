@@ -93,7 +93,16 @@ brain/brand/
   positioning.md       what we do, for whom, what makes us different; the name as it should
                        appear, the tagline, a one-paragraph description; contact details and
                        social links (from _common.md and the contact page)
-  voice.md             the voice card + three quoted sentences from the site
+  voice.md             the voice card + three quoted sentences from the site, then the
+                       fingerprint the website's voice.md template lays out: three to five
+                       signature moves each with the sentence that shows it (cited), the
+                       never-list, three to five generic-to-in-voice rewrite pairs, the lexicon
+                       (protected terms, customers' own phrases from reviews, the owner's
+                       un-marketing words), the sentence stats measured on the samples (mean,
+                       shortest, longest, openers, contractions), and tone by surface (page, ad,
+                       post, email). Quote the evidence on every line; a line without a sample
+                       stays "to fill". Rank samples by how unpolished they are: the owner's
+                       emails and chat over the old site's copy, which may not be their voice.
   audience.md          the actual people who buy and what convinces them
   visual-identity.md   colours as 6-digit hex with where each is used (read the site's CSS
                        with the browse skill), the display and body font families and where
