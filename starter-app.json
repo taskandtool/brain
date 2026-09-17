@@ -2,6 +2,14 @@
   "schema_version": 1,
   "slug": "brain",
   "version": "0.1.0",
+  "needs": {
+    "connections": [
+      {
+        "provider": "google",
+        "why": "Add your Google Business listing to the brain"
+      }
+    ]
+  },
   "suggestions": [
     {
       "id": "read-my-website-into-the",
