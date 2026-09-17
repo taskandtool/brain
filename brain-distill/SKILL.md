@@ -64,8 +64,9 @@ questions only they can answer — grouped, in one message.
 ## The first ingest does two more things
 
 - **Schedule the weekly lint.** The brain stays true only if someone checks
-  it. Schedule the reminder once (it shows in the owner's Jobs tab, where
-  they or you can pause or remove it):
+  it. Propose the reminder once. It arrives disabled in the
+  owner's Jobs tab and sends nothing until they approve it, so say what it is
+  for and point them there:
 
 ```bash
 cd ~ && python3 -c "from tools.taskandtool import schedule_reminder; print(schedule_reminder('weekly-brain-lint', 'Weekly brain lint: run the brain-lint skill. If brain/.lint-off exists, or nothing in raw/ or brain/ changed since the last lint entry in brain/log.md, say so in one line and stop.', '0 6 * * 1'))"
@@ -106,7 +107,12 @@ brain/brand/
   audience.md          the actual people who buy and what convinces them
   visual-identity.md   colours as 6-digit hex with where each is used (read the site's CSS
                        with the browse skill), the display and body font families and where
-                       they load from, the logo files, the photography style
+                       they load from, the logo files, and the Imagery block the creatives
+                       build image prompts from: what the owner's photographs show
+                       (raw/web/_media.json photo entries, the screenshots), the settings,
+                       the light, the materials and the object that carries the brand's
+                       colour, the people rule, what never appears, and a one-paragraph
+                       style anchor; each line from the pictures, or "to fill"
   do-and-dont.md       observable rules; words used and never used
   logo/                the logo files copied from raw/web/images (svg preferred)
 ```
