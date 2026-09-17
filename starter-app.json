@@ -6,6 +6,7 @@
     "connections": [
       {
         "provider": "google",
+        "strength": "suggested",
         "why": "Add your Google Business listing to the brain"
       }
     ]
