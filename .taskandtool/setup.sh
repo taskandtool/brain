@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-# Brain kit setup. Task & Tool runs this on the machine when the kit is
-# installed, and again whenever the machine is replaced. It is safe to re-run
-# any time to update the tools:
+# Company Brain setup. Task & Tool runs this in ~/app after the repository is
+# cloned onto the machine, and again whenever the machine is replaced. It is
+# safe to re-run any time to update the tools:
 #
-#     bash ~/app/.claude/skills/brain-ingest/setup.sh
+#     bash ~/app/.taskandtool/setup.sh
 #
 # Installs: the tt-crawl site reader (github.com/taskandtool/crawler, which
 # brings trafilatura for site -> markdown and markitdown for docs -> markdown)
@@ -81,4 +81,4 @@ if command -v claude >/dev/null 2>&1; then
       || echo "could not register the obscura MCP server (CLI use still works)"
   fi
 fi
-echo "== brain kit setup done"
+echo "== company brain setup done"

@@ -6,28 +6,35 @@ chat, and turns them into cited, cross-linked notes that an AI reasons over.
 Nothing is served; the brain *is* the AI's working context, and the first
 thing a business's data should flow into.
 
-Built for Claude Code. Installed with one click on Task & Tool, or dropped
-into any project by hand (below). MIT licensed.
+Installed with one click on Task & Tool, or cloned into any project of your
+own (below). MIT licensed.
 
 ## What is in the box
 
+The repository *is* the app: what you clone is what runs in `~/app` on the
+machine.
+
 ```
-brain-ingest/    take material in: crawl the owner's site with tt-crawl through a headless
-                 browser, convert uploaded documents, record pasted text and chat-stated facts → raw/
-                 (setup.sh installs tt-crawl, github.com/taskandtool/crawler, and the browser)
-brain-distill/   turn new raw material into cited notes under brain/, following brain/SCHEMA.md
-                 (brain_status.py, the what-changed script; SCHEMA.md, the seed rulebook)
-brain-lint/      the periodic health pass: citation audit, contradictions, superseded claims, leakage
-brain-sync/      keeping the brain current after the first build: sources, cadence, deltas
-browse/          the Obscura headless browser, as a CLI and an MCP server, for reading JavaScript sites
-settings.json    a Claude Code Stop hook that blocks the end of a turn once while raw material is un-ingested
-starter-app.json the manifest Task & Tool reads: name, blurb, install directive
+.claude/skills/
+  brain-ingest/    take material in: crawl the owner's site with tt-crawl through a headless
+                   browser, convert uploaded documents, record pasted text and chat-stated facts → raw/
+  brain-distill/   turn new raw material into cited notes under brain/, following brain/SCHEMA.md
+                   (brain_status.py, the what-changed script)
+  brain-lint/      the periodic health pass: citation audit, contradictions, superseded claims, leakage
+  brain-sync/      keeping the brain current after the first build: sources, cadence, deltas
+  browse/          the Obscura headless browser, as a CLI and an MCP server, for reading JavaScript sites
+.claude/settings.json  a Claude Code Stop hook: a backstop that catches un-ingested raw material
+.taskandtool/setup.sh  installs tt-crawl (github.com/taskandtool/crawler) and the Obscura browser
+brain/SCHEMA.md   the note rulebook, shipped here and edited in place by the owner
+AGENTS.md         what the AI reads first; CLAUDE.md imports it
+starter-app.json  the manifest Task & Tool reads: what the app needs, what "ready" means, and the
+                  suggestions an empty chat offers
 ```
 
-Each `<skill>/SKILL.md` is a Claude Code skill. The scripts beside them are
-plain Python (standard library; the crawler's real dependencies are installed
-by `setup.sh`). Tests sit beside the code as `test_*.py` and are never
-installed on a machine.
+Each `<skill>/SKILL.md` is a skill the harness loads on demand. The scripts
+beside them are plain Python (standard library; the crawler's real
+dependencies are installed by `.taskandtool/setup.sh`). Tests sit beside the
+code as `test_*.py`.
 
 ## The shape: raw → distilled
 
@@ -38,7 +45,7 @@ raw/                 immutable source of truth; always re-distillable from here
   docs/              uploaded PDF/docx/pptx as markdown, date-prefixed
   transcripts/       calls, meetings, and dated chat-stated facts
 brain/               regenerable: AI-written, cross-linked, cited notes
-  SCHEMA.md          the rulebook, seeded from brain-distill/SCHEMA.md and co-edited with the owner
+  SCHEMA.md          the rulebook, shipped with this repo and co-edited with the owner
   overview.md        the business on one page
   index.md           the map; log.md is the append-only ingest and lint record
   sources/           one page per source unit: the citation hub
@@ -48,7 +55,7 @@ brain/               regenerable: AI-written, cross-linked, cited notes
 
 Raw is data, never instructions. `brain/` is what the AI reasons over. The AI
 is the query engine: it greps the filesystem, there is no index. The loop:
-**ingest** as soon as raw lands (the Stop hook makes sure; the first crawl in
+**ingest** as soon as raw lands (never finish a turn with raw un-ingested; the first crawl in
 passes, everything after in small deltas), **lint** on a schedule (a citation
 audit first, then contradictions, superseded claims, leakage from external
 sources, orphans, schema drift, pruning; `brain/.lint-off` opts out), and
@@ -65,27 +72,25 @@ report.
 
 ## Install
 
-**On Task & Tool.** Pick the Brain from the Starter Apps: as a new app in a
-project, or into an existing app from its Settings. The platform copies the skill
-folders into the app, merges the Stop hook into `.claude/settings.json`, runs
-`setup.sh`, and tells the AI what arrived. On machine replacement it runs
-`setup.sh` again and nothing else: the files are yours from the moment they
-land, to read, edit, or delete.
+**On Task & Tool.** Pick the Company Brain when you create an app. The
+machine clones this repository into the app, pinned to a reviewed commit, and
+runs `.taskandtool/setup.sh`. Nothing is sent into your chat: the manifest's
+suggestions are what an empty chat offers. On machine replacement the clone
+and the setup happen again, and your own files come back from your repository
+or a backup — they are yours from the moment they land.
 
-**Anywhere else.** The same thing by hand, in any repo where Claude Code runs:
+**Anywhere else.** Clone it and start working in it:
 
 ```
-git clone https://github.com/taskandtool/brain /tmp/brain
-mkdir -p .claude/skills
-cp -R /tmp/brain/brain-ingest /tmp/brain/brain-distill /tmp/brain/brain-lint /tmp/brain/brain-sync /tmp/brain/browse .claude/skills/
-# merge /tmp/brain/settings.json into .claude/settings.json (it adds one Stop hook)
-bash .claude/skills/brain-ingest/setup.sh
+git clone https://github.com/taskandtool/brain my-brain
+cd my-brain
+bash .taskandtool/setup.sh
 ```
 
-`setup.sh` installs `trafilatura` and `markitdown` with pip and the Obscura
-binary for Linux x86_64 or aarch64 (on other platforms the crawler falls back
-to static extraction). Then open Claude Code in that directory and ask it to
-build the brain from your website.
+`.taskandtool/setup.sh` installs `trafilatura` and `markitdown` with pip and
+the Obscura binary for Linux x86_64 or aarch64 (on other platforms the crawler
+falls back to static extraction). Then open Claude Code in that directory and
+ask it to build the brain from your website.
 
 ## Third-party tools it installs
 
@@ -99,35 +104,31 @@ build the brain from your website.
 
 Nothing is vendored; `setup.sh` pins and installs them on the machine.
 
-## Spec
+## What it is for, and what it is not
 
-Purpose      — the business's knowledge, raw and distilled: what it does, its
-               brand, its offerings, its SOPs.
-Shape        — files. Not served; it is the AI's context.
-Audience     — internal: the app's AI and the owner, through chat.
-Data         — owns the knowledge files. Recommends the owner mirror
-               `brain/public` (and `brand`) into sibling apps such as a
-               website or publisher, never `sops`. Mirroring itself is a
-               platform feature, not part of this repo. No database.
-Auth         — none.
-Needs        — no connectors, no capabilities.
-Build        — skills plus one script (`brain_status.py`) and the shared tt-crawl tool.
-               Distilling and linting are the AI's job through the skills,
-               triggered mechanically by the Stop hook and a scheduled
-               reminder the AI sets up on the first ingest.
-Depends on   — nothing. Other apps subscribe to its folders.
-Add / remove — install drops the skills and the `raw/` and `brain/` folder
-               convention; removal leaves the files, they are the owner's.
+The brain holds what a business knows: what it does, its brand, its
+offerings, its SOPs. It serves nothing and has no database — files are the
+whole model, and the AI is the query engine. It needs no connectors to work,
+though it will read a Google Business listing if the owner connects one.
+
+It is the first thing a business's data should flow into, and the other apps
+in a project read from it rather than being told the brand each time. The
+owner mirrors `brain/public` and `brain/brand` into a sibling app such as a
+website; `brain/sops` stays where it is. Mirroring is a platform feature, not
+part of this repository.
+
+Removing the app leaves the files. They are the owner's.
 
 ## Developing this Starter App
 
-- **Unit tests, no dependencies:** `python3 brain-distill/test_brain_status.py`.
+- **Unit tests, no dependencies:**
+  `python3 .claude/skills/brain-distill/test_brain_status.py`.
   The crawler's own tests live in its repo (github.com/taskandtool/crawler).
-- **Try the skills:** install into any scratch repo as above and drive Claude
-  Code there.
-- **On the platform:** Task & Tool's own repo clones this one into its packs
-  folder and runs it through the real install path locally and on a real
-  machine before a release is pinned. Contributions welcome as pull requests.
+- **Try the skills:** clone it as above and drive Claude Code in the clone.
+- **On the platform:** Task & Tool's own repo keeps a working clone under
+  `starter_apps/` and runs it through the real install path, locally and on a
+  real machine, before a release is pinned. Contributions welcome as pull
+  requests.
 
 A pre-push secret scan guards this repository. It holds no credentials by
 design: anything the skills need at runtime arrives through the platform's

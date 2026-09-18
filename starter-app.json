@@ -11,6 +11,11 @@
       }
     ]
   },
+  "ready": {
+    "paths": [
+      "brain/SCHEMA.md"
+    ]
+  },
   "suggestions": [
     {
       "id": "read-my-website-into-the",

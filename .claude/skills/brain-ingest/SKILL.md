@@ -17,14 +17,14 @@ raw/docs/             uploaded PDFs/docx/pptx → markdown, date-prefixed
 raw/transcripts/      calls, meetings, videos, and facts the owner stated in chat (dated)
 ```
 
-`brain/SCHEMA.md` (seeded on the first ingest) is the rulebook for all of this;
-read it when it exists.
+`brain/SCHEMA.md` is the rulebook for all of this; read it first.
 
 The tools (the Obscura browser, trafilatura, markitdown) were installed when
-the kit was added. If one is missing, re-run the setup once; it is idempotent:
+this app was set up. If one is missing, re-run the setup once; it is
+idempotent:
 
 ```bash
-bash ~/app/.claude/skills/brain-ingest/setup.sh
+bash ~/app/.taskandtool/setup.sh
 ```
 
 ## A the company website → markdown (the usual first step)
@@ -135,7 +135,7 @@ through the day. A fact with no raw file behind it is not knowledge yet.
 Raw material is not knowledge yet. As soon as it lands, run the
 `brain-distill` skill to fold it into `brain/`. The first crawl is a batch:
 ingest it by section, a pass at a time, logging each. After that, keep the
-brain moving in small deltas (the `brain-sync` skill). A Stop hook enforces
-ingest: if you try to end your turn with un-ingested raw files, it hands you
-the list. Tell the owner what you pulled in ("42 pages from your site, 3
+brain moving in small deltas (the `brain-sync` skill). Never end a turn with
+raw files still un-ingested: `brain_status.py status` is the check, and under
+Claude Code a `Stop` hook runs it for you as a backstop. Tell the owner what you pulled in ("42 pages from your site, 3
 docs") — it's their first sign the brain knows their business.

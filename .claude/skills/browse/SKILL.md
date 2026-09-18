@@ -4,16 +4,16 @@ description: "Browse the web with the Obscura headless browser: read JavaScript-
 
 # Browse
 
-The brain kit installs **Obscura**, a small headless browser (real JavaScript,
+The Company Brain installs **Obscura**, a small headless browser (real JavaScript,
 no Chromium). Use it whenever a page needs JavaScript to show its content, or
 when the owner wants data from another site. `tt-crawl site` (brain-ingest)
 already crawls a whole site through it; this skill is for everything else.
 
 The binary is `obscura` on the PATH, or at `/usr/local/bin/obscura` /
-`~/.local/bin/obscura`. If it is missing, run the kit setup once:
+`~/.local/bin/obscura`. If it is missing, run the app's setup once:
 
 ```bash
-bash ~/app/.claude/skills/brain-ingest/setup.sh
+bash ~/app/.taskandtool/setup.sh
 ```
 
 ## One page (the common case)

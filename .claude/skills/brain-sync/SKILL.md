@@ -26,8 +26,8 @@ small, controlled deltas. This skill is how to think about that.
   calls and documents whenever they happen. Don't invent a daily job.
 - **Tools that need no AI can be scheduled; ingest happens in conversation.**
   The crawler runs fine as a scheduled job (Jobs, via the platform: it needs no
-  AI key). What it changes in `raw/` is ingested the next time you're in chat —
-  the Stop hook makes sure it isn't missed.
+  AI key). What it changes in `raw/` is ingested the next time you're in chat:
+  `brain_status.py status` at the top of a turn is how you find it waiting.
 
 ## Sources worth syncing, and how
 
