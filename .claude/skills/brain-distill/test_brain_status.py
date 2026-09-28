@@ -58,6 +58,24 @@ class FilesystemTests(unittest.TestCase):
     def test_raw_files_skip_images_and_underscore_files(self):
         self.assertEqual(list(bst.raw_files()), ["raw/web/index.md"])
 
+    def test_a_crawls_screenshots_are_not_ingest_work(self):
+        os.makedirs("raw/web/pages/index")
+        for name in ("01.png", "02.png", "meta.json"):
+            with open("raw/web/pages/index/" + name, "w") as f:
+                f.write("x")
+        os.makedirs("raw/docs/pages")                 # not a crawl folder: counted
+        with open("raw/docs/pages/notes.md", "w") as f:
+            f.write("notes")
+        self.assertEqual(sorted(bst.raw_files()), ["raw/docs/pages/notes.md", "raw/web/index.md"])
+
+    def test_a_screenshot_ingested_before_is_not_reported_removed(self):
+        os.makedirs("raw/web/pages")
+        with open("raw/web/pages/index.png", "wb") as f:
+            f.write(b"png")
+        bst.save_manifest({"raw/web/index.md": bst.sha("raw/web/index.md"), "raw/web/pages/index.png": "old",
+                           "raw/web/gone.md": "old"})
+        self.assertEqual(bst.status()["removed"], ["raw/web/gone.md"])
+
     def test_status_then_mark_then_change(self):
         self.assertEqual(bst.status()["new"], ["raw/web/index.md"])
         self.assertEqual(bst.mark(), 1)

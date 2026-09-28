@@ -35,10 +35,17 @@ def sha(path):
     return h.hexdigest()
 
 
+# A crawl folder (one with tt-crawl's _manifest.json) also holds pages/: the
+# screenshots, a picture of every page in strips. Like images/, they are what
+# visual-identity.md looks at, not facts to ingest one file at a time.
+CRAWL_SKIP_DIRS = {"pages"}
+
+
 def raw_files(root=RAW):
     out = {}
     for dirpath, dirnames, filenames in os.walk(root):
-        dirnames[:] = [d for d in dirnames if d not in SKIP_DIRS and not d.startswith(".")]
+        skip = SKIP_DIRS | (CRAWL_SKIP_DIRS if "_manifest.json" in filenames else set())
+        dirnames[:] = [d for d in dirnames if d not in skip and not d.startswith(".")]
         for name in filenames:
             if name.startswith((".", "_")):        # _manifest.json, _common.md, dotfiles
                 continue
@@ -88,7 +95,11 @@ def diff(current, ingested):
 
 
 def status():
-    return diff(raw_files(), load_manifest())
+    current = raw_files()
+    # A file ingested before it was skipped (a 0.1.3 screenshot) is still on
+    # disk: not removed, just no longer ingest work.
+    ingested = {p: h for p, h in load_manifest().items() if p in current or not os.path.exists(p)}
+    return diff(current, ingested)
 
 
 def summarize(d):

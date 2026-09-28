@@ -58,8 +58,10 @@ What it does for you, so you don't have to:
 - **Lists the media** (`_media.json`: every image, the pages using it, alt
   text, the largest variant, a photo/logo/icon/stock/theme guess) and, with
   `--styles`, reads the fonts and colours by role off the rendered pages
-  (`_styles.json`), the brand's raw material; `--screenshots` keeps a PNG per
-  page under `raw/web/pages/`.
+  (`_styles.json`), the brand's raw material; `--screenshots` keeps a picture of
+  each whole page under `raw/web/pages/<name>/` (strips `01.png`, `02.png`…
+  top to bottom, and `meta.json`). Screenshots and images are what you look
+  at for the brand; `brain_status.py` does not count them as ingest work.
 - **Dedupes.** Identical and near-identical pages are skipped; one picture
   served at five sizes is fetched once; identical bytes are stored once.
 - **Stops at 100 pages by default.** That is deliberate and visible: the
