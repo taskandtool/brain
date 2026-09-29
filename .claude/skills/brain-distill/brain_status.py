@@ -5,6 +5,7 @@ AI, the Stop hook, and a scheduled job all call — deterministic, stdlib only.
     python3 brain_status.py status            # JSON: new / changed / removed raw files
     python3 brain_status.py mark [--all|paths] # record raw files as ingested
     python3 brain_status.py hook-stop         # Claude Code Stop hook (reads stdin)
+    python3 brain_status.py moved             # after `tt-crawl relayout`: keep moved files ingested
 
 State: brain/.ingested.json maps each raw file path to the sha256 of its
 content at ingest time. `status` diffs raw/ against it. Run from the app
@@ -23,7 +24,10 @@ import sys
 
 RAW = "raw"
 MANIFEST = os.path.join("brain", ".ingested.json")
-SKIP_DIRS = {"images", "__pycache__"}
+# Pictures are looked at, not ingested one file at a time (visual-identity.md
+# reads them through _index/media.json and the screenshots), and a crawl's
+# own ledger and cache (_index/, _cache/) are the crawler's, not sources.
+SKIP_DIRS = {"images", "shots", "videos", "__pycache__"}
 MAX_LISTED = 15
 
 
@@ -35,19 +39,12 @@ def sha(path):
     return h.hexdigest()
 
 
-# A crawl folder (one with tt-crawl's _manifest.json) also holds pages/: the
-# screenshots, a picture of every page in strips. Like images/, they are what
-# visual-identity.md looks at, not facts to ingest one file at a time.
-CRAWL_SKIP_DIRS = {"pages"}
-
-
 def raw_files(root=RAW):
     out = {}
     for dirpath, dirnames, filenames in os.walk(root):
-        skip = SKIP_DIRS | (CRAWL_SKIP_DIRS if "_manifest.json" in filenames else set())
-        dirnames[:] = [d for d in dirnames if d not in skip and not d.startswith(".")]
+        dirnames[:] = [d for d in dirnames if d not in SKIP_DIRS and not d.startswith((".", "_"))]
         for name in filenames:
-            if name.startswith((".", "_")):        # _manifest.json, _common.md, dotfiles
+            if name.startswith((".", "_")):        # _sites.json, _latest.json, dotfiles
                 continue
             path = os.path.join(dirpath, name).replace(os.sep, "/")
             out[path] = sha(path)
@@ -70,9 +67,11 @@ def save_manifest(data, path=MANIFEST):
 
 def unit_of(path):
     """The source unit a raw file belongs to (the brain keeps one source page
-    per unit): the owner's whole site is one unit; each external site is one;
-    every document, transcript, or other file is its own."""
+    per unit): each of the owner's sites (raw/site/<host>) is one unit; each
+    external site is one; every document, transcript, or other file is its own."""
     parts = path.split("/")
+    if len(parts) >= 4 and parts[0] == RAW and parts[1] == "site":
+        return "site:" + parts[2]
     if len(parts) >= 3 and parts[0] == RAW and parts[1] == "web":
         return "website"
     if len(parts) >= 4 and parts[0] == RAW and parts[1] == "external":
@@ -142,6 +141,33 @@ def mark(paths=None):
     return len(ingested)
 
 
+def moved(root=RAW):
+    """After `tt-crawl relayout`: every file it moved that the brain had
+    ingested stays ingested under its new path. relayout rewrites the old
+    paths in brain/ (its --rewrite), so the record already names the new
+    paths; the content of a moved page changed only in form (frontmatter,
+    the image links), so its new hash is recorded as ingested."""
+    ingested, count = load_manifest(), 0
+    for kind in ("site", "external"):
+        base = os.path.join(root, kind)
+        for host in sorted(os.listdir(base)) if os.path.isdir(base) else []:
+            try:
+                with open(os.path.join(base, host, "_index", "moved.json")) as f:
+                    pairs = json.load(f)
+            except (OSError, ValueError):
+                continue
+            for old, new in pairs.items():
+                targets = [new] if os.path.isfile(new) else [
+                    os.path.join(d, n).replace(os.sep, "/") for d, _, ns in os.walk(new) for n in ns]
+                for t in targets:
+                    if t in ingested or old in ingested:
+                        ingested.pop(old, None)
+                        ingested[t] = sha(t)
+                        count += 1
+    save_manifest(ingested)
+    return count
+
+
 def hook_stop(stdin_text):
     """Claude Code Stop hook: block the turn once with the pending list.
     Returns (stdout_text, exit_code). Pure given the stdin payload and the
@@ -180,6 +206,9 @@ def main(argv):
         rest = argv[2:]
         n = mark(None if not rest or rest == ["--all"] else rest)
         print(json.dumps({"ingested": n}))
+        return 0
+    if cmd == "moved":
+        print(json.dumps({"kept_ingested": moved()}))
         return 0
     if cmd == "hook-stop":
         project = os.environ.get("CLAUDE_PROJECT_DIR")

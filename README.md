@@ -40,7 +40,8 @@ code as `test_*.py`.
 
 ```
 raw/                 immutable source of truth; always re-distillable from here
-  web/               the owner's crawled site: one .md per page, images/, _common.md (site furniture, once)
+  site/<host>/       the owner's crawled site: pages/ (one .md per page), images/, structured/, docs/,
+                     and _index/ (facts, reviews, media, inventory, templates; the header and footer once)
   external/<host>/   other people's sites; never the owner's facts
   docs/              uploaded PDF/docx/pptx as markdown, date-prefixed
   transcripts/       calls, meetings, and dated chat-stated facts
@@ -64,11 +65,12 @@ hallucination contamination: no fact without a `raw/` citation, chat-stated
 facts are written to raw first, external material never becomes an owner
 fact, and superseded facts are retired with a pointer rather than erased.
 
-The crawler renders every page through Obscura, seeds from the sitemap,
-follows every same-site link, strips the lines that repeat across pages into
-`_common.md`, dedupes pages and images (content hash plus size-variant URL
-key), and stops at a visible default of 100 pages that the AI is told to
-report.
+The crawler renders every page through Obscura, reads the site's own nav
+first, then the sitemap, keeps each page's text word for word, sets the
+header, footer and lines that repeat across pages aside once, records the
+facts and reviews with where each was found, fetches each picture once at its
+largest, and stops at a visible default of 100 pages that the AI is told to
+report. No model is involved: a crawl costs the machine's time.
 
 ## Install
 

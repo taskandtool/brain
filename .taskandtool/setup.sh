@@ -11,9 +11,9 @@
 # it; the browse skill uses it too). Nothing here touches the app's code.
 set -euo pipefail
 
-OBSCURA_VERSION="${OBSCURA_VERSION:-v0.2.1}"
+OBSCURA_VERSION="${OBSCURA_VERSION:-v0.2.2}"
 OBSCURA_REPO="https://github.com/h4ckf0r0day/obscura"
-CRAWLER_REF="${CRAWLER_REF:-v0.1.4}"
+CRAWLER_REF="${CRAWLER_REF:-v0.2.0}"
 
 echo "== tt-crawl $CRAWLER_REF (site reader) + python tools"
 python3 -m pip install --quiet --upgrade "git+https://github.com/taskandtool/crawler@$CRAWLER_REF" 2>&1 | tail -2 || true

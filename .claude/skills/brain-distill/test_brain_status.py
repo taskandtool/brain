@@ -22,13 +22,15 @@ class DiffTests(unittest.TestCase):
         self.assertEqual(d["units"], {"raw/a.md": {"new": 1, "changed": 0}, "raw/b.md": {"new": 0, "changed": 1}})
 
     def test_units_group_the_site_and_external_hosts(self):
-        self.assertEqual(bst.unit_of("raw/web/services.md"), "website")
-        self.assertEqual(bst.unit_of("raw/web/faq/hours.md"), "website")
+        self.assertEqual(bst.unit_of("raw/site/acme.com/pages/services.md"), "site:acme.com")
+        self.assertEqual(bst.unit_of("raw/site/acme.com/docs/prices.md"), "site:acme.com")
+        self.assertEqual(bst.unit_of("raw/web/services.md"), "website")       # a folder crawled before tt-crawl 0.2
         self.assertEqual(bst.unit_of("raw/external/competitor.com/pricing.md"), "external:competitor.com")
         self.assertEqual(bst.unit_of("raw/docs/2026-09-02-brochure.md"), "raw/docs/2026-09-02-brochure.md")
-        d = bst.diff({"raw/web/a.md": "1", "raw/web/b.md": "2", "raw/external/x.com/p.md": "3"}, {"raw/web/b.md": "old"})
-        self.assertEqual(d["units"], {"website": {"new": 1, "changed": 1}, "external:x.com": {"new": 1, "changed": 0}})
-        self.assertIn("website (1 new, 1 changed)", bst.summarize(d))
+        d = bst.diff({"raw/site/a.com/pages/a.md": "1", "raw/site/a.com/pages/b.md": "2", "raw/external/x.com/p.md": "3"},
+                     {"raw/site/a.com/pages/b.md": "old"})
+        self.assertEqual(d["units"], {"site:a.com": {"new": 1, "changed": 1}, "external:x.com": {"new": 1, "changed": 0}})
+        self.assertIn("site:a.com (1 new, 1 changed)", bst.summarize(d))
 
     def test_summary_lists_pending_and_caps(self):
         d = {"new": [f"raw/{i}.md" for i in range(20)], "changed": [], "removed": []}
@@ -39,64 +41,61 @@ class DiffTests(unittest.TestCase):
 
 
 class FilesystemTests(unittest.TestCase):
+    PAGE = "raw/site/acme.com/pages/index.md"
+
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
         self.cwd = os.getcwd()
         os.chdir(self.tmp.name)
-        os.makedirs("raw/web/images")
-        with open("raw/web/index.md", "w") as f:
-            f.write("hello")
-        with open("raw/web/_manifest.json", "w") as f:
-            f.write("{}")
-        with open("raw/web/images/x.png", "wb") as f:
-            f.write(b"png")
+        for d in ("pages", "images", "shots/index", "_index", "_cache/pages"):
+            os.makedirs("raw/site/acme.com/" + d)
+        for path, body in ((self.PAGE, "hello"), ("raw/site/acme.com/images/x.png", "png"),
+                           ("raw/site/acme.com/shots/index/01.png", "png"), ("raw/site/acme.com/_index/inventory.md", "t"),
+                           ("raw/site/acme.com/_cache/pages/index.json", "{}"), ("raw/site/_sites.json", "{}")):
+            with open(path, "w") as f:
+                f.write(body)
 
     def tearDown(self):
         os.chdir(self.cwd)
         self.tmp.cleanup()
 
-    def test_raw_files_skip_images_and_underscore_files(self):
-        self.assertEqual(list(bst.raw_files()), ["raw/web/index.md"])
+    def test_raw_files_skip_pictures_and_the_crawlers_own_files(self):
+        self.assertEqual(list(bst.raw_files()), [self.PAGE])
 
-    def test_a_crawls_screenshots_are_not_ingest_work(self):
-        os.makedirs("raw/web/pages/index")
-        for name in ("01.png", "02.png", "meta.json"):
-            with open("raw/web/pages/index/" + name, "w") as f:
-                f.write("x")
-        os.makedirs("raw/docs/pages")                 # not a crawl folder: counted
-        with open("raw/docs/pages/notes.md", "w") as f:
-            f.write("notes")
-        self.assertEqual(sorted(bst.raw_files()), ["raw/docs/pages/notes.md", "raw/web/index.md"])
+    def test_a_file_ingested_before_it_was_skipped_is_not_reported_removed(self):
+        bst.save_manifest({self.PAGE: bst.sha(self.PAGE), "raw/site/acme.com/images/x.png": "old", "raw/site/acme.com/gone.md": "old"})
+        self.assertEqual(bst.status()["removed"], ["raw/site/acme.com/gone.md"])
 
-    def test_a_screenshot_ingested_before_is_not_reported_removed(self):
-        os.makedirs("raw/web/pages")
-        with open("raw/web/pages/index.png", "wb") as f:
-            f.write(b"png")
-        bst.save_manifest({"raw/web/index.md": bst.sha("raw/web/index.md"), "raw/web/pages/index.png": "old",
-                           "raw/web/gone.md": "old"})
-        self.assertEqual(bst.status()["removed"], ["raw/web/gone.md"])
+    def test_moved_keeps_relaid_files_ingested(self):
+        # relayout moved raw/web/index.md and rewrote the record's paths (its --rewrite)
+        with open("raw/site/acme.com/_index/moved.json", "w") as f:
+            json.dump({"raw/web/index.md": self.PAGE, "raw/web/images": "raw/site/acme.com/images"}, f)
+        bst.save_manifest({self.PAGE: "the hash before relayout rewrote its frontmatter"})
+        self.assertEqual(bst.status()["changed"], [self.PAGE])
+        self.assertEqual(bst.moved(), 1)
+        self.assertEqual(bst.status(), {"new": [], "changed": [], "removed": [], "units": {}})
 
     def test_status_then_mark_then_change(self):
-        self.assertEqual(bst.status()["new"], ["raw/web/index.md"])
+        self.assertEqual(bst.status()["new"], [self.PAGE])
         self.assertEqual(bst.mark(), 1)
         self.assertEqual(bst.status(), {"new": [], "changed": [], "removed": [], "units": {}})
-        with open("raw/web/index.md", "w") as f:
+        with open(self.PAGE, "w") as f:
             f.write("hello again")
-        self.assertEqual(bst.status()["changed"], ["raw/web/index.md"])
+        self.assertEqual(bst.status()["changed"], [self.PAGE])
         with open("raw/docs.md", "w") as f:
             f.write("doc")
         # marking one path leaves the other pending
         bst.mark(["raw/docs.md"])
         st = bst.status()
-        self.assertEqual((st["new"], st["changed"], st["removed"]), ([], ["raw/web/index.md"], []))
-        self.assertEqual(st["units"], {"website": {"new": 0, "changed": 1}})
+        self.assertEqual((st["new"], st["changed"], st["removed"]), ([], [self.PAGE], []))
+        self.assertEqual(st["units"], {"site:acme.com": {"new": 0, "changed": 1}})
 
     def test_hook_blocks_once_with_the_list_then_never_loops(self):
         out, code = bst.hook_stop("{}")
         self.assertEqual(code, 0)
         decision = json.loads(out)
         self.assertEqual(decision["decision"], "block")
-        self.assertIn("raw/web/index.md", decision["reason"])
+        self.assertIn(self.PAGE, decision["reason"])
         self.assertIn("brain-distill", decision["reason"])
         # the second stop, while already continuing from this hook, passes
         self.assertEqual(bst.hook_stop(json.dumps({"stop_hook_active": True})), ("", 0))

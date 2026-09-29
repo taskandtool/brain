@@ -11,7 +11,8 @@ never overwrites this file.)
 
 ```
 raw/                      immutable sources; the AI reads, never edits
-  web/                      the owner's own site, crawled (one .md per page)
+  site/<host>/              the owner's own site, crawled: pages/ (one .md per page), images/,
+                            structured/, docs/, and _index/ (facts, reviews, media, inventory)
   external/<host>/          other people's sites, pulled on request — NOT the owner's facts
   docs/                     uploaded documents → markdown, date-prefixed
   transcripts/              calls, meetings, videos, and facts the owner stated in chat
@@ -38,7 +39,7 @@ type: offering            # offering | policy | entity | concept | process | faq
 updated: 2026-09-02
 status: current           # current | superseded
 sources:
-  - raw/web/services.md
+  - raw/site/example.com/pages/services.md
   - raw/transcripts/2026-08-30-intake-call.md
 ---
 
@@ -46,7 +47,7 @@ One paragraph that answers "what is this" for someone who has never heard of it.
 
 ## Details
 Short sections. Every fact you'd be embarrassed to get wrong carries its source
-inline: "Call-outs are $180 (raw/web/pricing.md)."
+inline: "Call-outs are $180 (raw/site/example.com/pages/pricing.md)."
 
 ## Related
 - [Service area](../public/service-area.md)
@@ -111,7 +112,7 @@ area_served: ""
 
 # public/proof.md              type: proof
 items:
-  - { quote: "…", who: "J. Alvarez, Fort Myers", source: raw/web/reviews.md, date: 2026-03-02 }
+  - { quote: "…", who: "J. Alvarez, Fort Myers", source: raw/site/example.com/_index/reviews.md, date: 2026-03-02 }
 ```
 
 The note names a website relies on: `business.md`, `services.md` (or one
