@@ -24,7 +24,6 @@ class DiffTests(unittest.TestCase):
     def test_units_group_the_site_and_external_hosts(self):
         self.assertEqual(bst.unit_of("raw/site/acme.com/pages/services.md"), "site:acme.com")
         self.assertEqual(bst.unit_of("raw/site/acme.com/docs/prices.md"), "site:acme.com")
-        self.assertEqual(bst.unit_of("raw/web/services.md"), "website")       # a folder crawled before tt-crawl 0.2
         self.assertEqual(bst.unit_of("raw/external/competitor.com/pricing.md"), "external:competitor.com")
         self.assertEqual(bst.unit_of("raw/docs/2026-09-02-brochure.md"), "raw/docs/2026-09-02-brochure.md")
         d = bst.diff({"raw/site/a.com/pages/a.md": "1", "raw/site/a.com/pages/b.md": "2", "raw/external/x.com/p.md": "3"},
@@ -65,15 +64,6 @@ class FilesystemTests(unittest.TestCase):
     def test_a_file_ingested_before_it_was_skipped_is_not_reported_removed(self):
         bst.save_manifest({self.PAGE: bst.sha(self.PAGE), "raw/site/acme.com/images/x.png": "old", "raw/site/acme.com/gone.md": "old"})
         self.assertEqual(bst.status()["removed"], ["raw/site/acme.com/gone.md"])
-
-    def test_moved_keeps_relaid_files_ingested(self):
-        # relayout moved raw/web/index.md and rewrote the record's paths (its --rewrite)
-        with open("raw/site/acme.com/_index/moved.json", "w") as f:
-            json.dump({"raw/web/index.md": self.PAGE, "raw/web/images": "raw/site/acme.com/images"}, f)
-        bst.save_manifest({self.PAGE: "the hash before relayout rewrote its frontmatter"})
-        self.assertEqual(bst.status()["changed"], [self.PAGE])
-        self.assertEqual(bst.moved(), 1)
-        self.assertEqual(bst.status(), {"new": [], "changed": [], "removed": [], "units": {}})
 
     def test_status_then_mark_then_change(self):
         self.assertEqual(bst.status()["new"], [self.PAGE])

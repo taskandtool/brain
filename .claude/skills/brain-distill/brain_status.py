@@ -5,7 +5,6 @@ AI, the Stop hook, and a scheduled job all call — deterministic, stdlib only.
     python3 brain_status.py status            # JSON: new / changed / removed raw files
     python3 brain_status.py mark [--all|paths] # record raw files as ingested
     python3 brain_status.py hook-stop         # Claude Code Stop hook (reads stdin)
-    python3 brain_status.py moved             # after `tt-crawl relayout`: keep moved files ingested
 
 State: brain/.ingested.json maps each raw file path to the sha256 of its
 content at ingest time. `status` diffs raw/ against it. Run from the app
@@ -72,8 +71,6 @@ def unit_of(path):
     parts = path.split("/")
     if len(parts) >= 4 and parts[0] == RAW and parts[1] == "site":
         return "site:" + parts[2]
-    if len(parts) >= 3 and parts[0] == RAW and parts[1] == "web":
-        return "website"
     if len(parts) >= 4 and parts[0] == RAW and parts[1] == "external":
         return "external:" + parts[2]
     return path
@@ -141,33 +138,6 @@ def mark(paths=None):
     return len(ingested)
 
 
-def moved(root=RAW):
-    """After `tt-crawl relayout`: every file it moved that the brain had
-    ingested stays ingested under its new path. relayout rewrites the old
-    paths in brain/ (its --rewrite), so the record already names the new
-    paths; the content of a moved page changed only in form (frontmatter,
-    the image links), so its new hash is recorded as ingested."""
-    ingested, count = load_manifest(), 0
-    for kind in ("site", "external"):
-        base = os.path.join(root, kind)
-        for host in sorted(os.listdir(base)) if os.path.isdir(base) else []:
-            try:
-                with open(os.path.join(base, host, "_index", "moved.json")) as f:
-                    pairs = json.load(f)
-            except (OSError, ValueError):
-                continue
-            for old, new in pairs.items():
-                targets = [new] if os.path.isfile(new) else [
-                    os.path.join(d, n).replace(os.sep, "/") for d, _, ns in os.walk(new) for n in ns]
-                for t in targets:
-                    if t in ingested or old in ingested:
-                        ingested.pop(old, None)
-                        ingested[t] = sha(t)
-                        count += 1
-    save_manifest(ingested)
-    return count
-
-
 def hook_stop(stdin_text):
     """Claude Code Stop hook: block the turn once with the pending list.
     Returns (stdout_text, exit_code). Pure given the stdin payload and the
@@ -206,9 +176,6 @@ def main(argv):
         rest = argv[2:]
         n = mark(None if not rest or rest == ["--all"] else rest)
         print(json.dumps({"ingested": n}))
-        return 0
-    if cmd == "moved":
-        print(json.dumps({"kept_ingested": moved()}))
         return 0
     if cmd == "hook-stop":
         project = os.environ.get("CLAUDE_PROJECT_DIR")

@@ -24,7 +24,7 @@ machine.
   brain-sync/      keeping the brain current after the first build: sources, cadence, deltas
   browse/          the Obscura headless browser, as a CLI and an MCP server, for reading JavaScript sites
 .claude/settings.json  a Claude Code Stop hook: a backstop that catches un-ingested raw material
-.taskandtool/setup.sh  installs tt-crawl (github.com/taskandtool/crawler) and the Obscura browser
+.taskandtool/setup.sh  installs tt-crawl's latest (github.com/taskandtool/crawler) and the Obscura browser
 brain/SCHEMA.md   the note rulebook, shipped here and edited in place by the owner
 AGENTS.md         what the AI reads first; CLAUDE.md imports it
 starter-app.json  the manifest Task & Tool reads: what the app needs, what "ready" means, and the
@@ -89,22 +89,21 @@ cd my-brain
 bash .taskandtool/setup.sh
 ```
 
-`.taskandtool/setup.sh` installs `trafilatura` and `markitdown` with pip and
-the Obscura binary for Linux x86_64 or aarch64 (on other platforms the crawler
-falls back to static extraction). Then open Claude Code in that directory and
+`.taskandtool/setup.sh` installs the crawler (tt-crawl) with pip and the two
+browsers it drives, Chrome and Obscura. Then open Claude Code in that directory and
 ask it to build the brain from your website.
 
 ## Third-party tools it installs
 
+- [tt-crawl](https://github.com/taskandtool/crawler), MIT, the site reader,
+  installed from its main branch; it brings
+  [markitdown](https://github.com/microsoft/markitdown) (MIT) for documents.
+- Chrome (chrome-headless-shell, from Google's Chrome for Testing), the
+  crawler's default browser for reading pages and screenshots.
 - [Obscura](https://github.com/h4ckf0r0day/obscura), Apache-2.0, a Rust
-  headless browser in one static binary. The crawler renders every page
-  through it; the browse skill drives it.
-- [trafilatura](https://github.com/adbar/trafilatura), Apache-2.0, rendered
-  HTML to content markdown.
-- [markitdown](https://github.com/microsoft/markitdown), MIT, documents to
-  markdown.
+  headless browser in one static binary; the browse skill drives it.
 
-Nothing is vendored; `setup.sh` pins and installs them on the machine.
+Nothing is vendored; `setup.sh` installs them on the machine.
 
 ## What it is for, and what it is not
 

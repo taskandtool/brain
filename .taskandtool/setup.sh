@@ -5,18 +5,20 @@
 #
 #     bash ~/app/.taskandtool/setup.sh
 #
-# Installs: the tt-crawl site reader (github.com/taskandtool/crawler, which
-# brings trafilatura for site -> markdown and markitdown for docs -> markdown)
-# and the Obscura headless browser (the crawler renders every page through
-# it; the browse skill uses it too). Nothing here touches the app's code.
+# Installs: the tt-crawl site reader at its latest (github.com/taskandtool/crawler)
+# and the two browsers it drives, Chrome and Obscura (the browse skill uses
+# Obscura too).
+# Nothing here touches the app's code.
 set -euo pipefail
 
-OBSCURA_VERSION="${OBSCURA_VERSION:-v0.2.2}"
-OBSCURA_REPO="https://github.com/h4ckf0r0day/obscura"
-CRAWLER_REF="${CRAWLER_REF:-v0.2.0}"
+CRAWLER_REF="${CRAWLER_REF:-main}"
+CRAWLER="git+https://github.com/taskandtool/crawler@$CRAWLER_REF"
 
 echo "== tt-crawl $CRAWLER_REF (site reader) + python tools"
-python3 -m pip install --quiet --upgrade "git+https://github.com/taskandtool/crawler@$CRAWLER_REF" 2>&1 | tail -2 || true
+# The crawler's main, every run: the first install brings its dependencies;
+# the second replaces its own code even when its version number did not move.
+python3 -m pip install --quiet --upgrade "ttcrawl @ $CRAWLER" 2>&1 | tail -2 || true
+python3 -m pip install --quiet --force-reinstall --no-deps "ttcrawl @ $CRAWLER" 2>&1 | tail -2 || true
 python3 -m ttcrawl --version
 
 # `tt-crawl` on the PATH, whatever pip did with its console script (a user
@@ -28,48 +30,14 @@ if ! command -v tt-crawl >/dev/null 2>&1; then
     fi
   done
 fi
-python3 -c "import trafilatura; print('trafilatura', trafilatura.__version__)"
 
-# Where the Obscura binary goes: system-wide when we can, else ~/.local/bin.
-# tt-crawl and the browse skill look in both places.
-if [ -w /usr/local/bin ]; then
-  BIN=/usr/local/bin
-elif command -v sudo >/dev/null 2>&1 && sudo -n true 2>/dev/null; then
-  BIN=/usr/local/bin
-  SUDO="sudo -n"
-else
-  BIN="$HOME/.local/bin"
-fi
-SUDO="${SUDO:-}"
-$SUDO mkdir -p "$BIN"
-
-echo "== obscura $OBSCURA_VERSION -> $BIN"
-case "$(uname -m)" in
-  x86_64|amd64) asset="obscura-x86_64-linux.tar.gz" ;;
-  aarch64|arm64) asset="obscura-aarch64-linux.tar.gz" ;;
-  *) echo "no obscura build for $(uname -m); skipping (the scraper falls back to static extraction)"; exit 0 ;;
-esac
-
-stamp="$BIN/.obscura-version"
-if [ -x "$BIN/obscura" ] && [ "$(cat "$stamp" 2>/dev/null || true)" = "$OBSCURA_VERSION" ]; then
-  echo "obscura $OBSCURA_VERSION already installed"
-else
-  tmp="$(mktemp -d)"
-  trap 'rm -rf "$tmp"' EXIT
-  curl -fsSL --retry 3 "$OBSCURA_REPO/releases/download/$OBSCURA_VERSION/$asset" -o "$tmp/obscura.tgz"
-  tar xzf "$tmp/obscura.tgz" -C "$tmp"
-  # The archive holds `obscura` and `obscura-worker` (keep them together: the
-  # parallel `scrape` command spawns the worker). Layout varies by release, so
-  # locate them rather than assume the top level.
-  main_bin="$(find "$tmp" -type f -name obscura | head -1)"
-  worker_bin="$(find "$tmp" -type f -name obscura-worker | head -1)"
-  [ -n "$main_bin" ] || { echo "obscura binary not found in $asset"; exit 1; }
-  $SUDO install -m 755 "$main_bin" "$BIN/obscura"
-  [ -n "$worker_bin" ] && $SUDO install -m 755 "$worker_bin" "$BIN/obscura-worker"
-  echo "$OBSCURA_VERSION" | $SUDO tee "$stamp" >/dev/null
-  echo "installed obscura $OBSCURA_VERSION"
-fi
-"$BIN/obscura" --version 2>/dev/null || true
+# The browsers the crawler drives: Chrome reads pages and takes screenshots
+# by default; Obscura is the small browser the browse skill uses. Installing
+# them here keeps a first crawl from downloading a browser mid-conversation.
+echo "== browsers"
+python3 -m ttcrawl install-browser chrome || echo "chrome did not install; tt-crawl falls back to obscura"
+python3 -m ttcrawl install-browser obscura || echo "obscura did not install; the browse skill needs it"
+BIN="$(dirname "$(command -v obscura || echo "$HOME/.local/bin/obscura")")"
 
 # Register Obscura's MCP server with Claude Code (user scope, so it is not
 # written into the app's repo) for interactive browsing: navigate, click,

@@ -20,7 +20,7 @@
     {
       "id": "read-my-website-into-the",
       "label": "Read my website into the brain",
-      "prompt": "Read my whole website into the brain. Crawl it into raw/site with the brain-ingest skill (tt-crawl brand: every page's own text, the brand's pictures, the facts and reviews with where each was found, the header and footer as structure, the site's own markup), then tt-crawl docs for the documents it links and tt-crawl wp if it is WordPress, tell me how many pages you found and whether you hit the 100-page limit, then distill it in passes by section into brain/ following brain/SCHEMA.md. Finish with what went in and the questions only I can answer. My site is ",
+      "prompt": "Read my whole website into the brain. Crawl it into raw/site with the brain-ingest skill (tt-crawl brand: every page's own text, the brand's pictures, the facts and reviews with where each was found, the header and footer as structure, the site's own markup), then tt-crawl docs for the documents it links and tt-crawl import --source wp if it is WordPress, tell me how many pages you found and whether you hit the 100-page limit, then distill it in passes by section into brain/ following brain/SCHEMA.md. Finish with what went in and the questions only I can answer. My site is ",
       "when": [
         {
           "path": "raw/site/_sites.json",
@@ -83,7 +83,7 @@
     {
       "id": "import-my-wordpress-content",
       "label": "Import my WordPress content",
-      "prompt": "My site runs on WordPress. Pull its pages and posts with `tt-crawl wp` into its folder in raw/site (authors, dates, categories, full content), tell me what it found, then fold the facts into brain/ the usual way, citing the export. My site is ",
+      "prompt": "My site runs on WordPress. Pull its pages and posts with `tt-crawl import --source wp` into its folder in raw/site (authors, dates, categories, full content), tell me what it found, then fold the facts into brain/ the usual way, citing the export. My site is ",
       "when": [
         {
           "path": "raw/site/_sites.json",
