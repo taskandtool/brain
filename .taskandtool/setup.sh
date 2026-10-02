@@ -21,22 +21,11 @@ python3 -m pip install --quiet --upgrade "ttcrawl @ $CRAWLER" 2>&1 | tail -2 || 
 python3 -m pip install --quiet --force-reinstall --no-deps "ttcrawl @ $CRAWLER" 2>&1 | tail -2 || true
 python3 -m ttcrawl --version
 
-# `tt-crawl` on the PATH, whatever pip did with its console script (a user
-# install lands in ~/.local/bin, which a service shell may not have).
-if ! command -v tt-crawl >/dev/null 2>&1; then
-  for d in /usr/local/bin "$HOME/.local/bin"; do
-    if [ -w "$d" ] || mkdir -p "$d" 2>/dev/null && [ -w "$d" ]; then
-      printf '#!/bin/sh\nexec python3 -m ttcrawl "$@"\n' > "$d/tt-crawl" && chmod +x "$d/tt-crawl" && echo "tt-crawl launcher -> $d/tt-crawl" && break
-    fi
-  done
-fi
+# tt-crawl on the PATH, then the browsers it drives: Chrome reads pages and
+# takes screenshots, Obscura is the small fallback (the browse skill uses it
+# too). Done here so a first crawl never downloads a browser mid-conversation.
+python3 -m ttcrawl setup || echo "tt-crawl setup did not finish every step; its JSON line says which"
 
-# The browsers the crawler drives: Chrome reads pages and takes screenshots
-# by default; Obscura is the small browser the browse skill uses. Installing
-# them here keeps a first crawl from downloading a browser mid-conversation.
-echo "== browsers"
-python3 -m ttcrawl install-browser chrome || echo "chrome did not install; tt-crawl falls back to obscura"
-python3 -m ttcrawl install-browser obscura || echo "obscura did not install; the browse skill needs it"
 BIN="$(dirname "$(command -v obscura || echo "$HOME/.local/bin/obscura")")"
 
 # Register Obscura's MCP server with Claude Code (user scope, so it is not
