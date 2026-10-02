@@ -16,6 +16,8 @@ machine.
 
 ```
 .claude/skills/
+  brand/           the brand record in brand/ and public/, from any source; the same skill in every
+                   Starter App that carries it (templates/ holds the empty shapes)
   brain-ingest/    take material in: crawl the owner's site with tt-crawl through a headless
                    browser, convert uploaded documents, record pasted text and chat-stated facts → raw/
   brain-distill/   turn new raw material into cited notes under brain/, following brain/SCHEMA.md
@@ -23,6 +25,7 @@ machine.
   brain-lint/      the periodic health pass: citation audit, contradictions, superseded claims, leakage
   brain-sync/      keeping the brain current after the first build: sources, cadence, deltas
   browse/          the Obscura headless browser, as a CLI and an MCP server, for reading JavaScript sites
+.agents/skills/   thin Codex adapters: the same descriptions, pointing at the bodies above
 .claude/settings.json  a Claude Code Stop hook: a backstop that catches un-ingested raw material
 .taskandtool/setup.sh  installs tt-crawl's latest (github.com/taskandtool/crawler) and the Obscura browser
 brain/SCHEMA.md   the note rulebook, shipped here and edited in place by the owner
@@ -45,12 +48,13 @@ raw/                 immutable source of truth; always re-distillable from here
   external/<host>/   other people's sites; never the owner's facts
   docs/              uploaded PDF/docx/pptx as markdown, date-prefixed
   transcripts/       calls, meetings, and dated chat-stated facts
+brand/  public/      the brand record every app reads: look, voice, published facts (the brand skill)
 brain/               regenerable: AI-written, cross-linked, cited notes
   SCHEMA.md          the rulebook, shipped with this repo and co-edited with the owner
   overview.md        the business on one page
   index.md           the map; log.md is the append-only ingest and lint record
   sources/           one page per source unit: the citation hub
-  public/ brand/ sops/   notes by audience; a note's type is frontmatter
+  sops/              internal how-we-work; a note's type is frontmatter
   .ingested.json     brain_status.py's manifest: raw path → sha256 at ingest
 ```
 
@@ -112,11 +116,9 @@ offerings, its SOPs. It serves nothing and has no database — files are the
 whole model, and the AI is the query engine. It needs no connectors to work,
 though it will read a Google Business listing if the owner connects one.
 
-It is the first thing a business's data should flow into, and the other apps
-in a project read from it rather than being told the brand each time. The
-owner mirrors `brain/public` and `brain/brand` into a sibling app such as a
-website; `brain/sops` stays where it is. Mirroring is a platform feature, not
-part of this repository.
+It is the first thing a business's data should flow into. Its `brand/` and
+`public/` folders have the same shape in every Starter App that carries the
+`brand` skill, so a website or a marketing app reads them the same way.
 
 Removing the app leaves the files. They are the owner's.
 

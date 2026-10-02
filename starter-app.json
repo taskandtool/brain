@@ -31,14 +31,14 @@
     {
       "id": "extract-my-brand",
       "label": "Extract my brand",
-      "prompt": "Extract my brand from my site in raw/site (crawl it first with brain-ingest if it is not there) and write it up under brain/brand/ as separate notes named the way a website in this project expects (positioning, voice, audience, visual-identity, do-and-dont; see the brain-distill skill): positioning (what we do, for whom, what makes us different, in our own words, plus our name, tagline, and contact details), voice (with three quoted examples from the site), audience, visual identity (the logo files copied into brain/brand/logo from the site's images/ (its _index/media.json names the logo), the colour palette as hex and the fonts as the site actually uses them, read with the browse skill), and a do-and-don't list. Cite the raw page for every claim, mark anything you inferred rather than read as a question for me, and update brain/overview.md.",
+      "prompt": "Extract my brand from my site in raw/site (crawl it first with brain-ingest if it is not there) into brand/ with the brand skill: positioning, voice with quoted examples, audience, visual identity (colours as hex, fonts, the logo files, the imagery notes from my real photos), do and don't, and the best photos in brand/images. Cite the raw page for every claim, mark anything you inferred as a question for me, and update brain/overview.md.",
       "when": [
         {
           "path": "raw/site/_sites.json",
           "is": "present"
         },
         {
-          "path": "brain/brand/visual-identity.md",
+          "path": "brand/visual-identity.md",
           "is": "missing"
         }
       ]
@@ -46,14 +46,14 @@
     {
       "id": "collect-the-facts-about-my",
       "label": "Collect the facts about my company",
-      "prompt": "Collect the facts about my company from my site in raw/site (crawl it first with brain-ingest if it is not there; its _index/facts.json says where each phone, address and email was found) and write them under brain/public/ as one note per topic: each service or offering with its prices where stated, locations and service area, opening hours, phone and email, the team with bios and roles, FAQs, guarantees and policies. Cite the raw page for every fact, never fill a gap from general knowledge, update brain/overview.md and brain/index.md, and end with the list of facts you could not find so I can give them to you.",
+      "prompt": "Collect the facts about my company from my site in raw/site (crawl it first with brain-ingest if it is not there) into public/ with the brand skill: the business details, each service with its prices where stated, locations and service area, hours, the team, FAQs, policies, and real reviews as proof. Cite the raw page for every fact, never fill a gap from general knowledge, update brain/overview.md and brain/index.md, and end with the facts you could not find so I can give them to you.",
       "when": [
         {
           "path": "raw/site/_sites.json",
           "is": "present"
         },
         {
-          "path": "brain/public/business.md",
+          "path": "public/business.md",
           "is": "missing"
         }
       ]
@@ -98,21 +98,6 @@
       ]
     },
     {
-      "id": "prepare-my-brain-for-the",
-      "label": "Prepare my brain for the website",
-      "prompt": "This project has a website app. Prepare the brain for it as the brain-distill skill describes: check that brain/public/business.md has type: business and its typed frontmatter filled from raw/ (the site's structured/business.json first), one offering note per service with a summary, faq.md with ## questions, proof.md with sourced items or an empty list, legal/ holding the verbatim terms and privacy pages, and the brand notes named as the website expects. Report what is complete and what only I can supply; then tell me which folders to mirror to the website (brand, public) from its Settings.",
-      "when": [
-        {
-          "sibling": "website",
-          "is": "present"
-        },
-        {
-          "path": "brain/public/business.md",
-          "is": "present"
-        }
-      ]
-    },
-    {
       "id": "note-what-i-just-told",
       "label": "Note what I just told you",
       "prompt": "Record what I am about to tell you as a dated transcript in raw/transcripts (my words), then fold it into the right notes in brain/ with citations, and tell me what changed. Here it is: "
@@ -131,7 +116,7 @@
     {
       "id": "add-my-google-listing-to",
       "label": "Add my Google listing to the brain",
-      "prompt": "Add my public Google listing to the brain: run tt-crawl places for my business (ask me for a Google Places connection with request_connection if this app has no GOOGLE_PLACES_API_KEY), then fold the phone, address, hours, and the public reviews into brain/public/business.md and proof.md, citing raw/places. Tell me anything on the listing that disagrees with my site.",
+      "prompt": "Add my public Google listing to the brain: run tt-crawl places for my business (ask me for a Google Places connection with request_connection if this app has no GOOGLE_PLACES_API_KEY), then fold the phone, address, hours, and the public reviews into public/business.md and public/proof.md with the brand skill, citing raw/places. Tell me anything on the listing that disagrees with my site.",
       "when": [
         {
           "path": "raw/places",

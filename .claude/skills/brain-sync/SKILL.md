@@ -18,9 +18,6 @@ small, controlled deltas. This skill is how to think about that.
   week of call transcripts is one per call. Log each.
 - **Superseding, not overwriting.** When a refresh changes a fact, the old one
   is marked superseded with a pointer, per `brain/SCHEMA.md`.
-- **Copies elsewhere follow on their own.** Folders the owner mirrored into
-  other apps refresh at the end of every turn in which they changed; call
-  `refresh_mirrors()` (tools.taskandtool) when it has to be immediate.
 - **The owner sets the cadence.** Ask how often something really changes. Most
   small businesses: the site a few times a year, prices and hours occasionally,
   calls and documents whenever they happen. Don't invent a daily job.

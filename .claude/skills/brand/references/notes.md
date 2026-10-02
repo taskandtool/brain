@@ -1,0 +1,107 @@
+# The notes
+
+## Layout
+
+```
+brand/
+  positioning.md       what the business does, for whom, what makes it different; the name as it
+                       should appear, the tagline, a one-paragraph description; contact and social links
+  voice.md             the voice card and fingerprint (references/voice.md)
+  audience.md          the actual people who buy, what they worry about, where they are when the
+                       need shows up, what convinces them
+  visual-identity.md   colours by role, type, logo, imagery (references/visual.md)
+  do-and-dont.md       observable rules; words used and never used
+  logo/                the logo files, svg preferred
+  images/              a small curated set of the business's best photos; images.md describes each
+  <anything>.md        further notes are welcome and read as context
+public/
+  business.md          type: business, one per business
+  services.md          type: offering; or one note per offering when there are more than four
+  locations.md         type: location; or one note per site, for a business with several
+  faq.md               type: faq
+  team.md              type: entity
+  policies.md          type: policy (guarantees, cancellations, payment terms, service area)
+  proof.md             type: proof
+legal/                 terms, privacy, cookies, returns: copied verbatim, never rewritten
+```
+
+`brand/` is the look and the sound; `public/` is anything the business would
+say to a stranger. Internal knowledge (SOPs, pricing logic, people's
+details) belongs in neither.
+
+## A note
+
+```markdown
+---
+title: Emergency hose repair
+type: offering
+updated: 2026-09-02
+status: current
+sources:
+  - raw/site/example.com/pages/services.md
+  - raw/transcripts/2026-08-30-chat.md
+---
+
+One paragraph that answers "what is this" for someone who has never heard of
+it. Call-outs are $180 (raw/site/example.com/pages/pricing.md).
+```
+
+Every note has `title`, `type`, `updated`, `status` and `sources`. Facts in
+the body carry their raw path in brackets.
+
+## Typed frontmatter
+
+Apps read these fields as data (a website renders its footer, contact
+section and JSON-LD from them), so the atomic facts live in frontmatter and
+the prose lives in the body. Leave a field empty rather than guess.
+
+```yaml
+# public/business.md                    type: business
+schema_type: LocalBusiness              # or the fitting schema.org subtype: Plumber, Dentist, Restaurant …
+name: Crimp Tech
+legal_name: Crimp Tech LLC
+telephone: "+1 239 555 0100"
+email: hello@crimp-tech.com
+address: { street: "12 Dock Rd", locality: Fort Myers, region: FL, postal_code: "33901", country: US }
+geo: { lat: 26.64, lng: -81.87 }
+opening_hours: ["Mo-Fr 08:00-17:00", "Sa 09:00-12:00"]   # schema.org openingHours strings
+price_range: "$$"
+same_as: ["https://instagram.com/crimptech"]              # the business's own profiles
+area_served: "Lee County, FL"
+
+# public/locations.md (or one note per site)   type: location: the same fields, per location
+
+# public/services.md (or one per offering)     type: offering
+price: 180                              # a number, only when a source states one
+currency: USD
+unit: per visit
+area_served: ""
+
+# public/faq.md                         type: faq: each question a `## ` heading, the answer beneath
+
+# public/proof.md                       type: proof
+items:
+  - { quote: "…", who: "J. Alvarez, Fort Myers", platform: Google, date: 2026-03-02, source: raw/places/abc.json }
+```
+
+Legal pages go in `legal/<slug>.md` with `path` (the old URL) and `title`
+frontmatter, the text verbatim.
+
+## Sources in order of trust
+
+For facts (name, phone, address, hours, prices): the site's own structured
+data (`raw/site/<host>/structured/`), then the public listing in
+`raw/places/`, then `_index/facts.json` (each fact with where it was found),
+then page text, then documents. The owner's word in chat overrides all of
+them, saved to `raw/transcripts/` first.
+
+Contact facts come only from the business's own pages, header, footer and
+listing, never from reviews, comments or blog posts, where other people's
+numbers appear.
+
+## Updating
+
+- Change the note, bump `updated`, add the new source.
+- Keep the replaced value on a line: `superseded: "Mo-Fr 08:00-16:00" (raw/site/…/contact.md, 2026-01-10)`.
+- Two current sources disagree: keep both in the body, marked **conflict**,
+  and ask the owner. Resolve it when they answer, citing their answer.
