@@ -26,7 +26,6 @@ machine.
   brain-sync/      keeping the brain current after the first build: sources, cadence, deltas
   browse/          the Obscura headless browser, as a CLI and an MCP server, for reading JavaScript sites
 .agents/skills/   thin Codex adapters: the same descriptions, pointing at the bodies above
-.claude/settings.json  a Claude Code Stop hook: a backstop that catches un-ingested raw material
 .taskandtool/setup.sh  installs tt-crawl's latest (github.com/taskandtool/crawler) and the Obscura browser
 brain/SCHEMA.md   the note rulebook, shipped here and edited in place by the owner
 AGENTS.md         what the AI reads first; CLAUDE.md imports it
@@ -63,8 +62,7 @@ is the query engine: it greps the filesystem, there is no index. The loop:
 **ingest** as soon as raw lands (never finish a turn with raw un-ingested; the first crawl in
 passes, everything after in small deltas), **lint** on a schedule (a citation
 audit first, then contradictions, superseded claims, leakage from external
-sources, orphans, schema drift, pruning; `brain/.lint-off` opts out), and
-**publish** after either. Against the known failure of this pattern,
+sources, orphans, schema drift, pruning; `brain/.lint-off` opts out). Against the known failure of this pattern,
 hallucination contamination: no fact without a `raw/` citation, chat-stated
 facts are written to raw first, external material never becomes an owner
 fact, and superseded facts are retired with a pointer rather than erased.
@@ -113,8 +111,7 @@ Nothing is vendored; `setup.sh` installs them on the machine.
 
 The brain holds what a business knows: what it does, its brand, its
 offerings, its SOPs. It serves nothing and has no database — files are the
-whole model, and the AI is the query engine. It needs no connectors to work,
-though it will read a Google Business listing if the owner connects one.
+whole model, and the AI is the query engine. It needs no connectors to work.
 
 It is the first thing a business's data should flow into. Its `brand/` and
 `public/` folders have the same shape in every Starter App that carries the

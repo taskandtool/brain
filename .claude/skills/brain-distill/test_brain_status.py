@@ -2,7 +2,6 @@
 
     python3 kits/packs/brain/brain-distill/test_brain_status.py
 """
-import json
 import os
 import sys
 import tempfile
@@ -79,21 +78,6 @@ class FilesystemTests(unittest.TestCase):
         st = bst.status()
         self.assertEqual((st["new"], st["changed"], st["removed"]), ([], [self.PAGE], []))
         self.assertEqual(st["units"], {"site:acme.com": {"new": 0, "changed": 1}})
-
-    def test_hook_blocks_once_with_the_list_then_never_loops(self):
-        out, code = bst.hook_stop("{}")
-        self.assertEqual(code, 0)
-        decision = json.loads(out)
-        self.assertEqual(decision["decision"], "block")
-        self.assertIn(self.PAGE, decision["reason"])
-        self.assertIn("brain-distill", decision["reason"])
-        # the second stop, while already continuing from this hook, passes
-        self.assertEqual(bst.hook_stop(json.dumps({"stop_hook_active": True})), ("", 0))
-        # nothing pending → silent pass
-        bst.mark()
-        self.assertEqual(bst.hook_stop("{}"), ("", 0))
-        # garbage stdin is not an error
-        self.assertEqual(bst.hook_stop("not json")[1], 0)
 
 
 if __name__ == "__main__":

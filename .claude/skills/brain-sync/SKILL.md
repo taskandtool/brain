@@ -36,7 +36,7 @@ small, controlled deltas. This skill is how to think about that.
 | Things the owner tells you in chat | `raw/transcripts/YYYY-MM-DD-chat.md` (their words, dated), then cite it | immediately |
 | Other people's sites (competitors, suppliers, directories) | `tt-crawl playbook competitor` (into `raw/external/<host>/`) or the `browse` skill; **external, never the owner's facts** | on request |
 | Reviews (Google, Yelp, etc.) | usually blocked for automated visitors from here; the owner pastes or exports | on request |
-| YouTube and video | not automatic today: YouTube blocks most datacenter addresses. The owner can paste transcripts; a YouTube connection (API) or a proxy is a platform-level addition, not a workaround to attempt here | when the platform adds it |
+| YouTube and video | through a data connection (ScrapeCreators lists a channel's videos and their transcripts; DataForSEO and SearchAPI fetch one video's), never directly: YouTube blocks this machine. One file per video in `raw/transcripts/` | as often as they publish |
 | Email newsletters, social posts, CRM notes, Google Drive, Notion | through a connection the platform provides (Connections in Settings) once available; until then the owner pastes or exports | case by case |
 
 Anything not on this list: ask what it is, where it lives, how it changes, and

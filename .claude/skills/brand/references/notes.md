@@ -58,22 +58,22 @@ the prose lives in the body. Leave a field empty rather than guess.
 ```yaml
 # public/business.md                    type: business
 schema_type: LocalBusiness              # or the fitting schema.org subtype: Plumber, Dentist, Restaurant …
-name: Crimp Tech
-legal_name: Crimp Tech LLC
-telephone: "+1 239 555 0100"
-email: hello@crimp-tech.com
-address: { street: "12 Dock Rd", locality: Fort Myers, region: FL, postal_code: "33901", country: US }
-geo: { lat: 26.64, lng: -81.87 }
+name: Harlow Joinery
+legal_name: Harlow Joinery Ltd
+telephone: "+44 117 496 0100"
+email: hello@harlowjoinery.example
+address: { street: "4 Mead Street", locality: Bristol, region: England, postal_code: "BS3 4RP", country: GB }
+geo: { lat: 51.44, lng: -2.58 }
 opening_hours: ["Mo-Fr 08:00-17:00", "Sa 09:00-12:00"]   # schema.org openingHours strings
-price_range: "$$"
-same_as: ["https://instagram.com/crimptech"]              # the business's own profiles
-area_served: "Lee County, FL"
+price_range: "££"
+same_as: ["https://instagram.com/harlowjoinery"]          # the business's own profiles
+area_served: "Bristol and Bath"
 
 # public/locations.md (or one note per site)   type: location: the same fields, per location
 
 # public/services.md (or one per offering)     type: offering
 price: 180                              # a number, only when a source states one
-currency: USD
+currency: GBP
 unit: per visit
 area_served: ""
 
@@ -81,7 +81,7 @@ area_served: ""
 
 # public/proof.md                       type: proof
 items:
-  - { quote: "…", who: "J. Alvarez, Fort Myers", platform: Google, date: 2026-03-02, source: raw/places/abc.json }
+  - { quote: "…", who: "J. Okafor, Clifton", platform: Google, date: 2026-03-02, source: raw/places/abc.json }
 ```
 
 Legal pages go in `legal/<slug>.md` with `path` (the old URL) and `title`

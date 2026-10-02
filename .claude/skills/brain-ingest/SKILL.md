@@ -32,7 +32,7 @@ bash ~/app/.taskandtool/setup.sh
 
 `tt-crawl` (installed by setup; `python3 -m ttcrawl` if it is not on the
 PATH) reads a site through a real browser, keeps each page's own words, and
-writes the records other apps build from. No model reads anything. The
+writes the raw records the brain is distilled from. No model reads anything. The
 crawler carries its own recipes; print the one you need instead of guessing
 flags, because they move with the crawler:
 
@@ -59,10 +59,8 @@ What to do with what it reports:
 - **A fact with two values** in `_index/facts.json` (two phone numbers): ask
   the owner which is right; never pick.
 - **Then the follow-ups:** `tt-crawl docs` for the documents the pages link
-  to, the import recipe when the summary or `raw/site/_sites.json` says
-  WordPress, and `tt-crawl places "Business, City" --out raw/places` for the
-  public Google listing (it needs `GOOGLE_PLACES_API_KEY`: ask with
-  `request_connection("google-places", why, auth="api_key", delivery="machine")`).
+  to, and the import recipe when the summary or `raw/site/_sites.json` says
+  WordPress.
 - **A site that refuses this machine** (a challenge page, a block on cloud
   addresses): use a web-scraping connection this app holds, as its skill
   says, or ask the owner for one with `request_connection`. Never without
@@ -99,9 +97,11 @@ only if the owner needs those specific files.
 Write pasted calls, meetings, or video transcripts straight to
 `raw/transcripts/YYYY-MM-DD-<name>.md`. Normalize obvious noise (speaker labels,
 timestamps, ASR line-wrapping) into readable paragraphs. SRT/VTT subtitle
-files: strip the cue numbers and timestamps, keep the text. (YouTube
-transcripts are not pulled automatically: YouTube blocks most datacenter
-addresses; the owner can paste them.)
+files: strip the cue numbers and timestamps, keep the text. YouTube
+blocks this machine's address, so fetch transcripts through a data
+connection the app holds (ScrapeCreators, DataForSEO, SearchAPI; their
+skills say how), or ask for one with `request_connection`; save each as
+`raw/transcripts/YYYY-MM-DD-youtube-<video id>.md` with its title and link.
 
 **Facts the owner tells you in chat** ("we're closed Mondays now", "the
 call-out fee is $180") are sources too. Before they go into a note, write them

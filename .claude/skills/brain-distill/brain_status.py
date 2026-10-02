@@ -1,20 +1,13 @@
 #!/usr/bin/env python3
 """What changed in raw/ since the brain last ingested it. The one script the
-AI, the Stop hook, and a scheduled job all call — deterministic, stdlib only.
+AI and a scheduled job call — deterministic, stdlib only.
 
     python3 brain_status.py status            # JSON: new / changed / removed raw files
     python3 brain_status.py mark [--all|paths] # record raw files as ingested
-    python3 brain_status.py hook-stop         # Claude Code Stop hook (reads stdin)
 
 State: brain/.ingested.json maps each raw file path to the sha256 of its
 content at ingest time. `status` diffs raw/ against it. Run from the app
-dir (the hook passes $CLAUDE_PROJECT_DIR).
-
-The Stop hook implements Karpathy's "ingest when a source is added" without
-the human having to say so: when the agent tries to end its turn while
-un-ingested raw files exist, the hook blocks once and hands back the list,
-so the agent integrates them first. It never blocks twice in a row
-(`stop_hook_active`), so it can't loop.
+dir.
 """
 import hashlib
 import json
@@ -138,31 +131,6 @@ def mark(paths=None):
     return len(ingested)
 
 
-def hook_stop(stdin_text):
-    """Claude Code Stop hook: block the turn once with the pending list.
-    Returns (stdout_text, exit_code). Pure given the stdin payload and the
-    status."""
-    try:
-        payload = json.loads(stdin_text or "{}")
-    except ValueError:
-        payload = {}
-    if payload.get("stop_hook_active"):
-        return "", 0                       # already continuing from us: never loop
-    if not os.path.isdir(RAW):
-        return "", 0
-    d = status()
-    if not d["new"] and not d["changed"]:
-        return "", 0
-    reason = (
-        "Brain: " + summarize(d) +
-        ". Ingest them now with the brain-distill skill (read them, fold the facts into "
-        "brain/ notes, cross-link, update brain/index.md and brain/log.md, then run "
-        "`python3 .claude/skills/brain-distill/brain_status.py mark --all` and publish). "
-        "If the owner explicitly asked you not to, say so and stop."
-    )
-    return json.dumps({"decision": "block", "reason": reason}), 0
-
-
 def main(argv):
     cmd = argv[1] if len(argv) > 1 else "status"
     if cmd == "status":
@@ -177,14 +145,6 @@ def main(argv):
         n = mark(None if not rest or rest == ["--all"] else rest)
         print(json.dumps({"ingested": n}))
         return 0
-    if cmd == "hook-stop":
-        project = os.environ.get("CLAUDE_PROJECT_DIR")
-        if project and os.path.isdir(project):
-            os.chdir(project)
-        out, code = hook_stop(sys.stdin.read())
-        if out:
-            print(out)
-        return code
     sys.stderr.write(__doc__)
     return 2
 

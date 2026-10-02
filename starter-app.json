@@ -2,15 +2,6 @@
   "schema_version": 1,
   "slug": "brain",
   "version": "0.1.0",
-  "needs": {
-    "connections": [
-      {
-        "provider": "google",
-        "strength": "suggested",
-        "why": "Add your Google Business listing to the brain"
-      }
-    ]
-  },
   "ready": {
     "paths": [
       "brain/SCHEMA.md"
@@ -110,17 +101,6 @@
         {
           "path": "raw/site/_sites.json",
           "is": "present"
-        }
-      ]
-    },
-    {
-      "id": "add-my-google-listing-to",
-      "label": "Add my Google listing to the brain",
-      "prompt": "Add my public Google listing to the brain: run tt-crawl places for my business (ask me for a Google Places connection with request_connection if this app has no GOOGLE_PLACES_API_KEY), then fold the phone, address, hours, and the public reviews into public/business.md and public/proof.md with the brand skill, citing raw/places. Tell me anything on the listing that disagrees with my site.",
-      "when": [
-        {
-          "path": "raw/places",
-          "is": "missing"
         }
       ]
     }

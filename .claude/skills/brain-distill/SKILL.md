@@ -1,5 +1,5 @@
 ---
-description: "Ingest new raw/ material into the brain: fold facts into organized, cross-linked, cited notes under brain/, keep source pages, the overview, index and log current, mark what was ingested, publish. Use right after anything lands in raw/, when the Stop hook reports un-ingested files, or when the owner states a fact worth keeping."
+description: "Ingest new raw/ material into the brain: fold facts into organized, cross-linked, cited notes under brain/, keep source pages, the overview, index and log current, mark what was ingested. Use right after anything lands in raw/, when brain_status.py reports un-ingested files, or when the owner states a fact worth keeping."
 ---
 
 # Brain: distill (ingest)

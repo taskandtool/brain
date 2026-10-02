@@ -1,13 +1,13 @@
 ---
-description: "The brain's periodic health pass: audit citations, find contradictions, superseded claims, orphans, missing pages, dead links, schema drift and external-fact leakage in brain/ and the brand record (brand/, public/); fix what is safe, flag the rest to the owner, publish. Runs weekly as a prompt job (a chat of its own each week), or on demand."
+description: "The brain's periodic health pass: audit citations, find contradictions, superseded claims, orphans, missing pages, dead links, schema drift and external-fact leakage in brain/ and the brand record (brand/, public/); fix what is safe, flag the rest to the owner. Runs weekly as a prompt job (a chat of its own each week), or on demand."
 ---
 
 # Brain: lint
 
 Ingest keeps the brain growing; lint keeps it true. Run it when the weekly
-reminder arrives in chat, or whenever the owner asks. If the owner has said
-they don't want the weekly pass, create the empty file `brain/.lint-off` and
-say so; the reminder then does nothing.
+`weekly-brain-lint` job opens its chat with you, or whenever the owner asks.
+If the owner has said they don't want the weekly pass, create the empty file
+`brain/.lint-off` and say so; the job's chat then ends in one line.
 
 ## First, is there anything to do?
 
