@@ -1,6 +1,6 @@
 ---
 name: brand
-description: "Write the brand record: brand/ (look, voice, audience, logo, best photos) and public/ (business details, services, prices, FAQs, team, policies, reviews), from any source: a site crawl, a chat, a transcript, a social profile or post, a document, photos. Use when either folder is empty or says to fill, or when the owner shares something about the business."
+description: "Writes the brand record: brand/ (look, voice, audience, logo, best photos) and public/ (business details, services, prices, FAQs, team, policies, reviews), from any source: a site crawl, a chat, a transcript, a social profile or post, a document, photos. Use when either folder is empty or says to fill, or when the owner shares something about the business."
 ---
 
 # Brand
@@ -15,8 +15,8 @@ whatever material arrives, and cite every fact.
    Name files `YYYY-MM-DD-<slug>.<ext>` unless a tool names them, and never
    edit a raw file afterwards.
 2. **Write the notes the work in hand needs.** A first homepage needs
-   `public/business.md`, `public/services.md` and
-   `brand/visual-identity.md`; the rest wait until the work reaches them.
+   `public/business.md` and `public/services.md`; the rest wait until the
+   work reaches them.
    A note that does not exist yet takes its shape from `templates/` beside
    this file; the frontmatter and citation rules are in
    `references/notes.md`.
