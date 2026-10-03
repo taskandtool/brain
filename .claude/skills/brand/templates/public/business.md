@@ -11,6 +11,7 @@ email: ""
 address: { street: "", locality: "", region: "", postal_code: "", country: "" }
 geo: { lat: null, lng: null }
 opening_hours: []               # ["Mo-Fr 08:00-17:00", "Sa 09:00-12:00"]
+time_zone: ""                   # the IANA zone the hours are in, e.g. America/New_York
 price_range: ""
 same_as: []                     # social profile URLs
 area_served: ""

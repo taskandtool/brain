@@ -65,6 +65,7 @@ email: hello@harlowjoinery.example
 address: { street: "4 Mead Street", locality: Bristol, region: England, postal_code: "BS3 4RP", country: GB }
 geo: { lat: 51.44, lng: -2.58 }
 opening_hours: ["Mo-Fr 08:00-17:00", "Sa 09:00-12:00"]   # schema.org openingHours strings
+time_zone: Europe/London            # the IANA zone the hours, bookings and reports are in
 price_range: "££"
 same_as: ["https://instagram.com/harlowjoinery"]          # the business's own profiles
 area_served: "Bristol and Bath"
