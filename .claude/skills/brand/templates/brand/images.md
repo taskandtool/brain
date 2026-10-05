@@ -1,7 +1,8 @@
 # Images
 
-The business's best real photographs, each looked at once and described
-here, so later work reads this file instead of opening the pictures. One
+The business's best real photographs, copied into `images/` (a website's
+are in `static/images/`), each looked at once and described here, so later
+work reads this file instead of opening the pictures. One
 line per file; the focal point sets `object-position` when a picture is
 cropped. Nothing is used in an ad until its permission line says yes.
 
