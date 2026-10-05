@@ -4,7 +4,7 @@ type: proof
 updated: to fill
 status: current
 items: []                       # - { quote: "", who: "", platform: "", date: "", source: "raw/site/<host>/_index/reviews.json" }
-marks: []                       # - { name: "", file: "/images/marks/<file>", kind: client|partner|association|certification|award|press, source: "" }
+marks: []                       # - { name: "", file: "/images/marks/<file>", kind: client|partner|brand|association|certification|award|press, source: "" }
 sources: []
 ---
 
