@@ -86,7 +86,7 @@ reviews:
 ratings:
   - { platform: Google, value: 4.9, count: 212, url: "https://maps.google.com/?cid=…", source: raw/places/abc.json }
 logos:
-  - { name: "Federation of Master Builders", file: /images/logos/fmb.png, kind: member, source: raw/site/<host>/_index/media.json }
+  - { name: "Federation of Master Builders", file: /images/logos/fmb.png, source: raw/site/<host>/_index/media.json }
 ```
 
 Legal pages go in `legal/<slug>.md` with `path` (the old URL) and `title`

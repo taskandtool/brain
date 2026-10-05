@@ -5,7 +5,7 @@ updated: to fill
 status: current
 reviews: []    # - { quote: "", name: "", role: "", company: "", platform: Google, date: "", stars: 5, url: "", source: "" }
 ratings: []    # - { platform: Google, value: 4.9, count: 212, url: "", source: "" }
-logos: []      # - { name: "", file: "/images/logos/<file>", kind: customer|brand|supplier|partner|member|certification|award|press, source: "" }
+logos: []      # - { name: "", file: "/images/logos/<file>", source: "" }   customers, brands, suppliers, memberships, certifications, press
 people: []     # - { name: "", role: "", photo: "", source: "" }
 numbers: []    # - { figure: "", says: "", source: "" }
 posts: []      # - { platform: "", text: "", url: "", date: "", source: "" }
