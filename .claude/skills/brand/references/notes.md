@@ -81,10 +81,12 @@ area_served: ""
 # public/faq.md                         type: faq: each question a `## ` heading, the answer beneath
 
 # public/proof.md                       type: proof
-items:
-  - { quote: "…", who: "J. Okafor, Clifton", platform: Google, date: 2026-03-02, source: raw/places/abc.json }
-marks:                                  # others' logos the business shows: clients, partners, memberships
-  - { name: "Federation of Master Builders", file: /images/marks/fmb.png, kind: association, source: raw/site/<host>/_index/media.json }
+reviews:
+  - { quote: "…", name: "J. Okafor", role: "Clifton", platform: Google, date: 2026-03-02, stars: 5, source: raw/places/abc.json }
+ratings:
+  - { platform: Google, value: 4.9, count: 212, url: "https://maps.google.com/?cid=…", source: raw/places/abc.json }
+logos:
+  - { name: "Federation of Master Builders", file: /images/logos/fmb.png, kind: member, source: raw/site/<host>/_index/media.json }
 ```
 
 Legal pages go in `legal/<slug>.md` with `path` (the old URL) and `title`

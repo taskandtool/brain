@@ -3,11 +3,16 @@ title: Proof
 type: proof
 updated: to fill
 status: current
-items: []                       # - { quote: "", who: "", platform: "", date: "", source: "raw/site/<host>/_index/reviews.json" }
-marks: []                       # - { name: "", file: "/images/marks/<file>", kind: client|partner|brand|association|certification|award|press, source: "" }
+reviews: []    # - { quote: "", name: "", role: "", company: "", platform: Google, date: "", stars: 5, url: "", source: "" }
+ratings: []    # - { platform: Google, value: 4.9, count: 212, url: "", source: "" }
+logos: []      # - { name: "", file: "/images/logos/<file>", kind: customer|brand|supplier|partner|member|certification|award|press, source: "" }
+people: []     # - { name: "", role: "", photo: "", source: "" }
+numbers: []    # - { figure: "", says: "", source: "" }
+posts: []      # - { platform: "", text: "", url: "", date: "", source: "" }
 sources: []
 ---
 
-Real testimonials, and the logos of clients, partners, associations,
-certifications, awards and press (`marks`), each with its source.
-Nothing here is invented; an empty list is an honest slot on the page.
+What others say about the business, from anywhere: reviews and ratings,
+the logos of customers, brands, suppliers, partners, memberships and
+certifications, the people they work with, the numbers they state, and
+posts about them. Words stay exactly as written; nothing is invented.
