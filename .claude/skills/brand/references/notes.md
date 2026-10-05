@@ -83,6 +83,8 @@ area_served: ""
 # public/proof.md                       type: proof
 items:
   - { quote: "…", who: "J. Okafor, Clifton", platform: Google, date: 2026-03-02, source: raw/places/abc.json }
+marks:                                  # others' logos the business shows: clients, partners, memberships
+  - { name: "Federation of Master Builders", file: /images/marks/fmb.png, kind: association, source: raw/site/<host>/_index/media.json }
 ```
 
 Legal pages go in `legal/<slug>.md` with `path` (the old URL) and `title`
