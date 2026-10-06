@@ -16,9 +16,9 @@ __pycache__/
 
 # Working knowledge is the owner's, made on their machine, never in this repo.
 # The schema is the exception: it ships, and the owner edits it in place.
-raw/
-brain/
-!brain/SCHEMA.md
+/raw/
+/brain/*
+!/brain/SCHEMA.md
 /brand/
 /public/
 /legal/

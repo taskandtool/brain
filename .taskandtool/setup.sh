@@ -6,8 +6,7 @@
 #     bash ~/app/.taskandtool/setup.sh
 #
 # Installs: the tt-crawl site reader at its latest (github.com/taskandtool/crawler)
-# and the two browsers it drives, Chrome and Obscura (the browse skill uses
-# Obscura too).
+# and the two browsers it drives, Chrome and Obscura.
 # Nothing here touches the app's code.
 set -euo pipefail
 
@@ -19,23 +18,11 @@ echo "== tt-crawl $CRAWLER_REF (site reader) + python tools"
 # the second replaces its own code even when its version number did not move.
 python3 -m pip install --quiet --upgrade "ttcrawl @ $CRAWLER" 2>&1 | tail -2 || true
 python3 -m pip install --quiet --force-reinstall --no-deps "ttcrawl @ $CRAWLER" 2>&1 | tail -2 || true
-python3 -m ttcrawl --version
+python3 -m ttcrawl --version || echo "tt-crawl did not install; site capture is unavailable until it does"
 
 # tt-crawl on the PATH, then the browsers it drives: Chrome reads pages and
-# takes screenshots, Obscura is the small fallback (the browse skill uses it
-# too). Done here so a first crawl never downloads a browser mid-conversation.
-python3 -m ttcrawl setup || echo "tt-crawl setup did not finish every step; its JSON line says which"
+# takes screenshots, Obscura is the small fallback. Done here so a first
+# crawl never downloads a browser mid-conversation.
+python3 -m ttcrawl setup || echo "tt-crawl setup did not finish every step; its output above says which"
 
-BIN="$(dirname "$(command -v obscura || echo "$HOME/.local/bin/obscura")")"
-
-# Register Obscura's MCP server with Claude Code (user scope, so it is not
-# written into the app's repo) for interactive browsing: navigate, click,
-# fill, snapshot. One-shot fetches use the CLI (see the browse skill).
-if command -v claude >/dev/null 2>&1; then
-  if ! claude mcp get obscura >/dev/null 2>&1; then
-    claude mcp add --scope user obscura -- "$BIN/obscura" mcp >/dev/null 2>&1 \
-      && echo "registered obscura MCP server with Claude Code" \
-      || echo "could not register the obscura MCP server (CLI use still works)"
-  fi
-fi
 echo "== company brain setup done"

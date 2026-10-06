@@ -1,9 +1,9 @@
 ---
 name: brain-lint
-description: "The brain's periodic health pass: audit citations, find contradictions, superseded claims, orphans, missing pages, dead links, schema drift and external-fact leakage in brain/ and the brand record (brand/, public/); fix what is safe, flag the rest to the owner. Runs weekly as a prompt job (a chat of its own each week), or on demand."
+description: "Runs the brain's health pass over brain/, brand/ and public/: audits citations, finds contradictions, stale claims, orphans, dead links, schema drift and outside facts passed off as the owner's; fixes what is safe and flags the rest. Use when the weekly lint job opens a chat, or the owner asks to check the brain."
 ---
 
-# Brain Lint
+# Brain lint
 
 This is the Codex discovery adapter. The authoritative instructions live in
 [the canonical brain-lint skill](../../../.claude/skills/brain-lint/SKILL.md).

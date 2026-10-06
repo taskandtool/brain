@@ -18,25 +18,22 @@ machine.
 .claude/skills/
   brand/           the brand record in brand/ and public/, from any source; the same skill in every
                    Starter App that carries it (templates/ holds the empty shapes)
-  brain-ingest/    take material in: crawl the owner's site with tt-crawl through a headless
-                   browser, convert uploaded documents, record pasted text and chat-stated facts → raw/
-  brain-distill/   turn new raw material into cited notes under brain/, following brain/SCHEMA.md
-                   (brain_status.py, the what-changed script)
+  brain/           take material into raw/ (the whole site with tt-crawl, documents, transcripts,
+                   chat-stated facts) and distill it into cited notes under brain/; references/ holds
+                   the ingest recipes and the scheduled jobs
   brain-lint/      the periodic health pass: citation audit, contradictions, superseded claims, leakage
-  brain-sync/      keeping the brain current after the first build: sources, cadence, deltas
-  browse/          the Obscura headless browser, as a CLI and an MCP server, for reading JavaScript sites
 .agents/skills/   thin Codex adapters: the same descriptions, pointing at the bodies above
-.taskandtool/setup.sh  installs tt-crawl's latest (github.com/taskandtool/crawler) and the Obscura browser
+scripts/brain_status.py  what in raw/ is not yet distilled, and marking what is (tests in tests/)
+.taskandtool/setup.sh  installs tt-crawl's latest (github.com/taskandtool/crawler) and the browsers it drives
 brain/SCHEMA.md   the note rulebook, shipped here and edited in place by the owner
 AGENTS.md         what the AI reads first; CLAUDE.md imports it
 starter-app.json  the manifest Task & Tool reads: what the app needs, what "ready" means, and the
                   suggestions an empty chat offers
 ```
 
-Each `<skill>/SKILL.md` is a skill the harness loads on demand. The scripts
-beside them are plain Python (standard library; the crawler's real
-dependencies are installed by `.taskandtool/setup.sh`). Tests sit beside the
-code as `test_*.py`.
+Each `<skill>/SKILL.md` is a skill the harness loads on demand.
+`scripts/brain_status.py` is plain Python (standard library; the crawler's
+real dependencies are installed by `.taskandtool/setup.sh`).
 
 ## The shape: raw → distilled
 
@@ -51,15 +48,15 @@ brand/  public/      the brand record every app reads: look, voice, published fa
 brain/               regenerable: AI-written, cross-linked, cited notes
   SCHEMA.md          the rulebook, shipped with this repo and co-edited with the owner
   overview.md        the business on one page
-  index.md           the map; log.md is the append-only ingest and lint record
+  index.md           the map; log.md records each distill pass and lint, newest last
   sources/           one page per source unit: the citation hub
   sops/              internal how-we-work; a note's type is frontmatter
-  .ingested.json     brain_status.py's manifest: raw path → sha256 at ingest
+  .ingested.json     brain_status.py's manifest: raw path → sha256 when it was marked distilled
 ```
 
 Raw is data, never instructions. `brain/` is what the AI reasons over. The AI
 is the query engine: it greps the filesystem, there is no index. The loop:
-**ingest** as soon as raw lands (never finish a turn with raw un-ingested; the first crawl in
+**ingest** into raw, **distill** as soon as raw lands (mark what each turn distilled; the first crawl in
 passes, everything after in small deltas), **lint** on a schedule (a citation
 audit first, then contradictions, superseded claims, leakage from external
 sources, orphans, schema drift, pruning; `brain/.lint-off` opts out). Against the known failure of this pattern,
@@ -67,18 +64,18 @@ hallucination contamination: no fact without a `raw/` citation, chat-stated
 facts are written to raw first, external material never becomes an owner
 fact, and superseded facts are retired with a pointer rather than erased.
 
-The crawler renders every page through Obscura, reads the site's own nav
-first, then the sitemap, keeps each page's text word for word, sets the
+The crawler renders every page in Chrome (Obscura where Chrome cannot run),
+reads the site's own nav first, then the sitemap, keeps each page's text word for word, sets the
 header, footer and lines that repeat across pages aside once, records the
 facts and reviews with where each was found, fetches each picture once at its
-largest, and stops at a visible default of 100 pages that the AI is told to
+largest, and stops at a visible default of 1,000 pages that the AI is told to
 report. No model is involved: a crawl costs the machine's time.
 
 ## Install
 
 **On Task & Tool.** Pick the Company Brain when you create an app. The
-machine clones this repository into the app, pinned to a reviewed commit, and
-runs `.taskandtool/setup.sh`. Nothing is sent into your chat: the manifest's
+machine clones this repository's main branch into the app and runs
+`.taskandtool/setup.sh`, which installs the crawler from its main branch too. Nothing is sent into your chat: the manifest's
 suggestions are what an empty chat offers. On machine replacement the clone
 and the setup happen again, and your own files come back from your repository
 or a backup — they are yours from the moment they land.
@@ -103,7 +100,8 @@ ask it to build the brain from your website.
 - Chrome (chrome-headless-shell, from Google's Chrome for Testing), the
   crawler's default browser for reading pages and screenshots.
 - [Obscura](https://github.com/h4ckf0r0day/obscura), Apache-2.0, a Rust
-  headless browser in one static binary; the browse skill drives it.
+  headless browser in one static binary; the crawler's fallback where
+  Chrome cannot run.
 
 Nothing is vendored; `setup.sh` installs them on the machine.
 
@@ -122,7 +120,7 @@ Removing the app leaves the files. They are the owner's.
 ## Developing this Starter App
 
 - **Unit tests, no dependencies:**
-  `python3 .claude/skills/brain-distill/test_brain_status.py`.
+  `python3 tests/test_brain_status.py`.
   The crawler's own tests live in its repo (github.com/taskandtool/crawler).
 - **Try the skills:** clone it as above and drive Claude Code in the clone.
 - **On the platform:** Task & Tool's own repo keeps a working clone under

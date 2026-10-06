@@ -11,7 +11,7 @@
     {
       "id": "read-my-website-into-the",
       "label": "Read my website into the brain",
-      "prompt": "Read my whole website into the brain. Crawl it into raw/site with the brain-ingest skill (tt-crawl brand: every page's own text, the brand's pictures, the facts and reviews with where each was found, the header and footer as structure, the site's own markup), then tt-crawl docs for the documents it links and tt-crawl import --source wp if it is WordPress, tell me how many pages you found and whether you hit the 100-page limit, then distill it in passes by section into brain/ following brain/SCHEMA.md. Finish with what went in and the questions only I can answer. My site is ",
+      "prompt": "Read my whole website into the brain with the brain skill (tt-crawl pages, then tt-crawl docs), tell me how many pages you read and found, then distill it in passes by section into brain/ following brain/SCHEMA.md. Finish with what went in and the questions only I can answer. My site is ",
       "when": [
         {
           "path": "raw/site/_sites.json",
@@ -22,7 +22,7 @@
     {
       "id": "extract-my-brand",
       "label": "Extract my brand",
-      "prompt": "Extract my brand from my site in raw/site (crawl it first with brain-ingest if it is not there) into brand/ with the brand skill: positioning, voice with quoted examples, audience, visual identity (colours as hex, fonts, the logo files, the imagery notes from my real photos), do and don't, and the best photos in brand/images. Cite the raw page for every claim, mark anything you inferred as a question for me, and update brain/overview.md.",
+      "prompt": "Extract my brand from my site in raw/site (crawl it first with the brain skill if it is not there) into brand/ with the brand skill: positioning, voice with quoted examples, audience, visual identity (colours as hex, fonts, the logo files, the imagery notes from my real photos), do and don't, and the best photos in brand/images. Cite the raw page for every claim, mark anything you inferred as a question for me, and update brain/overview.md.",
       "when": [
         {
           "path": "raw/site/_sites.json",
@@ -37,7 +37,7 @@
     {
       "id": "collect-the-facts-about-my",
       "label": "Collect the facts about my company",
-      "prompt": "Collect the facts about my company from my site in raw/site (crawl it first with brain-ingest if it is not there) into public/ with the brand skill: the business details, each service with its prices where stated, locations and service area, hours, the team, FAQs, policies, and real reviews as proof. Cite the raw page for every fact, never fill a gap from general knowledge, update brain/overview.md and brain/index.md, and end with the facts you could not find so I can give them to you.",
+      "prompt": "Collect the facts about my company from my site in raw/site (crawl it first with the brain skill if it is not there) into public/ with the brand skill: the business details, each service with its prices where stated, locations and service area, hours, the team, FAQs, policies, and real reviews as proof. Cite the raw page for every fact, never fill a gap from general knowledge, update brain/overview.md and brain/index.md, and end with the facts you could not find so I can give them to you.",
       "when": [
         {
           "path": "raw/site/_sites.json",
@@ -64,7 +64,7 @@
     {
       "id": "add-documents-to-the-brain",
       "label": "Add documents to the brain",
-      "prompt": "I have documents to add to the brain. Convert them into raw/docs with brain-ingest, then fold their facts into the existing notes in brain/ rather than making duplicates, citing each document. The documents are "
+      "prompt": "I have documents to add to the brain. Convert them into raw/docs with the brain skill, then fold their facts into the existing notes in brain/ rather than making duplicates, citing each document. The documents are "
     },
     {
       "id": "what-does-the-brain-know",
@@ -96,7 +96,7 @@
     {
       "id": "what-changed-on-my-site",
       "label": "What changed on my site since last time",
-      "prompt": "Re-crawl my site with tt-crawl (into the same raw/site folder) and use the brain-sync skill to tell me what changed since the last ingest: pages added, removed, or changed, facts that moved, and what in brain/ you updated as a result.",
+      "prompt": "Re-crawl my site with tt-crawl (into the same raw/site folder) and use the brain skill to tell me what changed since the last crawl: pages added, removed, or changed, facts that moved, and what in brain/ you updated as a result.",
       "when": [
         {
           "path": "raw/site/_sites.json",

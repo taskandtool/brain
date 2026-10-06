@@ -4,8 +4,8 @@ This file is the brain's rulebook: what kinds of notes exist, how a note is
 shaped, where things go, and how facts are cited and retired. The AI reads it
 before every ingest and lint and follows it over the skills' defaults. It is
 yours to edit — when the owner wants notes shaped differently, change it here
-and say so in `log.md`. (Seeded from the brain kit's template; the template
-never overwrites this file.)
+and say so in `log.md`. (Seeded from the Company Brain's template; the
+template never overwrites this file.)
 
 ## Layout
 
@@ -27,7 +27,7 @@ brain/
   SCHEMA.md                 this file
   overview.md               the business on one page: what it is, for whom, how it works
   index.md                  every note, one line each, grouped by folder
-  log.md                    append-only: each ingest and lint, what changed, open questions
+  log.md                    append-only: each distill pass and lint, what changed, open questions
   sources/                  one page per ingested source unit (see below)
   sops/                     internal how-we-work; never published
   <topic>.md                everything else the business knows: history, people, decisions, answers
@@ -58,8 +58,8 @@ Short sections. Every fact you'd be embarrassed to get wrong carries its source
 inline: "Call-outs are $180 (raw/site/example.com/pages/pricing.md)."
 
 ## Related
-- [Service area](../public/service-area.md)
-- [Refund policy](../sops/refunds.md)
+- [Services](../public/services.md)
+- [Refunds](sops/refunds.md)
 ```
 
 Rules:
@@ -78,7 +78,8 @@ Rules:
 - **Retire, don't erase.** When a newer source contradicts a fact, mark the old
   note `status: superseded`, add `superseded_by:` pointing at the newer note or
   source, and record it in `log.md`. History stays; the index lists only current
-  notes.
+  notes. Notes in `brand/` and `public/` instead keep the replaced value on a
+  `superseded:` line, as the `brand` skill says.
 - **Conflicts go to the owner.** Two current sources that disagree get both
   facts in the note, marked "conflict", and a question in the next reply. The
   AI never silently picks one.

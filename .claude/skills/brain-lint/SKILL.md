@@ -1,5 +1,6 @@
 ---
-description: "The brain's periodic health pass: audit citations, find contradictions, superseded claims, orphans, missing pages, dead links, schema drift and external-fact leakage in brain/ and the brand record (brand/, public/); fix what is safe, flag the rest to the owner. Runs weekly as a prompt job (a chat of its own each week), or on demand."
+name: brain-lint
+description: "Runs the brain's health pass over brain/, brand/ and public/: audits citations, finds contradictions, stale claims, orphans, dead links, schema drift and outside facts passed off as the owner's; fixes what is safe and flags the rest. Use when the weekly lint job opens a chat, or the owner asks to check the brain."
 ---
 
 # Brain: lint
@@ -12,8 +13,8 @@ If the owner has said they don't want the weekly pass, create the empty file
 ## First, is there anything to do?
 
 - Read `brain/SCHEMA.md`; it defines what "correct" means here.
-- `python3 .claude/skills/brain-distill/brain_status.py status` — un-ingested
-  raw files mean ingest first (the `brain-distill` skill), then lint.
+- `python3 scripts/brain_status.py status`: pending raw files (exit 1)
+  mean distill first (the `brain` skill), then lint.
 - Read the last lint entry in `brain/log.md`. If nothing in `raw/`, `brain/`,
   `brand/` or `public/` changed since, say so in one line and stop. Don't re-lint a brain that
   hasn't moved; it costs the owner tokens for nothing.
@@ -31,8 +32,8 @@ Read `index.md`, `overview.md`, then every current note in `brain/`,
 2. **Contradictions** — two current notes (or a note and a newer raw source)
    that disagree: hours, prices, phone numbers, policies. Newer raw wins when
    the date is clear; otherwise mark both and ask the owner.
-3. **Stale claims** — facts a newer source superseded. Mark the old
-   `status: superseded` with `superseded_by`; never just delete.
+3. **Stale claims** — facts a newer source superseded. Retire them as
+   SCHEMA.md says; never just delete.
 4. **Leakage** — anything from `raw/external/` or general knowledge presented
    as the owner's own fact, especially in `public/`. Move or relabel it.
 5. **Orphans** — notes nothing links to, or missing from `index.md`. Link them
