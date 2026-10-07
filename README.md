@@ -22,7 +22,6 @@ machine.
                    chat-stated facts) and distill it into cited notes under brain/; references/ holds
                    the ingest recipes and the scheduled jobs
   brain-lint/      the periodic health pass: citation audit, contradictions, superseded claims, leakage
-.agents/skills/   thin Codex adapters: the same descriptions, pointing at the bodies above
 scripts/brain_status.py  what in raw/ is not yet distilled, and marking what is (tests in tests/)
 .taskandtool/setup.sh  installs tt-crawl's latest (github.com/taskandtool/crawler) and the browsers it drives
 brain/SCHEMA.md   the note rulebook, shipped here and edited in place by the owner
