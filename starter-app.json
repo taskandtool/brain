@@ -11,7 +11,7 @@
     {
       "id": "read-my-website-into-the",
       "label": "Read my website into the brain",
-      "prompt": "Read my whole website into the brain with the brain skill (tt-crawl pages, then tt-crawl docs), tell me how many pages you read and found, then distill it in passes by section into brain/ following brain/SCHEMA.md. Finish with what went in and the questions only I can answer. My site is ",
+      "prompt": "Read my website into the brain: ",
       "when": [
         {
           "path": "raw/site/_sites.json",
@@ -21,8 +21,8 @@
     },
     {
       "id": "extract-my-brand",
-      "label": "Extract my brand",
-      "prompt": "Extract my brand from my site in raw/site (crawl it first with the brain skill if it is not there) into brand/ with the brand skill: positioning, voice with quoted examples, audience, visual identity (colours as hex, fonts, the logo files, the imagery notes from my real photos), do and don't, and the best photos in brand/images. Cite the raw page for every claim, mark anything you inferred as a question for me, and update brain/overview.md.",
+      "label": "Pull my brand from my website",
+      "prompt": "Pull my brand from my website: look, voice, audience and photos.",
       "when": [
         {
           "path": "raw/site/_sites.json",
@@ -36,8 +36,8 @@
     },
     {
       "id": "collect-the-facts-about-my",
-      "label": "Collect the facts about my company",
-      "prompt": "Collect the facts about my company from my site in raw/site (crawl it first with the brain skill if it is not there) into public/ with the brand skill: the business details, each service with its prices where stated, locations and service area, hours, the team, FAQs, policies, and real reviews as proof. Cite the raw page for every fact, never fill a gap from general knowledge, update brain/overview.md and brain/index.md, and end with the facts you could not find so I can give them to you.",
+      "label": "Collect my company's facts",
+      "prompt": "Collect the facts about my company from my website: services, prices, hours, team and reviews.",
       "when": [
         {
           "path": "raw/site/_sites.json",
@@ -51,8 +51,8 @@
     },
     {
       "id": "read-the-documents-linked-from",
-      "label": "Read the documents linked from my site",
-      "prompt": "Fetch the documents my website links to (price lists, brochures, menus, forms) with tt-crawl docs, tell me what you found and what could not be read, then fold their facts into the notes in brain/ with citations.",
+      "label": "Read the documents on my site",
+      "prompt": "Read the documents my website links to, like price lists and brochures.",
       "when": [
         {
           "path": "raw/site/_sites.json",
@@ -64,17 +64,28 @@
     {
       "id": "add-documents-to-the-brain",
       "label": "Add documents to the brain",
-      "prompt": "I have documents to add to the brain. Convert them into raw/docs with the brain skill, then fold their facts into the existing notes in brain/ rather than making duplicates, citing each document. The documents are "
+      "prompt": "Add the documents I'm attaching to the brain."
     },
     {
       "id": "what-does-the-brain-know",
       "label": "What does the brain know?",
-      "prompt": "Give me a tour of what the brain knows so far: the overview in a few lines, the notes by folder, the sources they came from, any conflicts or open questions in brain/log.md, and the three biggest gaps you would fill next."
+      "prompt": "What does the brain know so far, and what's missing?"
+    },
+    {
+      "id": "publish-the-brain-for-my-team",
+      "label": "Put the brain online for my team",
+      "prompt": "Put the brain online for my team.",
+      "when": [
+        {
+          "path": "brain/overview.md",
+          "is": "present"
+        }
+      ]
     },
     {
       "id": "import-my-wordpress-content",
-      "label": "Import my WordPress content",
-      "prompt": "My site runs on WordPress. Pull its pages and posts with `tt-crawl import --source wp` into its folder in raw/site (authors, dates, categories, full content), tell me what it found, then fold the facts into brain/ the usual way, citing the export. My site is ",
+      "label": "Import my WordPress site",
+      "prompt": "Import my pages and posts from WordPress.",
       "when": [
         {
           "path": "raw/site/_sites.json",
@@ -90,13 +101,13 @@
     },
     {
       "id": "note-what-i-just-told",
-      "label": "Note what I just told you",
-      "prompt": "Record what I am about to tell you as a dated transcript in raw/transcripts (my words), then fold it into the right notes in brain/ with citations, and tell me what changed. Here it is: "
+      "label": "Remember what I tell you",
+      "prompt": "Remember this: "
     },
     {
       "id": "what-changed-on-my-site",
-      "label": "What changed on my site since last time",
-      "prompt": "Re-crawl my site with tt-crawl (into the same raw/site folder) and use the brain skill to tell me what changed since the last crawl: pages added, removed, or changed, facts that moved, and what in brain/ you updated as a result.",
+      "label": "What changed on my site?",
+      "prompt": "Check my website again and tell me what changed.",
       "when": [
         {
           "path": "raw/site/_sites.json",

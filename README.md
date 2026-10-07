@@ -3,8 +3,9 @@
 A Task & Tool **Starter App**: the business's knowledge, raw and distilled.
 It takes in the owner's website, documents, transcripts, and facts stated in
 chat, and turns them into cited, cross-linked notes that an AI reasons over.
-Nothing is served; the brain *is* the AI's working context, and the first
-thing a business's data should flow into.
+The brain *is* the AI's working context, and the first thing a business's
+data should flow into. The viewer serves it as a website for people: search,
+backlinks, a graph, and every citation a link to the page it came from.
 
 Installed with one click on Task & Tool, or cloned into any project of your
 own (below). MIT licensed.
@@ -23,7 +24,12 @@ machine.
                    the ingest recipes and the scheduled jobs
   brain-lint/      the periodic health pass: citation audit, contradictions, superseded claims, leakage
 scripts/brain_status.py  what in raw/ is not yet distilled, and marking what is (tests in tests/)
-.taskandtool/setup.sh  installs tt-crawl's latest (github.com/taskandtool/crawler) and the browsers it drives
+scripts/viewer.py  the viewer: installs Quartz, serves dev, builds dist/ for production, checks links
+viewer/           Quartz's config and pinned plugins, and safe-text, the plugin that shows HTML in
+                  crawled pages as text
+package.json      npm run dev / build / deploy, the viewer's commands (no dependencies of its own)
+.taskandtool/setup.sh  installs tt-crawl's latest (github.com/taskandtool/crawler), the browsers it
+                  drives, and the viewer, then registers the `web` service
 brain/SCHEMA.md   the note rulebook, shipped here and edited in place by the owner
 AGENTS.md         what the AI reads first; CLAUDE.md imports it
 starter-app.json  the manifest Task & Tool reads: what the app needs, what "ready" means, and the
@@ -31,8 +37,9 @@ starter-app.json  the manifest Task & Tool reads: what the app needs, what "read
 ```
 
 Each `<skill>/SKILL.md` is a skill the harness loads on demand.
-`scripts/brain_status.py` is plain Python (standard library; the crawler's
-real dependencies are installed by `.taskandtool/setup.sh`).
+`scripts/brain_status.py` and `scripts/viewer.py` are plain Python (standard
+library; the crawler's and Quartz's real dependencies are installed by
+`.taskandtool/setup.sh`).
 
 ## The shape: raw → distilled
 
@@ -70,14 +77,41 @@ facts and reviews with where each was found, fetches each picture once at its
 largest, and stops at a visible default of 1,000 pages that the AI is told to
 report. No model is involved: a crawl costs the machine's time.
 
+## The viewer
+
+[Quartz](https://quartz.jzhao.xyz) renders `brain/`, `brand/`, `public/`,
+`legal/` and `raw/` as one site: full-text search, a folder explorer,
+backlinks, a graph, and a properties panel showing each note's type, status
+and sources. Notes link with plain relative markdown links, so a citation
+opens the crawled page or document it came from, and pictures show where
+they are cited.
+
+- **Dev:** the `web` service runs `npm run dev`, and every note edit shows
+  on refresh at the app's team address.
+- **Production:** `npm run deploy` builds a static site into `dist/` and
+  deploys it to Cloudflare through the platform. The first deploy opens it
+  to the team; only a person makes it public. Each deploy keeps `/raw`,
+  `/brain/sops` and the search index private to the team, so a public site
+  shows the notes, brand and published facts.
+- **Safe with crawled text:** `raw/` comes from sites the owner does not
+  control. The viewer never serves the crawler's HTML, scripts, data or raw
+  SVGs, and the `safe-text` plugin shows any HTML in markdown as text and
+  drops links with a script scheme.
+- **Checked:** `python3 scripts/viewer.py check` lists links that point
+  nowhere and citations written as bare paths, each with the link to write.
+
+Quartz is installed outside the app (`~/.local/share/company-brain/`), at a
+pinned tag with its plugins pinned in `viewer/quartz.lock.json`. It needs
+Node 22.
+
 ## Install
 
 **On Task & Tool.** Pick the Company Brain when you create an app. The
 machine clones this repository's main branch into the app and runs
 `.taskandtool/setup.sh`, which installs the crawler from its main branch too. Nothing is sent into your chat: the manifest's
 suggestions are what an empty chat offers. On machine replacement the clone
-and the setup happen again, and your own files come back from your repository
-or a backup — they are yours from the moment they land.
+and the setup happen again, and your own files come back from the backup (the
+knowledge folders are kept out of git) — they are yours from the moment they land.
 
 **Anywhere else.** Clone it and start working in it:
 
@@ -87,9 +121,10 @@ cd my-brain
 bash .taskandtool/setup.sh
 ```
 
-`.taskandtool/setup.sh` installs the crawler (tt-crawl) with pip and the two
-browsers it drives, Chrome and Obscura. Then open Claude Code in that directory and
-ask it to build the brain from your website.
+`.taskandtool/setup.sh` installs the crawler (tt-crawl) with pip, the two
+browsers it drives, Chrome and Obscura, and Quartz for the viewer. Then open
+Claude Code in that directory and ask it to build the brain from your
+website; `npm run dev` serves the viewer on port 3000.
 
 ## Third-party tools it installs
 
@@ -101,14 +136,17 @@ ask it to build the brain from your website.
 - [Obscura](https://github.com/h4ckf0r0day/obscura), Apache-2.0, a Rust
   headless browser in one static binary; the crawler's fallback where
   Chrome cannot run.
+- [Quartz](https://github.com/jackyzha0/quartz), MIT, the viewer, at a
+  pinned tag, with its community plugins (MIT) pinned by commit.
 
 Nothing is vendored; `setup.sh` installs them on the machine.
 
 ## What it is for, and what it is not
 
 The brain holds what a business knows: what it does, its brand, its
-offerings, its SOPs. It serves nothing and has no database — files are the
-whole model, and the AI is the query engine. It needs no connectors to work.
+offerings, its SOPs. It has no database — files are the whole model, the AI
+is the query engine, and the viewer only reads them. It needs no connectors
+to work.
 
 It is the first thing a business's data should flow into. Its `brand/` and
 `public/` folders have the same shape in every Starter App that carries the
@@ -119,7 +157,8 @@ Removing the app leaves the files. They are the owner's.
 ## Developing this Starter App
 
 - **Unit tests, no dependencies:**
-  `python3 tests/test_brain_status.py`.
+  `python3 tests/test_brain_status.py`, `python3 tests/test_viewer.py` and
+  `node --test tests/safe_text.test.mjs`.
   The crawler's own tests live in its repo (github.com/taskandtool/crawler).
 - **Try the skills:** clone it as above and drive Claude Code in the clone.
 - **On the platform:** Task & Tool's own repo keeps a working clone under

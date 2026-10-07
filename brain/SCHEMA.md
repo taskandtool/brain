@@ -55,7 +55,7 @@ One paragraph that answers "what is this" for someone who has never heard of it.
 
 ## Details
 Short sections. Every fact you'd be embarrassed to get wrong carries its source
-inline: "Call-outs are $180 (raw/site/example.com/pages/pricing.md)."
+inline: "Call-outs are $180 ([pricing](../raw/site/example.com/pages/pricing.md))."
 
 ## Related
 - [Services](../public/services.md)
@@ -72,6 +72,9 @@ Rules:
 - **Cite or don't write.** Every fact traces to a `raw/` path. A fact with no
   raw file is not knowledge yet: if the owner said it in chat, first write it to
   `raw/transcripts/YYYY-MM-DD-chat.md` (their words, dated), then cite that.
+- **Links are relative to the note.** In the body a citation and a picture are
+  markdown links to the file from where the note sits, so each opens in the
+  viewer; frontmatter `sources:` keep plain paths from the app root.
 - **Never infer this business's facts from elsewhere.** General knowledge and
   `raw/external/` describe the world and competitors, never the owner. A note
   about a competitor says so in its title and cites `raw/external/…`.
@@ -97,7 +100,7 @@ names and their templates are in the `brand` skill
 
 One page per **source unit**, not per file: the owner's website crawl is one
 unit (`sources/website.md`), each uploaded document is one, each transcript is
-one, each external site is one. A source page has the same frontmatter (`type:
+one, each external site is one, each social profile with its posts is one. A source page has the same frontmatter (`type:
 source`) and says: what the source is and where it came from, when it was
 ingested and last re-ingested, its key facts in a list (each linking to the
 note that holds it), and what was skipped or unclear. It is the hub every

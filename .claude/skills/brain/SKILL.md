@@ -29,8 +29,8 @@ may have changed it, and it wins over this skill.
    - **Brand and public facts** (look, voice, services, prices, hours,
      team, reviews) go to `brand/` and `public/` with the `brand` skill, in
      the same pass. `brain/` links to them rather than repeating them.
-   - **Pictures** are referenced by relative path with a one-line alt
-     text, never copied.
+   - **Pictures** in `brain/` notes are linked by relative path with a
+     one-line alt text, never copied; only `brand/images` holds copies.
 4. **Keep the hubs current:** the unit's page in `brain/sources/`,
    `overview.md` if the big picture moved, `index.md`, and one `log.md`
    entry per pass (the unit; notes created, updated or retired; open

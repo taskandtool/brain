@@ -40,7 +40,8 @@ Read `index.md`, `overview.md`, then every current note in `brain/`,
    in or fold them into a better home.
 6. **Missing pages** — concepts referenced across notes with no note of their
    own (a service everyone mentions with no page). Create it from raw.
-7. **Dead links** — relative links to notes or raw files that no longer exist.
+7. **Dead links and bare citations** — `python3 scripts/viewer.py check`
+   lists them, each with the link to write. Fix every one.
 8. **Wrong folder** — internal procedure in `public/`, a public fact buried in
    `brain/sops/`. Move it: `public/` is what every other app reads.
 9. **Schema drift** — notes missing frontmatter, oversized notes that should

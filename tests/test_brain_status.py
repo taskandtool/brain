@@ -30,6 +30,9 @@ class DiffTests(unittest.TestCase):
         self.assertEqual(bst.unit_of("raw/site/acme.com/docs/prices.md"), "raw/site/acme.com")
         self.assertEqual(bst.unit_of("raw/external/competitor.com/pricing.md"), "raw/external/competitor.com")
         self.assertEqual(bst.unit_of("raw/docs/2026-09-02-brochure.md"), "raw/docs/2026-09-02-brochure.md")
+        self.assertEqual(bst.unit_of("raw/social/instagram/acmehoses/2026-09-01-post.md"),
+                         "raw/social/instagram/acmehoses")
+        self.assertEqual(bst.unit_of("raw/places/acme-hose-co.json"), "raw/places/acme-hose-co.json")
         d = bst.diff({"raw/site/a.com/pages/a.md": "1", "raw/site/a.com/pages/b.md": "2", "raw/external/x.com/p.md": "3"},
                      {"raw/site/a.com/pages/b.md": "old"})
         self.assertEqual(d["units"], {"raw/site/a.com": {"new": 1, "changed": 1}, "raw/external/x.com": {"new": 1, "changed": 0}})
@@ -166,9 +169,10 @@ class CommandTests(unittest.TestCase):
             os.makedirs(os.path.join(app, "scripts"))
             os.makedirs(os.path.join(app, "raw", "docs"))
             os.makedirs(os.path.join(app, "elsewhere"))
-            with open(os.path.join(SCRIPTS, "brain_status.py")) as src, \
-                    open(os.path.join(app, "scripts", "brain_status.py"), "w") as dst:
-                dst.write(src.read())
+            for name in ("brain_status.py", "cli.py"):
+                with open(os.path.join(SCRIPTS, name)) as src, \
+                        open(os.path.join(app, "scripts", name), "w") as dst:
+                    dst.write(src.read())
             with open(os.path.join(app, "raw", "docs", "a.md"), "w") as f:
                 f.write("a")
             script = os.path.join(app, "scripts", "brain_status.py")

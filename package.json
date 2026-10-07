@@ -1,0 +1,10 @@
+{
+  "name": "company-brain",
+  "private": true,
+  "description": "The business's knowledge as cited notes, browsable as a website: Quartz over brain/, brand/, public/, legal/ and raw/.",
+  "scripts": {
+    "dev": "python3 scripts/viewer.py dev",
+    "build": "python3 scripts/viewer.py build",
+    "deploy": "python3 ~/tools/taskandtool.py add-private-path /raw && python3 ~/tools/taskandtool.py add-private-path /brain/sops && python3 ~/tools/taskandtool.py add-private-path /static/contentIndex.json && python3 scripts/viewer.py build && python3 ~/tools/taskandtool.py deploy dist"
+  }
+}

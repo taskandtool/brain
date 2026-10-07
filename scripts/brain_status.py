@@ -23,6 +23,8 @@ import json
 import os
 import sys
 
+from cli import Misuse, Parser, fail
+
 # the app root: this file is <root>/scripts/brain_status.py
 ROOT = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
 CMD = "python3 scripts/brain_status.py"
@@ -76,11 +78,14 @@ def save_manifest(data):
 def unit_of(path):
     """The source unit a raw file belongs to (the brain keeps one source page
     per unit), as the path to mark it by: each of the owner's sites
-    (raw/site/<host>) and each external site is one folder; every document,
-    transcript, or other file is its own."""
+    (raw/site/<host>) and each external site is one folder, and so is each
+    social profile with its posts (raw/social/<platform>/<handle>); every
+    document, transcript, listing, or other file is its own."""
     parts = path.split("/")
     if len(parts) >= 4 and parts[0] == "raw" and parts[1] in ("site", "external"):
         return "/".join(parts[:3])
+    if len(parts) >= 5 and parts[0] == "raw" and parts[1] == "social":
+        return "/".join(parts[:4])
     return path
 
 
@@ -197,25 +202,6 @@ def mark(paths=None):
             marked += 1
     save_manifest(ingested)
     return marked, unchanged, len(set(forget))
-
-
-class Misuse(Exception):
-    """argparse's complaint, raised instead of printed so it gets a Try: line."""
-
-
-class Parser(argparse.ArgumentParser):
-    def error(self, message):
-        raise Misuse(message)
-
-
-def fail(at, msg, lines=(), try_cmd=None, as_json=False):
-    """An error on stderr: `<at>: <msg>`, indented lines, then Try:; or one
-    JSON object under --json."""
-    if as_json:
-        print(json.dumps({"error": f"{at}: {msg}", "try": try_cmd}), file=sys.stderr)
-        return
-    print("\n".join([f"{at}: {msg}", *("  " + x for x in lines),
-                     *([f"  Try: {try_cmd}"] if try_cmd else [])]), file=sys.stderr)
 
 
 def main(argv):

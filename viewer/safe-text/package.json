@@ -1,0 +1,27 @@
+{
+  "name": "safe-text",
+  "version": "1.0.0",
+  "description": "Shows HTML written inside markdown as text, and drops links with a script scheme: raw/ is crawled from sites the owner does not control.",
+  "type": "module",
+  "private": true,
+  "license": "MIT",
+  "exports": {
+    ".": "./index.js",
+    "./package.json": "./package.json"
+  },
+  "main": "./index.js",
+  "scripts": {
+    "build": "node -e \"\""
+  },
+  "quartz": {
+    "name": "safe-text",
+    "displayName": "Safe text",
+    "category": "transformer",
+    "version": "1.0.0",
+    "quartzVersion": ">=5.0.0",
+    "dependencies": [],
+    "defaultOrder": 1,
+    "defaultEnabled": true,
+    "defaultOptions": {}
+  }
+}
