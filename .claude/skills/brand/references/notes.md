@@ -25,7 +25,7 @@ public/
 legal/                 terms, privacy, cookies, returns: copied verbatim, never rewritten
 ```
 
-`brand/` is the look and the sound; `public/` is anything the business would
+`brand/` is the look and the sound (each note `type: brand`); `public/` is anything the business would
 say to a stranger. Internal knowledge (SOPs, pricing logic, people's
 details) belongs in neither.
 
@@ -43,11 +43,13 @@ sources:
 ---
 
 One paragraph that answers "what is this" for someone who has never heard of
-it. Call-outs are $180 (raw/site/example.com/pages/pricing.md).
+it. Call-outs are $180 ([pricing](../raw/site/example.com/pages/pricing.md)).
 ```
 
-Every note has `title`, `type`, `updated`, `status` and `sources`. Facts in
-the body carry their raw path in brackets.
+Every note has `title`, `type`, `updated`, `status` and `sources`. A fact in
+the body cites its raw file as a markdown link relative to the note, so it
+opens wherever the notes are shown; frontmatter (`sources:`, `source:`) keeps
+plain paths from the app root.
 
 ## Typed frontmatter
 
@@ -107,6 +109,6 @@ numbers appear.
 ## Updating
 
 - Change the note, bump `updated`, add the new source.
-- Keep the replaced value on a line: `superseded: "Mo-Fr 08:00-16:00" (raw/site/…/contact.md, 2026-01-10)`.
+- Keep the replaced value on a line: `superseded: "Mo-Fr 08:00-16:00" ([contact](../raw/site/example.com/pages/contact.md), 2026-01-10)`.
 - Two current sources disagree: keep both in the body, marked **conflict**,
   and tell the owner. Resolve it when they answer, citing their answer.

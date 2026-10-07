@@ -1,3 +1,11 @@
+---
+title: Images
+type: brand
+updated: to fill
+status: current
+sources: []
+---
+
 # Images
 
 The business's best real photographs, copied into `images/` (a website's

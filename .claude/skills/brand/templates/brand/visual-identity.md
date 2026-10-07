@@ -1,3 +1,11 @@
+---
+title: Visual identity
+type: brand
+updated: to fill
+status: current
+sources: []
+---
+
 # Visual identity
 
 The brand's own colours, type, logo and photography, stated precisely

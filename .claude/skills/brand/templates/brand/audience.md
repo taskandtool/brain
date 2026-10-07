@@ -1,3 +1,11 @@
+---
+title: Audience
+type: brand
+updated: to fill
+status: current
+sources: []
+---
+
 # Audience
 
 The actual people who arrive, not demographics. To fill (the brand skill).
