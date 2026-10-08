@@ -192,5 +192,78 @@ class CommandTests(unittest.TestCase):
             self.assertEqual(r.returncode, 0, r.stdout)
 
 
+class InstallTests(AppTest):
+    def test_the_quartz_patch_applies_once_and_refuses_other_code(self):
+        saved = vw.QUARTZ_DIR
+        vw.QUARTZ_DIR = os.path.join(self.root, "quartz")
+        try:
+            name, shipped, fixed = vw.QUARTZ_PATCHES[0]
+            path = self.write(os.path.join("quartz", name), "before\n" + shipped + "after\n")
+            vw.patch_quartz()
+            vw.patch_quartz()
+            with open(path) as f:
+                self.assertEqual(f.read(), "before\n" + fixed + "after\n")
+            self.write(os.path.join("quartz", name), "some other Quartz\n")
+            with self.assertRaises(vw.Failed):
+                vw.patch_quartz()
+        finally:
+            vw.QUARTZ_DIR = saved
+
+    def fake_clone(self, calls):
+        """vw.run that makes a clone where git was asked to, and stops the
+        install at the next step (npm), so nothing touches the network."""
+        def run(args, cwd, what, try_cmd=None):
+            calls.append(args)
+            if args[0] == "git":
+                os.makedirs(os.path.join(args[-1], ".git"))
+                return ""
+            raise vw.Failed("stopped after the clone")
+        return run
+
+    def with_quartz_dir(self, fn):
+        saved = (vw.QUARTZ_DIR, vw.run, vw.node_major)
+        vw.QUARTZ_DIR = os.path.join(self.root, "share", "quartz")
+        vw.node_major = lambda: 24
+        try:
+            fn()
+        finally:
+            vw.QUARTZ_DIR, vw.run, vw.node_major = saved
+
+    def test_a_folder_that_is_not_a_clone_is_left_alone(self):
+        def go():
+            keep = self.write("share/quartz/notes.txt", "not ours")
+            calls = []
+            vw.run = self.fake_clone(calls)
+            with self.assertRaises(vw.Failed) as e:
+                vw._install()
+            self.assertIn("is not a Quartz clone", str(e.exception))
+            self.assertTrue(os.path.exists(keep))
+            self.assertEqual(calls, [])
+        self.with_quartz_dir(go)
+
+    def test_the_clone_lands_whole_or_not_at_all(self):
+        def go():
+            self.write("share/quartz.partial/half.txt", "a clone cut off earlier")
+            calls = []
+            vw.run = self.fake_clone(calls)
+            with self.assertRaises(vw.Failed):
+                vw._install()
+            self.assertEqual(calls[0][-1], vw.QUARTZ_DIR + ".partial")
+            self.assertTrue(os.path.isdir(os.path.join(vw.QUARTZ_DIR, ".git")))
+            self.assertFalse(os.path.exists(vw.QUARTZ_DIR + ".partial"))
+            self.assertFalse(os.path.exists(os.path.join(vw.QUARTZ_DIR, "half.txt")))
+        self.with_quartz_dir(go)
+
+    def test_a_build_names_production_in_link_previews(self):
+        self.assertIn("baseUrl: localhost", vw.config_text())
+        self.assertIn("baseUrl: acme-brain.taskandtool.app", vw.config_text("acme-brain.taskandtool.app"))
+        saved = os.environ.get("HOME")
+        os.environ["HOME"] = self.root  # no bridge here: nothing to ask
+        try:
+            self.assertIsNone(vw.production_host())
+        finally:
+            os.environ["HOME"] = saved
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -20,6 +20,7 @@ The viewer's look is viewer/quartz.config.yaml (colours, fonts, panels);
 its plugins are pinned in viewer/quartz.lock.json.
 """
 import argparse
+import fcntl
 import fnmatch
 import hashlib
 import json
@@ -29,7 +30,7 @@ import shutil
 import socket
 import subprocess
 import sys
-from urllib.parse import unquote
+from urllib.parse import unquote, urlparse
 
 from cli import Misuse, Parser, fail
 
@@ -120,11 +121,30 @@ def business_name():
     return name if name and name != "to fill" else None
 
 
-def config_text():
-    """viewer/quartz.config.yaml with the local plugin's path filled in, and
-    the business's name as the title while the title is the default."""
+def production_host():
+    """Production's host name from the bridge, or None off the platform or
+    before there is one: link previews need it as an absolute address."""
+    bridge = os.path.expanduser("~/tools/taskandtool.py")
+    if not os.path.isfile(bridge):
+        return None
+    try:
+        r = subprocess.run([sys.executable, bridge, "status", "--json"],
+                           capture_output=True, text=True, timeout=30)
+        url = json.loads(r.stdout or "{}").get("production_url") or ""
+    except (OSError, ValueError, subprocess.TimeoutExpired):
+        return None
+    return urlparse(url).hostname or None
+
+
+def config_text(base_url=None):
+    """viewer/quartz.config.yaml with the local plugin's path filled in, the
+    business's name as the title while the title is the default, and
+    `base_url` (production's host, for a build) as the address link previews
+    name."""
     with open(os.path.join(VIEWER, "quartz.config.yaml")) as f:
         text = f.read()
+    if base_url:
+        text = re.sub(r"^(\s*baseUrl:).*$", lambda m: f"{m.group(1)} {base_url}", text, count=1, flags=re.M)
     text = text.replace("@SAFE_TEXT@", os.path.join(VIEWER, "safe-text"))
     text = text.replace('"@LEFT_OUT@"', json.dumps(LEFT_OUT))
     name = business_name()
@@ -145,9 +165,42 @@ def write_if_changed(path, text):
         f.write(text)
 
 
+# Fixes to the pinned Quartz, applied at every install: (file, the text as
+# shipped, what it becomes). Quartz 5.0.0 stores a generated folder page's
+# rendered listing as its content, then renders the listing again, so every
+# folder showed its list twice.
+QUARTZ_PATCHES = [
+    ("quartz/plugins/pageTypes/dispatcher.ts",
+     "      ve.tree.children = htmlAst.children\n      ve.vfile.data.htmlAst = htmlAst\n",
+     "      ve.vfile.data.htmlAst = htmlAst\n"),
+]
+
+
+def patch_quartz():
+    for name, shipped, fixed in QUARTZ_PATCHES:
+        path = os.path.join(QUARTZ_DIR, name)
+        with open(path) as f:
+            text = f.read()
+        if shipped in text:
+            with open(path, "w") as f:
+                f.write(text.replace(shipped, fixed, 1))
+        elif fixed not in text:
+            raise Failed(f"Quartz {QUARTZ_TAG} is not the code the viewer patches: {name}", [],
+                         f"rm -rf {QUARTZ_DIR} && {CMD} install")
+
+
 def install():
     """Quartz at QUARTZ_TAG, its npm packages and the pinned plugins.
-    Returns True when something was installed, False when all was there."""
+    Returns True when something was installed, False when all was there.
+    One install at a time: the web service installs on its first start, and
+    a build run meanwhile waits for it rather than writing the same folder."""
+    os.makedirs(os.path.dirname(QUARTZ_DIR), exist_ok=True)
+    with open(QUARTZ_DIR + ".lock", "w") as lock:
+        fcntl.flock(lock, fcntl.LOCK_EX)
+        return _install()
+
+
+def _install():
     major = node_major()
     if major is None or major < 22:
         found = f"Node {major}" if major else "no Node"
@@ -155,10 +208,18 @@ def install():
                      "nvm install 22 && nvm alias default 22")
     did = False
     if not os.path.isdir(os.path.join(QUARTZ_DIR, ".git")):
-        os.makedirs(os.path.dirname(QUARTZ_DIR), exist_ok=True)
-        shutil.rmtree(QUARTZ_DIR, ignore_errors=True)
+        if os.path.exists(QUARTZ_DIR):
+            # Not something this script made: say so rather than delete it.
+            raise Failed(f"{QUARTZ_DIR} is there but is not a Quartz clone", [],
+                         f"move it aside, then {CMD} install")
+        # Cloned beside it and renamed into place, so a clone cut off by a
+        # sleep or a replacement never leaves a half Quartz that looks whole.
+        # Only the .partial folder, this step's own, is ever removed.
+        partial = QUARTZ_DIR + ".partial"
+        shutil.rmtree(partial, ignore_errors=True)
         run(["git", "-c", "advice.detachedHead=false", "clone", "--quiet", "--depth", "1",
-             "--branch", QUARTZ_TAG, QUARTZ_REPO, QUARTZ_DIR], ROOT, f"cloning Quartz {QUARTZ_TAG}")
+             "--branch", QUARTZ_TAG, QUARTZ_REPO, partial], ROOT, f"cloning Quartz {QUARTZ_TAG}")
+        os.rename(partial, QUARTZ_DIR)
         did = True
     # Written only after `npm ci` succeeds, so a half-finished install is redone.
     packages = os.path.join(QUARTZ_DIR, "node_modules", ".company-brain-installed")
@@ -167,6 +228,7 @@ def install():
             "installing Quartz's packages")
         open(packages, "w").close()
         did = True
+    patch_quartz()
     lock = lock_text()
     write_if_changed(os.path.join(QUARTZ_DIR, "quartz.lock.json"), lock)
     write_if_changed(os.path.join(QUARTZ_DIR, "quartz.config.yaml"), config_text())
@@ -212,7 +274,7 @@ def home_page():
     ]) + "\n"
 
 
-def stage(content):
+def stage(content, base_url=None):
     """`content` as links to the app's folders, plus the home page. Each
     folder is made if missing, so one that fills later is watched."""
     os.makedirs(content, exist_ok=True)
@@ -228,7 +290,7 @@ def stage(content):
         os.symlink(source, os.path.join(content, folder))
     with open(os.path.join(content, "index.md"), "w") as f:
         f.write(home_page())
-    write_if_changed(os.path.join(QUARTZ_DIR, "quartz.config.yaml"), config_text())
+    write_if_changed(os.path.join(QUARTZ_DIR, "quartz.config.yaml"), config_text(base_url))
 
 
 # ---------------------------------------------------------------- build
@@ -250,7 +312,8 @@ def prune(dist):
 
 def build():
     install()
-    stage(BUILD_CONTENT)
+    # A build is for production: its link previews name production's address.
+    stage(BUILD_CONTENT, production_host())
     dist = os.path.join(ROOT, "dist")
     run(["npx", "quartz", "build", "-d", BUILD_CONTENT, "-o", dist], QUARTZ_DIR, "the Quartz build",
         f"{CMD} check, then fix the note the build output names")
@@ -397,6 +460,8 @@ def main(argv):
             if not str(port).isdigit():
                 fail("viewer dev", f"PORT is {port!r}, not a number", [], f"PORT=3000 {CMD} dev")
                 return 2
+            if not os.path.isdir(os.path.join(QUARTZ_DIR, ".quartz")):
+                print(f"viewer dev: installing Quartz {QUARTZ_TAG} first; minutes on a machine", flush=True)
             install()
             stage(DEV_CONTENT)
             print(f"viewer dev: serving brain/, brand/, public/, legal/ and raw/ on port {port}, "

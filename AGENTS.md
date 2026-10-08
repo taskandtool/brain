@@ -64,8 +64,13 @@ making production public opens only the notes, brand and published facts.
 ```bash
 python3 scripts/viewer.py check     # links that point nowhere or at a file the viewer leaves out, and bare citations with the link to write; exit 1 while any
 python3 scripts/viewer.py build     # "viewer build: 412 pages and 230 other files in dist/", then what check found
-python3 scripts/viewer.py install   # Quartz and its plugins, outside the app; setup.sh runs it
+python3 scripts/viewer.py install   # Quartz and its plugins, outside the app; the web service runs it on its first start
 ```
+
+On a new machine the `web` service spends its first several minutes
+installing Quartz; the chat and the brain work meanwhile. When the owner
+asks to see the brain before it answers, `python3 ~/tools/taskandtool.py
+logs` says where the install is; never restart it.
 
 Its look (colours, fonts, which panels show) is `viewer/quartz.config.yaml`;
 take the colours and fonts from `brand/visual-identity.md` when the owner

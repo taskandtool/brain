@@ -100,9 +100,11 @@ they are cited.
 - **Checked:** `python3 scripts/viewer.py check` lists links that point
   nowhere and citations written as bare paths, each with the link to write.
 
-Quartz is installed outside the app (`~/.local/share/company-brain/`), at a
-pinned tag with its plugins pinned in `viewer/quartz.lock.json`. It needs
-Node 22.
+The web service installs Quartz on its first start, outside the app
+(`~/.local/share/company-brain/`), so setup does not wait for it. It is
+pinned to a tag, with its plugins pinned in `viewer/quartz.lock.json`; the
+install fixes Quartz 5.0.0 listing a folder twice. A production build names
+production's address in its link previews. It needs Node 22.
 
 ## Install
 
