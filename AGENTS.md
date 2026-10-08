@@ -30,12 +30,12 @@ python3 scripts/brain_status.py status [<path> …]  # summary, then the pending
 python3 scripts/brain_status.py mark <path> …      # after distilling: files or folders (a folder marks every file under it); a removed file by its old path
 ```
 
-Before ending a turn, mark what you distilled this turn; then `status`
-on those paths exits 0. The one exception is a first crawl distilled in passes: its pages
-still pending are fine, and you tell the owner how many are left.
+Before ending a turn, mark what you distilled this turn; `status` on those
+paths then exits 0. The one exception is a first crawl distilled in passes:
+pages still pending from it are fine, and you tell the owner how many are left.
 
-The owner's whole site is crawled with `tt-crawl pages` as the `brain`
-skill gives it, not the sampling `tt-crawl brand` the brand skill names.
+Crawl the owner's whole site with `tt-crawl pages`, as the `brain` skill
+gives it, not with `tt-crawl brand`, the sampling crawl the brand skill names.
 
 Which skill to read, by what the owner asks:
 
@@ -54,8 +54,8 @@ Read the one that fits the ask rather than working from memory.
 
 The brain as a website (Quartz): search, backlinks and a graph over
 `brain/`, `brand/`, `public/`, `legal/` and `raw/`, every citation a link to
-its source. Dev is the `web` service (`npm run dev`), every note edit there
-on refresh; "show me the brain" is its address, which
+its source. Dev is the `web` service (`npm run dev`); every note edit shows
+there on refresh. The answer to "show me the brain" is its address, which
 `python3 ~/tools/taskandtool.py status` prints. After changing the viewer's
 config, `python3 ~/tools/taskandtool.py restart`. Production is `npm run
 deploy` (the `deploy` skill); before each deploy, run `check` and fix what
@@ -71,11 +71,11 @@ python3 scripts/viewer.py install   # Quartz and its plugins, outside the app; t
 
 On a new machine the `web` service spends its first several minutes
 installing Quartz; the chat and the brain work meanwhile. When the owner
-asks to see the brain before it answers, say it is still installing
+asks to see the brain before the viewer answers, say it is still installing
 (`python3 ~/tools/taskandtool.py logs` shows "installing Quartz" until it
 serves); never restart it. A build started meanwhile waits for it.
 
-Its look (colours, fonts, which panels show) is `viewer/quartz.config.yaml`;
+The viewer's look (colours, fonts, which panels show) is `viewer/quartz.config.yaml`;
 take the colours and fonts from `brand/visual-identity.md` when the owner
 asks.
 
