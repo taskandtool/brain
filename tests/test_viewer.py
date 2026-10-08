@@ -4,6 +4,7 @@
 """
 import json
 import os
+import re
 import subprocess
 import sys
 import tempfile
@@ -121,8 +122,17 @@ class StagingTests(AppTest):
         self.write("public/business.md", "---\nname: Acme Hose Co\n---\n")
         page = vw.home_page()
         self.assertIn('title: "Acme Hose Co"', page)
-        for target in ("brain/overview.md", "brain/", "brand/", "public/", "raw/"):
+        for target in ("brain/", "brand/", "public/", "raw/"):
             self.assertIn(f"]({target})", page)
+
+    def test_every_home_page_link_has_a_page_on_a_fresh_brain(self):
+        # Against the repository as it ships: a folder with no file in it has
+        # no page in Quartz, so each linked folder must ship one.
+        shipped = os.path.realpath(os.path.join(SCRIPTS, ".."))
+        for target in re.findall(r"\]\(([^)]+)\)", vw.home_page()):
+            folder = os.path.join(shipped, target)
+            files = [n for n in os.listdir(folder) if n.endswith(".md")] if os.path.isdir(folder) else []
+            self.assertTrue(files, f"{target} ships no page")
 
     def test_stage_links_the_folders_and_makes_missing_ones(self):
         self.write("brain/overview.md", "x")
@@ -212,21 +222,38 @@ class CommandTests(unittest.TestCase):
 
 
 class InstallTests(AppTest):
-    def test_the_quartz_patch_applies_once_and_refuses_other_code(self):
+    def test_the_quartz_patches_apply_once_and_refuse_other_code(self):
         saved = vw.QUARTZ_DIR
         vw.QUARTZ_DIR = os.path.join(self.root, "quartz")
         try:
-            name, shipped, fixed = vw.QUARTZ_PATCHES[0]
-            path = self.write(os.path.join("quartz", name), "before\n" + shipped + "after\n")
+            # the folder lists, and the dev server's watch of public/
+            self.assertEqual([p[0] for p in vw.QUARTZ_PATCHES],
+                             ["quartz/plugins/pageTypes/dispatcher.ts", "quartz/build.ts"])
+            paths = []
+            for name, shipped, _ in vw.QUARTZ_PATCHES:
+                paths.append(self.write(os.path.join("quartz", name), "before\n" + shipped + "after\n"))
             vw.patch_quartz()
             vw.patch_quartz()
-            with open(path) as f:
-                self.assertEqual(f.read(), "before\n" + fixed + "after\n")
-            self.write(os.path.join("quartz", name), "some other Quartz\n")
-            with self.assertRaises(vw.Failed):
+            for path, (_, _, fixed) in zip(paths, vw.QUARTZ_PATCHES):
+                with open(path) as f:
+                    self.assertEqual(f.read(), "before\n" + fixed + "after\n")
+            self.write(os.path.join("quartz", vw.QUARTZ_PATCHES[1][0]), "some other Quartz\n")
+            with self.assertRaises(vw.Failed) as e:
                 vw.patch_quartz()
+            self.assertIn("move", e.exception.try_cmd)
+            self.assertNotIn("rm -rf", e.exception.try_cmd)
         finally:
             vw.QUARTZ_DIR = saved
+
+    def test_the_patches_match_the_pinned_quartz(self):
+        # Against the real Quartz install when this computer has one.
+        source = os.path.expanduser(f"~/.local/share/company-brain/quartz-{vw.QUARTZ_TAG}")
+        if not os.path.isdir(source):
+            self.skipTest("no Quartz installed here")
+        for name, shipped, fixed in vw.QUARTZ_PATCHES:
+            with open(os.path.join(source, name)) as f:
+                text = f.read()
+            self.assertTrue(shipped in text or fixed in text, name)
 
     def fake_clone(self, calls):
         """vw.run that makes a clone where git was asked to, and stops the
@@ -318,33 +345,40 @@ class InstallTests(AppTest):
         self.assertFalse(os.path.exists(os.path.join(self.root, "dist")))
 
 
-class DeployTests(AppTest):
-    def fake_bridge(self):
-        """A bridge that records each call it gets."""
-        log = os.path.join(self.root, "bridge.log")
-        script = self.write("bridge.py", "import sys\nopen(%r, 'a').write(' '.join(sys.argv[1:]) + '\\n')\n" % log)
-        return f"{sys.executable} {script}", log
+class ProductionTests(AppTest):
+    # What `status --json` prints: the platform's serving reply as is
+    # (MachineAPIController.serving_status), indented by the bridge.
+    STATUS_REPLY = {
+        "ok": True,
+        "development_url": "https://acme-brain-dev.taskandtool.app",
+        "production_url": "https://acme-brain.taskandtool.app",
+        "private_paths": [],
+        "deployed_at": None,
+        "visible_to": "team",
+        "can_deploy": True,
+        "note": "Production is visible to your team.",
+    }
 
-    def test_the_teams_paths_are_kept_once_and_never_again(self):
-        bridge, log = self.fake_bridge()
-        saved = vw.PRIVATE_MARKER
-        vw.PRIVATE_MARKER = os.path.join(self.root, "brain", ".viewer-private-paths")
-        try:
-            first = vw.keep_private(bridge)
-            again = vw.keep_private(bridge)
-        finally:
-            vw.PRIVATE_MARKER = saved
-        with open(log) as f:
-            calls = f.read().splitlines()
-        self.assertEqual(calls, [f"add-private-path {p}" for p in vw.PRIVATE_PATHS])
-        self.assertIn("/brain", first[0])
-        self.assertEqual(again, [])
+    def bridge_printing(self, reply, code=0):
+        """A bridge whose `status --json` prints `reply` and exits `code`."""
+        script = self.write("bridge.py", "import json, sys\n"
+                            f"print(json.dumps({reply!r}, indent=2))\nsys.exit({code})\n")
+        return f"{sys.executable} {script}"
 
-    def test_a_public_site_shows_only_what_the_business_publishes(self):
-        for path in ("/brain", "/raw", "/tags", "/static/contentIndex.json"):
-            self.assertIn(path, vw.PRIVATE_PATHS)
-        for folder in ("brand", "public", "legal"):
-            self.assertFalse(any(("/" + folder).startswith(p) for p in vw.PRIVATE_PATHS), folder)
+    def test_production_host_reads_the_status_reply(self):
+        self.assertEqual(vw.production_host(self.bridge_printing(self.STATUS_REPLY)),
+                         "acme-brain.taskandtool.app")
+
+    def test_no_production_address_is_none(self):
+        self.assertIsNone(vw.production_host(self.bridge_printing(dict(self.STATUS_REPLY, production_url=None))))
+        self.assertIsNone(vw.production_host(self.bridge_printing({"error": "unauthorized"}, code=1)))
+        self.assertIsNone(vw.production_host(f"{sys.executable} -c 'print(\"not json\")'"))
+
+    def test_the_build_says_when_production_is_not_known(self):
+        unknown = vw.build_report(3, 5, [], None)
+        self.assertIn("production's address is not known here", unknown[1])
+        self.assertEqual(vw.build_report(3, 5, [], "acme-brain.taskandtool.app"),
+                         ["viewer build: 3 pages and 2 other files in dist/"])
 
 
 if __name__ == "__main__":

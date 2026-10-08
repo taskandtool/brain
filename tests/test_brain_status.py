@@ -60,7 +60,8 @@ class FilesystemTests(unittest.TestCase):
             os.makedirs("raw/site/acme.com/" + d)
         for path, body in ((self.PAGE, "hello"), ("raw/site/acme.com/images/x.png", "png"),
                            ("raw/site/acme.com/shots/index/01.png", "png"), ("raw/site/acme.com/_index/inventory.md", "t"),
-                           ("raw/site/acme.com/_cache/pages/index.json", "{}"), ("raw/site/_sites.json", "{}")):
+                           ("raw/site/acme.com/_cache/pages/index.json", "{}"), ("raw/site/_sites.json", "{}"),
+                           ("raw/README.md", "the page the app ships for raw/")):
             with open(path, "w") as f:
                 f.write(body)
 
@@ -69,7 +70,7 @@ class FilesystemTests(unittest.TestCase):
         bst.ROOT = self.root
         self.tmp.cleanup()
 
-    def test_raw_files_skip_pictures_and_the_crawlers_own_files(self):
+    def test_raw_files_skip_pictures_the_crawlers_own_files_and_the_shipped_readme(self):
         self.assertEqual(list(bst.raw_files()), [self.PAGE])
 
     def test_a_file_ingested_before_it_was_skipped_is_not_reported_removed(self):

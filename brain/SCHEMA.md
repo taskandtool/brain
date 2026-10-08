@@ -29,7 +29,7 @@ brain/
   index.md                  every note, one line each, grouped by folder
   log.md                    append-only: each distill pass and lint, what changed, open questions
   sources/                  one page per ingested source unit (see below)
-  sops/                     internal how-we-work; never published
+  sops/                     internal how-we-work; never in public/
   <topic>.md                everything else the business knows: history, people, decisions, answers
 ```
 

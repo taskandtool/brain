@@ -89,12 +89,11 @@ they are cited.
 - **Dev:** the `web` service runs `npm run dev`, and every note edit shows
   on refresh at the app's team address.
 - **Production:** `npm run deploy` builds a static site into `dist/` and
-  deploys it to Cloudflare through the platform. The first deploy opens it
-  to the team; only a person makes it public. The first deploy keeps
-  `/brain`, `/raw`, tags and the search index for the team, so a public
-  site shows the home page, `brand/`, `public/` and `legal/`; a path the
-  owner opens later in Settings stays open. A build that ran without all of
-  Quartz's plugins fails and ships nothing.
+  deploys it to Cloudflare through the platform. Who can see it is the
+  platform's setting: the first deploy opens it to the team, and only a
+  person makes it public, which publishes the whole site, SOPs and `raw/`
+  included. A build that ran without all of Quartz's plugins fails and
+  ships nothing.
 - **Safe with crawled text:** `raw/` comes from sites the owner does not
   control. The viewer never serves the crawler's HTML, scripts, data or raw
   SVGs, and the `safe-text` plugin shows any HTML in markdown as text and

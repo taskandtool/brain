@@ -3,23 +3,20 @@
 raw/, with search, backlinks, a graph, and every citation a link to its
 source. Standard library only; runs from any directory.
 
-    python3 scripts/viewer.py install            # Quartz and its plugins, once
-    python3 scripts/viewer.py dev [--port N]     # serve it, rebuilt on every change
-    python3 scripts/viewer.py build              # the static site in dist/
-    python3 scripts/viewer.py deploy [--confirm] # build, keep the team's paths, publish
-    python3 scripts/viewer.py check [--all]      # links that point nowhere, citations that are not links
+    python3 scripts/viewer.py install          # Quartz and its plugins, once
+    python3 scripts/viewer.py dev [--port N]   # serve it, rebuilt on every change
+    python3 scripts/viewer.py build            # the static site in dist/
+    python3 scripts/viewer.py check [--all]    # links that point nowhere, citations that are not links
 
 `install` puts Quartz outside the app (QUARTZ_DIR, default
 ~/.local/share/company-brain/quartz-<tag>) and prints "already installed"
 when it is. `dev` is the web service's command: it installs if needed, then
 serves on $PORT (3000). `build` writes dist/, leaves out any file Cloudflare
 will not take, and ends with what `check` found; it fails, and removes dist/,
-if Quartz built without all its plugins. `deploy --confirm` builds, keeps
-/brain, /raw, /tags and search for the team the first time (a public site
-shows the home page, brand/, public/ and legal/), then publishes; without
---confirm it publishes nothing. `check` reads brain/, brand/, public/ and
-legal/ and exits 1 while anything needs fixing, naming the link to write
-instead.
+if Quartz built without all its plugins. Who can see production is the
+platform's setting, never this script's. `check` reads brain/, brand/,
+public/ and legal/ and exits 1 while anything needs fixing, naming the link
+to write instead.
 
 The viewer's look is viewer/quartz.config.yaml (colours, fonts, panels);
 its plugins are pinned in viewer/quartz.lock.json.
@@ -61,13 +58,6 @@ MAX_ASSET = 25 * 1024 * 1024      # Cloudflare's limit on one static file
 MAX_FILES = 20_000                # and on the files in one deploy
 MAX_LISTED = 15
 BRIDGE = "python3 ~/tools/taskandtool.py"
-# What a public production site keeps for the team: the brain's own notes
-# (SOPs, sources, the log), raw/, and what lists or searches them. The home
-# page, brand/, public/ and legal/ are what the business shows anyone.
-PRIVATE_PATHS = ("/brain", "/raw", "/tags", "/static/contentIndex.json")
-# Written once the bridge has kept them, so a later deploy never undoes an
-# owner who opened one in Settings. In brain/, which is backed up.
-PRIVATE_MARKER = os.path.join(ROOT, "brain", ".viewer-private-paths")
 DEV_RETRY_PAUSE = 60
 # What the viewer never serves: the crawler's data and cache, and anything a
 # browser would run as a page or script on the viewer's own address, in any
@@ -192,13 +182,21 @@ def write_if_changed(path, text):
 
 
 # Fixes to the pinned Quartz, applied at every install: (file, the text as
-# shipped, what it becomes). Quartz 5.0.0 stores a generated folder page's
-# rendered listing as its content, then renders the listing again, so every
-# folder showed its list twice.
+# shipped, what it becomes).
 QUARTZ_PATCHES = [
+    # Quartz 5.0.0 stores a generated folder page's rendered listing as its
+    # content, then renders the listing again, so every folder showed its
+    # list twice.
     ("quartz/plugins/pageTypes/dispatcher.ts",
      "      ve.tree.children = htmlAst.children\n      ve.vfile.data.htmlAst = htmlAst\n",
      "      ve.vfile.data.htmlAst = htmlAst\n"),
+    # Its dev server checks each changed note against Quartz's own .gitignore,
+    # which lists public/ (its build output), so edits under the brain's
+    # public/ never showed in dev. Checked against the content folder, as
+    # the first build already is.
+    ("quartz/build.ts",
+     "  const gitIgnoredMatcher = await isGitIgnored()\n",
+     "  const gitIgnoredMatcher = await isGitIgnored({ cwd: argv.directory })\n"),
 ]
 
 
@@ -321,13 +319,14 @@ def plugin_count():
 # ---------------------------------------------------------------- staging
 
 def home_page():
-    """The home page: the way in. Every row exists from the first start
-    (stage makes the folders), so the dev server never shows a stale one."""
+    """The home page: the way in. Every row has a page from the first start,
+    since each folder ships with a file (brain/SCHEMA.md, and a README.md in
+    brand/, public/ and raw/), so neither a fresh brain nor the dev server's
+    page written once at its start ever links to nothing."""
     title = business_name() or DEFAULT_TITLE
     return "\n".join([
         "---", f"title: {json.dumps(title)}", "---", "",
-        "- [Overview](brain/overview.md): the business on one page",
-        "- [Notes](brain/): everything the brain knows, cited",
+        "- [Notes](brain/): everything the brain knows, cited; the overview first",
         "- [Brand](brand/): look, voice, logo and photos",
         "- [Published facts](public/): details, services, hours, team and reviews",
         "- [Raw material](raw/): the site as crawled, documents and transcripts",
@@ -374,9 +373,11 @@ def prune(dist):
 PLUGIN_FAILED = re.compile(r"Failed to (install|load|instantiate) plugin|Could not determine category")
 
 
-def build(bridge=BRIDGE):
+def build():
+    """The site in dist/: (pages, files kept, files dropped, production's
+    host or None)."""
     # A build is for production: its link previews name production's address.
-    host = production_host(bridge)
+    host = production_host()
     dist = os.path.join(ROOT, "dist")
     # Held from install to the end of the build: the config and dist/ are
     # shared with the dev server's start and with any other build.
@@ -393,7 +394,7 @@ def build(bridge=BRIDGE):
                      f"{CMD} install")
     kept, dropped = prune(dist)
     pages = sum(1 for _d, _s, names in os.walk(dist) for n in names if n.endswith(".html"))
-    return pages, kept, dropped
+    return pages, kept, dropped, host
 
 
 # ---------------------------------------------------------------- check
@@ -504,9 +505,12 @@ def size_mb(n):
     return f"{n / (1024 * 1024):.0f} MiB"
 
 
-def build_report(pages, kept, dropped):
+def build_report(pages, kept, dropped, host):
     """The build's summary lines: the first is `viewer build: …`."""
     lines = [f"viewer build: {pages} pages and {kept - pages} other files in dist/"]
+    if not host:
+        lines.append("  production's address is not known here, so link previews name localhost; "
+                     f"{BRIDGE} status shows it once there is one")
     for path, size in dropped:
         lines.append(f"  left out, over Cloudflare's 25 MiB a file: {path} ({size_mb(size)})")
     if kept > MAX_FILES:
@@ -523,39 +527,24 @@ def bridge_cmd(bridge, *args):
     return words + list(args)
 
 
-def keep_private(bridge):
-    """Keep PRIVATE_PATHS for the team, the first time only: a path the
-    owner later opens in Settings stays open. Returns the lines to print."""
-    if os.path.exists(PRIVATE_MARKER):
-        return []
-    for path in PRIVATE_PATHS:
-        run(bridge_cmd(bridge, "add-private-path", path), ROOT, f"keeping {path} for the team",
-            f"{BRIDGE} status")
-    os.makedirs(os.path.dirname(PRIVATE_MARKER), exist_ok=True)
-    with open(PRIVATE_MARKER, "w") as f:
-        f.write("\n".join(PRIVATE_PATHS) + "\n")
-    return [f"  kept for the team once production is public: {', '.join(PRIVATE_PATHS)}"]
 
 
 def main(argv):
     ap = Parser(prog="viewer.py", description=__doc__,
                 formatter_class=argparse.RawDescriptionHelpFormatter)
-    sub = ap.add_subparsers(dest="cmd", required=True, metavar="{install,dev,build,deploy,check}")
+    sub = ap.add_subparsers(dest="cmd", required=True, metavar="{install,dev,build,check}")
     sub.add_parser("install", help="Quartz and its plugins, outside the app; safe to re-run")
     dv = sub.add_parser("dev", help="serve the viewer, rebuilt on every change (the web service)")
     dv.add_argument("--port", type=int, help="default: $PORT, else 3000")
     sub.add_parser("build", help="the static site in dist/, ready to deploy")
-    dp = sub.add_parser("deploy", help="build, keep the team's paths private (once), publish to production")
-    dp.add_argument("--confirm", action="store_true", help="publish; without it, build and say what would go")
-    dp.add_argument("--bridge", default=BRIDGE, help=f"the platform bridge's command (default: {BRIDGE})")
     ck = sub.add_parser("check", help="links that point nowhere and citations that are not links")
     ck.add_argument("--all", action="store_true", help="list every finding")
     try:
         args = ap.parse_args(argv)
     except Misuse as e:
-        cmd = argv[0] if argv and argv[0] in ("install", "dev", "build", "deploy", "check") else None
+        cmd = argv[0] if argv and argv[0] in ("install", "dev", "build", "check") else None
         fail("viewer" + (f" {cmd}" if cmd else ""), str(e),
-             [] if cmd else ["Commands: install, dev, build, deploy, check"],
+             [] if cmd else ["Commands: install, dev, build, check"],
              f"{CMD} {cmd + ' ' if cmd else ''}--help")
         return 2
 
@@ -606,21 +595,6 @@ def main(argv):
                 lines.append(f"\nNext: {CMD} check")
             else:
                 lines.append(f"\nNext: {BRIDGE} status (dev shows the same pages)")
-            print("\n".join(lines))
-            return 0
-
-        if args.cmd == "deploy":
-            lines = build_report(*build(args.bridge))
-            if not args.confirm:
-                lines += ["  Nothing was published.",
-                          f"  If the owner asked for it: {CMD} deploy --confirm"]
-                print("\n".join(lines))
-                return 0
-            lines += keep_private(args.bridge)
-            out = run(bridge_cmd(args.bridge, "deploy", "dist"), ROOT, "the deploy",
-                      f"{BRIDGE} status")
-            lines += ["  " + line for line in out.strip().splitlines()]
-            lines.append(f"\nNext: {BRIDGE} status")
             print("\n".join(lines))
             return 0
 

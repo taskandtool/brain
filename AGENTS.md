@@ -58,12 +58,10 @@ its source. Dev is the `web` service (`npm run dev`), every note edit there
 on refresh; "show me the brain" is its address, which
 `python3 ~/tools/taskandtool.py status` prints. After changing the viewer's
 config, `python3 ~/tools/taskandtool.py restart`. Production is `npm run
-deploy` (the `deploy` skill), never `deploy dist` by hand; before each
-deploy, run `check` and fix what it names. Production starts as the team's;
-if the owner makes it public, anyone sees the home page, `brand/`, `public/`
-and `legal/`, while `brain/`, `raw/`, tags and search stay the team's (the
-first deploy sets that). Citations in public notes then lead visitors to a
-sign-in.
+deploy` (the `deploy` skill); before each deploy, run `check` and fix what
+it names. Who can see production is the platform's setting, not this app's:
+the whole site, SOPs and `raw/` included, goes to whoever it is published
+to. Say so when the owner asks about making it public.
 
 ```bash
 python3 scripts/viewer.py check     # links that point nowhere or at a file the viewer leaves out, and bare citations with the link to write; exit 1 while any

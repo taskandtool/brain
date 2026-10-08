@@ -19,11 +19,15 @@ __pycache__/
 .DS_Store
 
 # Working knowledge is the owner's, made on their machine, never in this repo.
-# The schema is the exception: it ships, and the owner edits it in place.
-/raw/
+# The schema ships, and the owner edits it in place; each folder's README.md
+# ships so the viewer has a page for it from the first start.
+/raw/*
+!/raw/README.md
 /brain/*
 !/brain/SCHEMA.md
-/brand/
-/public/
+/brand/*
+!/brand/README.md
+/public/*
+!/public/README.md
 /legal/
 

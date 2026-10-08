@@ -56,6 +56,8 @@ def raw_files():
             if name.startswith((".", "_")):        # _sites.json, _latest.json, dotfiles
                 continue
             full = os.path.join(dirpath, name)
+            if full == os.path.join(ROOT, "raw", "README.md"):   # ships with the app, not material
+                continue
             out[os.path.relpath(full, ROOT).replace(os.sep, "/")] = sha(full)
     return out
 
