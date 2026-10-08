@@ -23,16 +23,13 @@ import json
 import os
 import sys
 
-from cli import Misuse, Parser, fail
+from cli import MAX_LISTED, ROOT, Misuse, Parser, fail
 
-# the app root: this file is <root>/scripts/brain_status.py
-ROOT = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
 CMD = "python3 scripts/brain_status.py"
 # Pictures are looked at, not distilled one file at a time (visual-identity.md
 # reads them through _index/media.json and the screenshots), and a crawl's
 # own ledger and cache (_index/, _cache/) are the crawler's, not sources.
-SKIP_DIRS = {"images", "shots", "videos", "__pycache__"}
-MAX_LISTED = 15
+SKIP_DIRS = {"images", "shots"}
 
 
 def manifest_path():
@@ -116,8 +113,8 @@ def under(path, prefixes):
 def status(prefixes=None):
     """The diff, or only the files under `prefixes` ("raw/…") when given."""
     current = raw_files()
-    # A file marked before it was skipped (a 0.1.3 screenshot) is still on
-    # disk: not removed, just no longer distill work.
+    # A file marked and later skipped (a screenshot) is still on disk: not
+    # removed, just no longer distill work.
     ingested = {p: h for p, h in load_manifest().items()
                 if p in current or not os.path.exists(os.path.join(ROOT, p))}
     if prefixes is not None:

@@ -4,7 +4,7 @@ raw/, with search, backlinks, a graph, and every citation a link to its
 source. Standard library only; runs from any directory.
 
     python3 scripts/viewer.py install          # Quartz and its plugins, once
-    python3 scripts/viewer.py dev [--port N]   # serve it, rebuilt on every change
+    python3 scripts/viewer.py dev              # serve it, rebuilt on every change
     python3 scripts/viewer.py build            # the static site in dist/
     python3 scripts/viewer.py check [--all]    # links that point nowhere, citations that are not links
 
@@ -35,10 +35,8 @@ import sys
 import time
 from urllib.parse import unquote, urlparse
 
-from cli import Misuse, Parser, fail
+from cli import MAX_LISTED, ROOT, Misuse, Parser, fail
 
-# the app root: this file is <root>/scripts/viewer.py
-ROOT = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
 CMD = "python3 scripts/viewer.py"
 VIEWER = os.path.join(ROOT, "viewer")
 QUARTZ_TAG = "v5.0.0"
@@ -56,7 +54,6 @@ NOTE_FOLDERS = ("brain", "brand", "public", "legal")
 DEFAULT_TITLE = "Company Brain"
 MAX_ASSET = 25 * 1024 * 1024      # Cloudflare's limit on one static file
 MAX_FILES = 20_000                # and on the files in one deploy
-MAX_LISTED = 15
 BRIDGE = "python3 ~/tools/taskandtool.py"
 DEV_RETRY_PAUSE = 60
 # What the viewer never serves: the crawler's data and cache, and anything a
@@ -118,10 +115,15 @@ def run(args, cwd, what, try_cmd=f"{CMD} install"):
     return r.stdout + r.stderr
 
 
+def pinned_lock():
+    """viewer/quartz.lock.json: the community plugins pinned by commit."""
+    with open(os.path.join(VIEWER, "quartz.lock.json")) as f:
+        return json.load(f)
+
+
 def lock_text():
     """Our pinned plugins plus the local safe-text plugin, as Quartz's lock."""
-    with open(os.path.join(VIEWER, "quartz.lock.json")) as f:
-        lock = json.load(f)
+    lock = pinned_lock()
     path = os.path.join(VIEWER, "safe-text")
     lock["plugins"]["safe-text"] = {"source": path, "resolved": path, "commit": "local"}
     return json.dumps(lock, indent=2) + "\n"
@@ -244,8 +246,7 @@ def plugins_missing():
     """The pinned plugins not in place, safe-text included: Quartz's plugin
     install exits 0 with some failed, and a build without safe-text would
     render raw/'s HTML."""
-    with open(os.path.join(VIEWER, "quartz.lock.json")) as f:
-        names = list(json.load(f)["plugins"])
+    names = list(pinned_lock()["plugins"])
     plugins = os.path.join(QUARTZ_DIR, ".quartz", "plugins")
     missing = [n for n in names if not os.path.isfile(os.path.join(plugins, n, "package.json"))]
     link = os.path.join(plugins, "safe-text")
@@ -312,8 +313,7 @@ def _install():
 
 
 def plugin_count():
-    with open(os.path.join(VIEWER, "quartz.lock.json")) as f:
-        return len(json.load(f)["plugins"]) + 1
+    return len(pinned_lock()["plugins"]) + 1          # safe-text is the one more
 
 
 # ---------------------------------------------------------------- staging
@@ -519,14 +519,8 @@ def build_report(pages, kept, dropped, host):
 
 
 def bridge_cmd(bridge, *args):
-    """The bridge command line, `~` expanded in each word; leading NAME=value
-    words (a test pointing it at another home) run through env."""
-    words = [os.path.expanduser(w) for w in shlex.split(bridge)]
-    if words and re.match(r"^[A-Za-z_][A-Za-z0-9_]*=", words[0]):
-        words = ["env"] + words
-    return words + list(args)
-
-
+    """The bridge command line, `~` expanded in each word."""
+    return [os.path.expanduser(w) for w in shlex.split(bridge)] + list(args)
 
 
 def main(argv):
@@ -534,8 +528,7 @@ def main(argv):
                 formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = ap.add_subparsers(dest="cmd", required=True, metavar="{install,dev,build,check}")
     sub.add_parser("install", help="Quartz and its plugins, outside the app; safe to re-run")
-    dv = sub.add_parser("dev", help="serve the viewer, rebuilt on every change (the web service)")
-    dv.add_argument("--port", type=int, help="default: $PORT, else 3000")
+    sub.add_parser("dev", help="serve the viewer on $PORT (3000), rebuilt on every change (the web service)")
     sub.add_parser("build", help="the static site in dist/, ready to deploy")
     ck = sub.add_parser("check", help="links that point nowhere and citations that are not links")
     ck.add_argument("--all", action="store_true", help="list every finding")
@@ -560,7 +553,7 @@ def main(argv):
             return 0
 
         if args.cmd == "dev":
-            port = args.port or os.environ.get("PORT") or "3000"
+            port = os.environ.get("PORT") or "3000"
             if not str(port).isdigit():
                 fail("viewer dev", f"PORT is {port!r}, not a number", [], f"PORT=3000 {CMD} dev")
                 return 2

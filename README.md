@@ -1,4 +1,4 @@
-# Brain
+# Company Brain
 
 A Task & Tool **Starter App**: the business's knowledge, raw and distilled.
 It takes in the owner's website, documents, transcripts, and facts stated in
@@ -7,8 +7,8 @@ The brain *is* the AI's working context, and the first thing a business's
 data should flow into. The viewer serves it as a website for people: search,
 backlinks, a graph, and every citation a link to the page it came from.
 
-Installed with one click on Task & Tool, or cloned into any project of your
-own (below). MIT licensed.
+Installed with one click on Task & Tool, or cloned into any repository of
+your own (below). MIT licensed.
 
 ## What is in the box
 
@@ -25,6 +25,8 @@ machine.
   brain-lint/      the periodic health pass: citation audit, contradictions, superseded claims, leakage
 scripts/brain_status.py  what in raw/ is not yet distilled, and marking what is (tests in tests/)
 scripts/viewer.py  the viewer: installs Quartz, serves dev, builds dist/ for production, checks links
+scripts/cli.py    the argument and error helper both scripts share
+tests/            the scripts' and safe-text's unit tests
 viewer/           Quartz's config and pinned plugins, and safe-text, the plugin that shows HTML in
                   crawled pages as text
 package.json      npm run dev / build / deploy, the viewer's commands (no dependencies of its own)
@@ -104,7 +106,8 @@ they are cited.
 The web service installs Quartz on its first start, outside the app
 (`~/.local/share/company-brain/`), so setup does not wait for it. It is
 pinned to a tag, with its plugins pinned in `viewer/quartz.lock.json`; the
-install fixes Quartz 5.0.0 listing a folder twice. A production build names
+install patches two Quartz 5.0.0 bugs: a folder listed twice, and edits
+under `public/` not showing in dev. A production build names
 production's address in its link previews. It needs Node 22.
 
 ## Install

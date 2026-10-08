@@ -64,9 +64,9 @@ line-wrapping into readable paragraphs; from SRT or VTT keep only the text.
 | Source | How it reaches raw/ |
 |---|---|
 | Someone else's site (competitor, supplier, directory) | `tt-crawl playbook competitor` gives the commands; into `raw/external/<host>/` |
-| The Google listing and its reviews | with the `google-places` connection granted: `GOOGLE_PLACES_API_URL=$PHOENIX_URL/api/machine/gateway/google-places/v1 GOOGLE_PLACES_API_KEY=$MACHINE_TOKEN tt-crawl places "Name, City"` (into `raw/places/`); more reviews or other review sites through the `dataforseo` or `apify` connection, as its skill says |
+| The Google listing and its reviews | the brand skill's `tt-crawl places` line, through the `google-places` connection (into `raw/places/`); more reviews or other review sites through the `dataforseo` or `apify` connection, as its skill says |
 | YouTube | through a data connection (ScrapeCreators lists a channel's videos and transcripts; DataForSEO and SearchAPI fetch one video's), never directly: YouTube blocks this machine. One file per video: `raw/transcripts/YYYY-MM-DD-youtube-<video id>.md` with its title and link |
-| Newsletters, social posts, CRM notes, Google Drive, Notion | through a connection the app holds, as its skill says; otherwise the owner pastes or exports |
+| Newsletters, social posts, CRM notes, Notion | through a connection the app holds, as its skill says; otherwise the owner pastes or exports |
 
 A connection the app lacks: `python3 ~/tools/taskandtool.py
 request-connection <slug> --why "<why>"`.

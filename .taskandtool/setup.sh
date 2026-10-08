@@ -30,7 +30,7 @@ python3 -m ttcrawl setup || echo "tt-crawl setup did not finish every step; its 
 
 # The viewer's web service. `npm run dev` installs Quartz on its first start
 # (minutes on a machine), so setup does not wait for it: the brain works in
-# chat at once, and the Development address answers once Quartz is in.
+# chat at once, and dev's address answers once Quartz is in.
 if [ -f "$HOME/tools/taskandtool.py" ]; then
   echo "== the viewer: serving dev (npm run dev on port 3000); it installs Quartz on its first start"
   python3 "$HOME/tools/taskandtool.py" serve "npm run dev" --port 3000 \

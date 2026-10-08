@@ -4,8 +4,8 @@ This file is the brain's rulebook: what kinds of notes exist, how a note is
 shaped, where things go, and how facts are cited and retired. The AI reads it
 before every ingest and lint and follows it over the skills' defaults. It is
 yours to edit — when the owner wants notes shaped differently, change it here
-and say so in `log.md`. (Seeded from the Company Brain's template; the
-template never overwrites this file.)
+and say so in `log.md`. It ships with this app; once you edit it, it is
+yours.
 
 ## Layout
 

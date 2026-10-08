@@ -193,7 +193,7 @@ class CommandTests(unittest.TestCase):
             r = self.run_it(*ok)
             self.assertEqual(r.returncode, 0, ok)
             self.assertTrue(r.stdout.strip(), ok)
-        for bad in (("frobnicate",), ("check", "--bogus"), ("build", "extra"), ("dev", "--port", "x"), ()):
+        for bad in (("frobnicate",), ("check", "--bogus"), ("build", "extra"), ("dev", "extra"), ()):
             r = self.run_it(*bad)
             self.assertEqual(r.returncode, 2, bad)
             self.assertEqual(r.stdout, "", bad)
@@ -300,16 +300,6 @@ class InstallTests(AppTest):
             self.assertFalse(os.path.exists(os.path.join(vw.QUARTZ_DIR, "half.txt")))
         self.with_quartz_dir(go)
 
-    def test_a_build_names_production_in_link_previews(self):
-        self.assertIn("baseUrl: localhost", vw.config_text())
-        self.assertIn("baseUrl: acme-brain.taskandtool.app", vw.config_text("acme-brain.taskandtool.app"))
-        saved = os.environ.get("HOME")
-        os.environ["HOME"] = self.root  # no bridge here: nothing to ask
-        try:
-            self.assertIsNone(vw.production_host())
-        finally:
-            os.environ["HOME"] = saved
-
     def test_a_missing_or_misplaced_plugin_is_caught(self):
         def go():
             plugins = os.path.join(vw.QUARTZ_DIR, ".quartz", "plugins")
@@ -358,6 +348,16 @@ class ProductionTests(AppTest):
         "can_deploy": True,
         "note": "Production is visible to your team.",
     }
+
+    def test_a_build_names_production_in_link_previews(self):
+        self.assertIn("baseUrl: localhost", vw.config_text())
+        self.assertIn("baseUrl: acme-brain.taskandtool.app", vw.config_text("acme-brain.taskandtool.app"))
+        saved = os.environ.get("HOME")
+        os.environ["HOME"] = self.root  # no bridge here: nothing to ask
+        try:
+            self.assertIsNone(vw.production_host())
+        finally:
+            os.environ["HOME"] = saved
 
     def bridge_printing(self, reply, code=0):
         """A bridge whose `status --json` prints `reply` and exits `code`."""

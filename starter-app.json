@@ -3,13 +3,11 @@
   "slug": "brain",
   "version": "0.1.0",
   "ready": {
-    "paths": [
-      "brain/SCHEMA.md"
-    ]
+    "service": "web"
   },
   "suggestions": [
     {
-      "id": "read-my-website-into-the",
+      "id": "read-my-website",
       "label": "Read my website into the brain",
       "prompt": "Read my website into the brain: ",
       "when": [
@@ -35,7 +33,7 @@
       ]
     },
     {
-      "id": "collect-the-facts-about-my",
+      "id": "collect-my-facts",
       "label": "Collect my company's facts",
       "prompt": "Collect the facts about my company from my website: services, prices, hours, team and reviews.",
       "when": [
@@ -50,7 +48,7 @@
       ]
     },
     {
-      "id": "read-the-documents-linked-from",
+      "id": "read-site-documents",
       "label": "Read the documents on my site",
       "prompt": "Read the documents my website links to, like price lists and brochures.",
       "when": [
@@ -72,9 +70,9 @@
       "prompt": "What does the brain know so far, and what's missing?"
     },
     {
-      "id": "publish-the-brain-for-my-team",
-      "label": "Put the brain online for my team",
-      "prompt": "Put the brain online for my team.",
+      "id": "deploy-the-brain",
+      "label": "Deploy the brain to production",
+      "prompt": "Deploy the brain to production.",
       "when": [
         {
           "path": "brain/overview.md",
@@ -83,7 +81,7 @@
       ]
     },
     {
-      "id": "import-my-wordpress-content",
+      "id": "import-wordpress",
       "label": "Import my WordPress site",
       "prompt": "Import my pages and posts from WordPress.",
       "when": [
@@ -100,7 +98,7 @@
       ]
     },
     {
-      "id": "note-what-i-just-told",
+      "id": "remember-this",
       "label": "Remember what I tell you",
       "prompt": "Remember this: "
     },

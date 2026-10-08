@@ -1,6 +1,6 @@
 # The brain's viewer: Quartz 5 over brain/, brand/, public/, legal/ and raw/.
 # scripts/viewer.py copies this into the Quartz install and fills in the
-# title, the local plugin's path, and what is never served (LEFT_OUT there). Yours to change: colours, fonts, which
+# title, the local plugin's path, what is never served (LEFT_OUT there) and, for a build, baseUrl. Yours to change: colours, fonts, which
 # panels show. Plugins are pinned in quartz.lock.json beside this file.
 configuration:
   pageTitle: Company Brain
