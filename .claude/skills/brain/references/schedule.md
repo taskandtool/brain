@@ -25,7 +25,7 @@ Only when the owner wants it. Ask how often the site really changes; for
 most small businesses that is a few times a year, so never a daily job. The
 crawler needs no AI, so it runs as a command job; what it changes in `raw/`
 waits for the next chat, where `brain_status.py status` finds it. Use the
-first crawl's `pages` command with `python3 -m ttcrawl` for `tt-crawl`:
+first crawl's `pages` command, with `python3 -m ttcrawl` in place of `tt-crawl`:
 
 ```bash
 python3 ~/tools/taskandtool.py schedule-job monthly-site-recrawl --when "0 4 1 * *" --team-only --command "python3 -m ttcrawl pages https://theirsite.com --images brand --styles --screenshots --screenshot-pages 5 && python3 -m ttcrawl docs"

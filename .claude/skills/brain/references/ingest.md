@@ -1,7 +1,7 @@
 # Taking material into raw/
 
 Read when a site, a document, a transcript or a new kind of source arrives.
-Where each lands is SCHEMA.md's layout. The tools (tt-crawl, its browsers,
+SCHEMA.md's layout says where each lands. The tools (tt-crawl, its browsers,
 markitdown) were installed with the app; if one is missing, re-run
 `bash ~/app/.taskandtool/setup.sh` once.
 
@@ -19,8 +19,8 @@ tt-crawl docs                  # the price lists, brochures and menus the pages 
 
 It reads up to 1,000 pages (`--max-pages`); `--resume` carries on an
 interrupted crawl. Each command prints what it read and wrote, then
-`Next:`. For other jobs print the recipe instead of guessing flags:
-`tt-crawl playbook survey` (a site past 1,000 pages).
+`Next:`. For other jobs, print the recipe instead of guessing flags, for
+example `tt-crawl playbook survey` for a site past 1,000 pages.
 `structured/business.json` is the best seed for `public/business.md`.
 
 What to do with what it reports:
@@ -36,8 +36,8 @@ What to do with what it reports:
 - **A site that refuses this machine** (a challenge page, a block on cloud
   addresses): use a web-scraping connection this app holds, as its skill
   says, or ask for one with `python3 ~/tools/taskandtool.py
-  request-connection <slug> --why "<why>"`. Never without the owner's
-  say-so: it spends their credits.
+  request-connection <slug> --why "<why>"`. Do neither without the
+  owner's say-so: it spends their credits.
 
 Tell the owner the result in plain words: pages read and found, pictures,
 reviews, facts, documents, whether it is WordPress. A re-crawl with the

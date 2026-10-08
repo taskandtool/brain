@@ -11,8 +11,8 @@ may have changed it, and it wins over this skill.
 
 ## The loop
 
-1. **Take the material into `raw/`.** A site, a document, a transcript, a
-   listing or a new kind of source: `references/ingest.md`. A fact the
+1. **Take the material into `raw/`.** For a site, a document, a
+   transcript, a listing or a new kind of source, read `references/ingest.md`. A fact the
    owner states in chat goes to raw first, as SCHEMA.md's "Cite or don't
    write" says.
 2. **See what is pending:** `python3 scripts/brain_status.py status` lists
@@ -22,8 +22,8 @@ may have changed it, and it wins over this skill.
    pages: take it by section (services, about, FAQ), a pass each. Later
    units are usually one pass.
    - **Fold, don't dump.** Add each fact where it belongs, merge what
-     sources say, dedupe by meaning. A new note only when the topic has no
-     home (grep first).
+     sources say, dedupe by meaning. Start a new note only when the topic
+     has no home (grep first).
    - **A changed file** means facts may have moved: compare, update, and
      retire what is no longer true.
    - **Brand and public facts** (look, voice, services, prices, hours,
@@ -43,8 +43,8 @@ may have changed it, and it wins over this skill.
 Then tell the owner in plain words what went in, what changed, and the
 questions only they can answer, grouped in one message.
 
-After the first distill, schedule the weekly lint; when the owner wants
-the site kept current, a re-crawl: `references/schedule.md`.
+After the first distill, schedule the weekly lint, and a re-crawl when the
+owner wants the site kept current: `references/schedule.md`.
 
 ## Answering from the brain
 
