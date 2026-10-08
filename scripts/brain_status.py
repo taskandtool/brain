@@ -71,8 +71,12 @@ def load_manifest():
 def save_manifest(data):
     path = manifest_path()
     os.makedirs(os.path.dirname(path), exist_ok=True)
-    with open(path, "w") as f:
+    # Written beside it and moved into place: a crash mid-write must never
+    # leave a manifest that reads as empty, which would make every raw file
+    # pending again.
+    with open(path + ".tmp", "w") as f:
         json.dump(dict(sorted(data.items())), f, indent=1)
+    os.replace(path + ".tmp", path)
 
 
 def unit_of(path):

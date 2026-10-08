@@ -5,6 +5,6 @@
   "scripts": {
     "dev": "python3 scripts/viewer.py dev",
     "build": "python3 scripts/viewer.py build",
-    "deploy": "python3 ~/tools/taskandtool.py add-private-path /raw && python3 ~/tools/taskandtool.py add-private-path /brain/sops && python3 ~/tools/taskandtool.py add-private-path /static/contentIndex.json && python3 scripts/viewer.py build && python3 ~/tools/taskandtool.py deploy dist"
+    "deploy": "python3 scripts/viewer.py deploy --confirm --bridge 'python3 ~/tools/taskandtool.py'"
   }
 }

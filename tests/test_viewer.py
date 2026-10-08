@@ -82,6 +82,25 @@ class CheckTests(AppTest):
         self.assertTrue(vw.left_out("raw/site/x/_cache/page.html"))
         self.assertFalse(vw.left_out("brand/logo.svg"))
 
+    def test_left_out_ignores_letter_case_and_covers_every_runnable_type(self):
+        for path in ("raw/external/x.com/logo.SVG", "raw/a/p.HTML", "raw/a/q.shtml", "raw/a/r.xht",
+                     "raw/a/s.svgz", "brand/x.Js", "public/y.XSL", "raw/a/z.mhtml"):
+            self.assertTrue(vw.left_out(path), path)
+        for path in ("brand/logo.SVG", "raw/site/a.com/images/photo.JPG", "brain/a.md"):
+            self.assertFalse(vw.left_out(path), path)
+        # The Quartz globs say the same: one any-case pattern per type.
+        self.assertEqual(vw.any_case("svg"), "[sS][vV][gG]")
+        for ext in vw.NEVER_SERVED:
+            self.assertIn(f"**/*.{vw.any_case(ext)}", vw.LEFT_OUT)
+        for ext in vw.NEVER_SERVED_FROM_RAW:
+            self.assertIn(f"raw/**/*.{vw.any_case(ext)}", vw.LEFT_OUT)
+
+    def test_a_link_outside_the_viewers_folders_is_named(self):
+        self.write("README.md", "x")
+        note = self.write("brain/a.md", "[readme](../README.md)\n")
+        [(_, what, _)] = vw.check_file(note)
+        self.assertIn("is outside what the viewer shows", what)
+
     def test_check_covers_the_note_folders_not_raw(self):
         self.write("brain/a.md", "[x](nope.md)\n")
         self.write("raw/site/acme.com/pages/a.md", "[x](nope.md) raw/elsewhere.md\n")
@@ -263,6 +282,69 @@ class InstallTests(AppTest):
             self.assertIsNone(vw.production_host())
         finally:
             os.environ["HOME"] = saved
+
+    def test_a_missing_or_misplaced_plugin_is_caught(self):
+        def go():
+            plugins = os.path.join(vw.QUARTZ_DIR, ".quartz", "plugins")
+            with open(os.path.join(vw.VIEWER, "quartz.lock.json")) as f:
+                names = list(json.load(f)["plugins"])
+            for name in names:
+                self.write(os.path.join("share/quartz/.quartz/plugins", name, "package.json"), "{}")
+            # safe-text not linked yet
+            self.assertEqual(vw.plugins_missing(), ["safe-text"])
+            os.symlink(os.path.join(vw.VIEWER, "safe-text"), os.path.join(plugins, "safe-text"))
+            self.assertEqual(vw.plugins_missing(), [])
+            os.unlink(os.path.join(plugins, names[0], "package.json"))
+            self.assertEqual(vw.plugins_missing(), [names[0]])
+        self.with_quartz_dir(go)
+
+    def test_a_build_without_its_plugins_fails_and_ships_nothing(self):
+        saved = (vw._install, vw.stage, vw.run, vw.production_host, vw.QUARTZ_DIR)
+        vw.QUARTZ_DIR = os.path.join(self.root, "share", "quartz")
+        vw._install = lambda: False
+        vw.stage = lambda content, base_url=None: None
+        vw.production_host = lambda bridge=None: None
+
+        def quartz_build(args, cwd, what, try_cmd=None):
+            self.write("dist/index.html", "<p>built</p>")
+            return "Parsing input files\nFailed to load plugin safe-text: Cannot find module\n"
+        vw.run = quartz_build
+        try:
+            with self.assertRaises(vw.Failed) as e:
+                vw.build()
+        finally:
+            vw._install, vw.stage, vw.run, vw.production_host, vw.QUARTZ_DIR = saved
+        self.assertIn("without all its plugins", str(e.exception))
+        self.assertFalse(os.path.exists(os.path.join(self.root, "dist")))
+
+
+class DeployTests(AppTest):
+    def fake_bridge(self):
+        """A bridge that records each call it gets."""
+        log = os.path.join(self.root, "bridge.log")
+        script = self.write("bridge.py", "import sys\nopen(%r, 'a').write(' '.join(sys.argv[1:]) + '\\n')\n" % log)
+        return f"{sys.executable} {script}", log
+
+    def test_the_teams_paths_are_kept_once_and_never_again(self):
+        bridge, log = self.fake_bridge()
+        saved = vw.PRIVATE_MARKER
+        vw.PRIVATE_MARKER = os.path.join(self.root, "brain", ".viewer-private-paths")
+        try:
+            first = vw.keep_private(bridge)
+            again = vw.keep_private(bridge)
+        finally:
+            vw.PRIVATE_MARKER = saved
+        with open(log) as f:
+            calls = f.read().splitlines()
+        self.assertEqual(calls, [f"add-private-path {p}" for p in vw.PRIVATE_PATHS])
+        self.assertIn("/brain", first[0])
+        self.assertEqual(again, [])
+
+    def test_a_public_site_shows_only_what_the_business_publishes(self):
+        for path in ("/brain", "/raw", "/tags", "/static/contentIndex.json"):
+            self.assertIn(path, vw.PRIVATE_PATHS)
+        for folder in ("brand", "public", "legal"):
+            self.assertFalse(any(("/" + folder).startswith(p) for p in vw.PRIVATE_PATHS), folder)
 
 
 if __name__ == "__main__":

@@ -76,6 +76,12 @@ class FilesystemTests(unittest.TestCase):
         bst.save_manifest({self.PAGE: bst.sha(self.PAGE), "raw/site/acme.com/images/x.png": "old", "raw/site/acme.com/gone.md": "old"})
         self.assertEqual(bst.status()["removed"], ["raw/site/acme.com/gone.md"])
 
+    def test_the_manifest_is_moved_into_place_whole(self):
+        bst.mark()
+        self.assertFalse(os.path.exists(bst.manifest_path() + ".tmp"))
+        with open(bst.manifest_path()) as f:
+            self.assertIn(self.PAGE, json.load(f))
+
     def test_status_then_mark_then_change(self):
         self.assertEqual(bst.status()["new"], [self.PAGE])
         self.assertEqual(bst.mark(), (1, 0, 0))

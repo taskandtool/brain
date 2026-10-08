@@ -28,8 +28,8 @@ scripts/viewer.py  the viewer: installs Quartz, serves dev, builds dist/ for pro
 viewer/           Quartz's config and pinned plugins, and safe-text, the plugin that shows HTML in
                   crawled pages as text
 package.json      npm run dev / build / deploy, the viewer's commands (no dependencies of its own)
-.taskandtool/setup.sh  installs tt-crawl's latest (github.com/taskandtool/crawler), the browsers it
-                  drives, and the viewer, then registers the `web` service
+.taskandtool/setup.sh  installs tt-crawl's latest (github.com/taskandtool/crawler) and the browsers
+                  it drives, then registers the `web` service, which installs Quartz on its first start
 brain/SCHEMA.md   the note rulebook, shipped here and edited in place by the owner
 AGENTS.md         what the AI reads first; CLAUDE.md imports it
 starter-app.json  the manifest Task & Tool reads: what the app needs, what "ready" means, and the
@@ -90,9 +90,11 @@ they are cited.
   on refresh at the app's team address.
 - **Production:** `npm run deploy` builds a static site into `dist/` and
   deploys it to Cloudflare through the platform. The first deploy opens it
-  to the team; only a person makes it public. Each deploy keeps `/raw`,
-  `/brain/sops` and the search index private to the team, so a public site
-  shows the notes, brand and published facts.
+  to the team; only a person makes it public. The first deploy keeps
+  `/brain`, `/raw`, tags and the search index for the team, so a public
+  site shows the home page, `brand/`, `public/` and `legal/`; a path the
+  owner opens later in Settings stays open. A build that ran without all of
+  Quartz's plugins fails and ships nothing.
 - **Safe with crawled text:** `raw/` comes from sites the owner does not
   control. The viewer never serves the crawler's HTML, scripts, data or raw
   SVGs, and the `safe-text` plugin shows any HTML in markdown as text and
@@ -123,10 +125,10 @@ cd my-brain
 bash .taskandtool/setup.sh
 ```
 
-`.taskandtool/setup.sh` installs the crawler (tt-crawl) with pip, the two
-browsers it drives, Chrome and Obscura, and Quartz for the viewer. Then open
-Claude Code in that directory and ask it to build the brain from your
-website; `npm run dev` serves the viewer on port 3000.
+`.taskandtool/setup.sh` installs the crawler (tt-crawl) with pip and the two
+browsers it drives, Chrome and Obscura. Then open Claude Code in that
+directory and ask it to build the brain from your website; `npm run dev`
+installs Quartz the first time and serves the viewer on port 3000.
 
 ## Third-party tools it installs
 

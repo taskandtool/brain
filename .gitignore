@@ -10,6 +10,9 @@
 
 # Tool noise
 /dist/
+# Quartz runs npm install in the linked plugin folder on each new machine.
+/viewer/safe-text/package-lock.json
+/viewer/safe-text/node_modules/
 __pycache__/
 *.pyc
 .pytest_cache/

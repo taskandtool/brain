@@ -3,33 +3,39 @@
 raw/, with search, backlinks, a graph, and every citation a link to its
 source. Standard library only; runs from any directory.
 
-    python3 scripts/viewer.py install          # Quartz and its plugins, once
-    python3 scripts/viewer.py dev [--port N]   # serve it, rebuilt on every change
-    python3 scripts/viewer.py build            # the static site in dist/
-    python3 scripts/viewer.py check [--all]    # links that point nowhere, citations that are not links
+    python3 scripts/viewer.py install            # Quartz and its plugins, once
+    python3 scripts/viewer.py dev [--port N]     # serve it, rebuilt on every change
+    python3 scripts/viewer.py build              # the static site in dist/
+    python3 scripts/viewer.py deploy [--confirm] # build, keep the team's paths, publish
+    python3 scripts/viewer.py check [--all]      # links that point nowhere, citations that are not links
 
 `install` puts Quartz outside the app (QUARTZ_DIR, default
 ~/.local/share/company-brain/quartz-<tag>) and prints "already installed"
 when it is. `dev` is the web service's command: it installs if needed, then
 serves on $PORT (3000). `build` writes dist/, leaves out any file Cloudflare
-will not take, and ends with what `check` found. `check` reads brain/,
-brand/, public/ and legal/ and exits 1 while anything needs fixing, naming
-the link to write instead.
+will not take, and ends with what `check` found; it fails, and removes dist/,
+if Quartz built without all its plugins. `deploy --confirm` builds, keeps
+/brain, /raw, /tags and search for the team the first time (a public site
+shows the home page, brand/, public/ and legal/), then publishes; without
+--confirm it publishes nothing. `check` reads brain/, brand/, public/ and
+legal/ and exits 1 while anything needs fixing, naming the link to write
+instead.
 
 The viewer's look is viewer/quartz.config.yaml (colours, fonts, panels);
 its plugins are pinned in viewer/quartz.lock.json.
 """
 import argparse
 import fcntl
-import fnmatch
 import hashlib
 import json
 import os
 import re
+import shlex
 import shutil
 import socket
 import subprocess
 import sys
+import time
 from urllib.parse import unquote, urlparse
 
 from cli import Misuse, Parser, fail
@@ -54,12 +60,32 @@ DEFAULT_TITLE = "Company Brain"
 MAX_ASSET = 25 * 1024 * 1024      # Cloudflare's limit on one static file
 MAX_FILES = 20_000                # and on the files in one deploy
 MAX_LISTED = 15
-# What the viewer never serves, as Quartz globs (its config's ignorePatterns):
-# the crawler's data and cache, and anything a browser would run as a page
-# or script on the viewer's own address. Raw SVGs too, since one opened
-# directly runs its script; brand/ keeps the owner's logos.
-LEFT_OUT = ["**/*.json", "**/*.jsonl", "**/_cache/**", "**/*.html", "**/*.htm",
-            "**/*.xhtml", "**/*.xml", "**/*.js", "**/*.mjs", "raw/**/*.svg"]
+BRIDGE = "python3 ~/tools/taskandtool.py"
+# What a public production site keeps for the team: the brain's own notes
+# (SOPs, sources, the log), raw/, and what lists or searches them. The home
+# page, brand/, public/ and legal/ are what the business shows anyone.
+PRIVATE_PATHS = ("/brain", "/raw", "/tags", "/static/contentIndex.json")
+# Written once the bridge has kept them, so a later deploy never undoes an
+# owner who opened one in Settings. In brain/, which is backed up.
+PRIVATE_MARKER = os.path.join(ROOT, "brain", ".viewer-private-paths")
+DEV_RETRY_PAUSE = 60
+# What the viewer never serves: the crawler's data and cache, and anything a
+# browser would run as a page or script on the viewer's own address, in any
+# letter case. SVGs from raw/ too, since one opened directly runs its script;
+# brand/ keeps the owner's logos.
+NEVER_SERVED = ("json", "jsonl", "html", "htm", "shtml", "xhtml", "xht", "xml", "xsl",
+                "xslt", "js", "mjs", "cjs", "mht", "mhtml")
+NEVER_SERVED_FROM_RAW = ("svg", "svgz")
+
+
+def any_case(ext):
+    """`svg` as a glob that matches it in any letter case: [sS][vV][gG]."""
+    return "".join(f"[{c.lower()}{c.upper()}]" if c.isalpha() else c for c in ext)
+
+
+# The same list as Quartz globs, its config's ignorePatterns.
+LEFT_OUT = (["**/_cache/**"] + [f"**/*.{any_case(e)}" for e in NEVER_SERVED]
+            + [f"raw/**/*.{any_case(e)}" for e in NEVER_SERVED_FROM_RAW])
 
 
 class Failed(Exception):
@@ -84,19 +110,22 @@ def node_major():
         return None
 
 
+# Quartz and its plugins depend on two packages fetched from GitHub at pinned
+# commits, which npm 12 refuses unless allowed.
+NPM_ENV = {"npm_config_allow_git": "all"}
+
+
 def run(args, cwd, what, try_cmd=f"{CMD} install"):
     """Run a command quietly; on failure raise with the end of its output.
-    Quartz and its plugins depend on two packages fetched from GitHub at
-    pinned commits, which npm 12 refuses unless allowed."""
-    env = {**os.environ, "npm_config_allow_git": "all"}
+    Returns stdout and stderr together."""
     try:
-        r = subprocess.run(args, cwd=cwd, capture_output=True, text=True, env=env)
+        r = subprocess.run(args, cwd=cwd, capture_output=True, text=True, env={**os.environ, **NPM_ENV})
     except FileNotFoundError:
         raise Failed(f"{what} failed: {args[0]} is not installed", [], try_cmd)
     if r.returncode != 0:
         tail = (r.stdout + r.stderr).strip().splitlines()[-12:]
         raise Failed(f"{what} failed", tail, try_cmd)
-    return r.stdout
+    return r.stdout + r.stderr
 
 
 def lock_text():
@@ -121,17 +150,14 @@ def business_name():
     return name if name and name != "to fill" else None
 
 
-def production_host():
+def production_host(bridge=BRIDGE):
     """Production's host name from the bridge, or None off the platform or
     before there is one: link previews need it as an absolute address."""
-    bridge = os.path.expanduser("~/tools/taskandtool.py")
-    if not os.path.isfile(bridge):
-        return None
     try:
-        r = subprocess.run([sys.executable, bridge, "status", "--json"],
+        r = subprocess.run(bridge_cmd(bridge, "status", "--json"),
                            capture_output=True, text=True, timeout=30)
         url = json.loads(r.stdout or "{}").get("production_url") or ""
-    except (OSError, ValueError, subprocess.TimeoutExpired):
+    except (OSError, ValueError, AttributeError, subprocess.TimeoutExpired):
         return None
     return urlparse(url).hostname or None
 
@@ -186,18 +212,48 @@ def patch_quartz():
                 f.write(text.replace(shipped, fixed, 1))
         elif fixed not in text:
             raise Failed(f"Quartz {QUARTZ_TAG} is not the code the viewer patches: {name}", [],
-                         f"rm -rf {QUARTZ_DIR} && {CMD} install")
+                         f"move {QUARTZ_DIR} aside, then {CMD} install")
+
+
+class quartz_lock:
+    """Quartz's folder for one command at a time: an install, a dev start's
+    staging, a build. Whoever waits says so, then waits. The lock goes with
+    the process, so a crash or a sleep that kills it never leaves it held."""
+
+    def __enter__(self):
+        os.makedirs(os.path.dirname(QUARTZ_DIR), exist_ok=True)
+        self.file = open(QUARTZ_DIR + ".lock", "w")
+        try:
+            fcntl.flock(self.file, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except BlockingIOError:
+            print("viewer: waiting for another viewer command (the web service's first "
+                  "install takes minutes)", flush=True)
+            fcntl.flock(self.file, fcntl.LOCK_EX)
+        return self
+
+    def __exit__(self, *_):
+        self.file.close()
 
 
 def install():
     """Quartz at QUARTZ_TAG, its npm packages and the pinned plugins.
-    Returns True when something was installed, False when all was there.
-    One install at a time: the web service installs on its first start, and
-    a build run meanwhile waits for it rather than writing the same folder."""
-    os.makedirs(os.path.dirname(QUARTZ_DIR), exist_ok=True)
-    with open(QUARTZ_DIR + ".lock", "w") as lock:
-        fcntl.flock(lock, fcntl.LOCK_EX)
+    Returns True when something was installed, False when all was there."""
+    with quartz_lock():
         return _install()
+
+
+def plugins_missing():
+    """The pinned plugins not in place, safe-text included: Quartz's plugin
+    install exits 0 with some failed, and a build without safe-text would
+    render raw/'s HTML."""
+    with open(os.path.join(VIEWER, "quartz.lock.json")) as f:
+        names = list(json.load(f)["plugins"])
+    plugins = os.path.join(QUARTZ_DIR, ".quartz", "plugins")
+    missing = [n for n in names if not os.path.isfile(os.path.join(plugins, n, "package.json"))]
+    link = os.path.join(plugins, "safe-text")
+    if os.path.realpath(link) != os.path.realpath(os.path.join(VIEWER, "safe-text")):
+        missing.append("safe-text")
+    return missing
 
 
 def _install():
@@ -245,8 +301,12 @@ def _install():
     if os.path.islink(link) and os.path.realpath(link) != os.path.realpath(os.path.join(VIEWER, "safe-text")):
         os.unlink(link)
         have = None
-    if have != want:
+    if have != want or plugins_missing():
         run(["npx", "quartz", "plugin", "install"], QUARTZ_DIR, "installing Quartz's plugins")
+        missing = plugins_missing()
+        if missing:
+            raise Failed(f"Quartz's plugin install left out {', '.join(missing)}", [],
+                         f"{CMD} install")
         with open(stamp, "w") as f:
             f.write(want + "\n")
         did = True
@@ -310,13 +370,27 @@ def prune(dist):
     return kept, sorted(dropped)
 
 
-def build():
-    install()
+# Quartz goes on building when a plugin fails to load, and says so only here.
+PLUGIN_FAILED = re.compile(r"Failed to (install|load|instantiate) plugin|Could not determine category")
+
+
+def build(bridge=BRIDGE):
     # A build is for production: its link previews name production's address.
-    stage(BUILD_CONTENT, production_host())
+    host = production_host(bridge)
     dist = os.path.join(ROOT, "dist")
-    run(["npx", "quartz", "build", "-d", BUILD_CONTENT, "-o", dist], QUARTZ_DIR, "the Quartz build",
-        f"{CMD} check, then fix the note the build output names")
+    # Held from install to the end of the build: the config and dist/ are
+    # shared with the dev server's start and with any other build.
+    with quartz_lock():
+        _install()
+        stage(BUILD_CONTENT, host)
+        out = run(["npx", "quartz", "build", "-d", BUILD_CONTENT, "-o", dist], QUARTZ_DIR,
+                  "the Quartz build", f"{CMD} check, then fix the note the build output names")
+    failed = [line.strip() for line in out.splitlines() if PLUGIN_FAILED.search(line)]
+    if failed:
+        # Without its plugins (safe-text above all) the site must not ship.
+        shutil.rmtree(dist, ignore_errors=True)
+        raise Failed("the Quartz build ran without all its plugins; dist/ removed", failed[:5],
+                     f"{CMD} install")
     kept, dropped = prune(dist)
     pages = sum(1 for _d, _s, names in os.walk(dist) for n in names if n.endswith(".html"))
     return pages, kept, dropped
@@ -365,6 +439,8 @@ def check_file(path):
             dest = os.path.normpath(os.path.join(here, unquote(re.split(r"[#?]", target)[0])))
             if not dest.startswith(ROOT + os.sep) or not os.path.exists(dest):
                 out.append((n, f"{target} points nowhere", None))
+            elif rel(dest).split("/")[0] not in FOLDERS:
+                out.append((n, f"{target} is outside what the viewer shows ({', '.join(FOLDERS)})", None))
             elif left_out(rel(dest)):
                 out.append((n, f"{target} is a file the viewer leaves out", None))
         for m in BARE.finditer(LINK.sub("", line)):
@@ -376,9 +452,12 @@ def check_file(path):
 
 
 def left_out(path):
-    """Whether an app-relative path matches LEFT_OUT."""
-    return any(fnmatch.fnmatch(path, g.replace("**/", "*/").replace("/**", "/*"))
-               for g in LEFT_OUT)
+    """Whether the viewer leaves out an app-relative path: the same rule as
+    LEFT_OUT, by lowercased extension."""
+    parts = path.split("/")
+    ext = os.path.splitext(parts[-1])[1].lower().lstrip(".")
+    return ("_cache" in parts[:-1] or ext in NEVER_SERVED
+            or (parts[0] == "raw" and ext in NEVER_SERVED_FROM_RAW))
 
 
 def check():
@@ -425,22 +504,58 @@ def size_mb(n):
     return f"{n / (1024 * 1024):.0f} MiB"
 
 
+def build_report(pages, kept, dropped):
+    """The build's summary lines: the first is `viewer build: …`."""
+    lines = [f"viewer build: {pages} pages and {kept - pages} other files in dist/"]
+    for path, size in dropped:
+        lines.append(f"  left out, over Cloudflare's 25 MiB a file: {path} ({size_mb(size)})")
+    if kept > MAX_FILES:
+        lines.append(f"  {kept} files: Cloudflare may refuse a deploy of more than {MAX_FILES:,}")
+    return lines
+
+
+def bridge_cmd(bridge, *args):
+    """The bridge command line, `~` expanded in each word; leading NAME=value
+    words (a test pointing it at another home) run through env."""
+    words = [os.path.expanduser(w) for w in shlex.split(bridge)]
+    if words and re.match(r"^[A-Za-z_][A-Za-z0-9_]*=", words[0]):
+        words = ["env"] + words
+    return words + list(args)
+
+
+def keep_private(bridge):
+    """Keep PRIVATE_PATHS for the team, the first time only: a path the
+    owner later opens in Settings stays open. Returns the lines to print."""
+    if os.path.exists(PRIVATE_MARKER):
+        return []
+    for path in PRIVATE_PATHS:
+        run(bridge_cmd(bridge, "add-private-path", path), ROOT, f"keeping {path} for the team",
+            f"{BRIDGE} status")
+    os.makedirs(os.path.dirname(PRIVATE_MARKER), exist_ok=True)
+    with open(PRIVATE_MARKER, "w") as f:
+        f.write("\n".join(PRIVATE_PATHS) + "\n")
+    return [f"  kept for the team once production is public: {', '.join(PRIVATE_PATHS)}"]
+
+
 def main(argv):
     ap = Parser(prog="viewer.py", description=__doc__,
                 formatter_class=argparse.RawDescriptionHelpFormatter)
-    sub = ap.add_subparsers(dest="cmd", required=True, metavar="{install,dev,build,check}")
+    sub = ap.add_subparsers(dest="cmd", required=True, metavar="{install,dev,build,deploy,check}")
     sub.add_parser("install", help="Quartz and its plugins, outside the app; safe to re-run")
     dv = sub.add_parser("dev", help="serve the viewer, rebuilt on every change (the web service)")
     dv.add_argument("--port", type=int, help="default: $PORT, else 3000")
     sub.add_parser("build", help="the static site in dist/, ready to deploy")
+    dp = sub.add_parser("deploy", help="build, keep the team's paths private (once), publish to production")
+    dp.add_argument("--confirm", action="store_true", help="publish; without it, build and say what would go")
+    dp.add_argument("--bridge", default=BRIDGE, help=f"the platform bridge's command (default: {BRIDGE})")
     ck = sub.add_parser("check", help="links that point nowhere and citations that are not links")
     ck.add_argument("--all", action="store_true", help="list every finding")
     try:
         args = ap.parse_args(argv)
     except Misuse as e:
-        cmd = argv[0] if argv and argv[0] in ("install", "dev", "build", "check") else None
+        cmd = argv[0] if argv and argv[0] in ("install", "dev", "build", "deploy", "check") else None
         fail("viewer" + (f" {cmd}" if cmd else ""), str(e),
-             [] if cmd else ["Commands: install, dev, build, check"],
+             [] if cmd else ["Commands: install, dev, build, deploy, check"],
              f"{CMD} {cmd + ' ' if cmd else ''}--help")
         return 2
 
@@ -462,11 +577,21 @@ def main(argv):
                 return 2
             if not os.path.isdir(os.path.join(QUARTZ_DIR, ".quartz")):
                 print(f"viewer dev: installing Quartz {QUARTZ_TAG} first; minutes on a machine", flush=True)
-            install()
-            stage(DEV_CONTENT)
+            try:
+                # Released before the exec: the dev server must not hold it.
+                with quartz_lock():
+                    _install()
+                    stage(DEV_CONTENT)
+            except Failed as e:
+                # The service manager restarts this at once; a pause keeps a
+                # failing install (GitHub or npm unreachable) from looping.
+                fail("viewer dev", str(e), e.lines, e.try_cmd)
+                time.sleep(DEV_RETRY_PAUSE)
+                return 1
             print(f"viewer dev: serving brain/, brand/, public/, legal/ and raw/ on port {port}, "
                   "rebuilt on every change", flush=True)
             os.chdir(QUARTZ_DIR)
+            os.environ.update(NPM_ENV)
             try:
                 os.execvp("npx", ["npx", "quartz", "build", "--serve", "--port", str(port),
                                   "--wsPort", str(free_port()), "-d", DEV_CONTENT])
@@ -474,18 +599,28 @@ def main(argv):
                 raise Failed("npx is not installed", [], "node --version")
 
         if args.cmd == "build":
-            pages, kept, dropped = build()
-            lines = [f"viewer build: {pages} pages and {kept - pages} other files in dist/"]
-            for path, size in dropped:
-                lines.append(f"  left out, over Cloudflare's 25 MiB a file: {path} ({size_mb(size)})")
-            if kept > MAX_FILES:
-                lines.append(f"  {kept} files: Cloudflare may refuse a deploy of more than {MAX_FILES:,}")
+            lines = build_report(*build())
             findings = check()
             if findings:
                 lines.append("  " + check_report(findings)[0])
                 lines.append(f"\nNext: {CMD} check")
             else:
-                lines.append("\nNext: python3 ~/tools/taskandtool.py status (dev shows the same pages)")
+                lines.append(f"\nNext: {BRIDGE} status (dev shows the same pages)")
+            print("\n".join(lines))
+            return 0
+
+        if args.cmd == "deploy":
+            lines = build_report(*build(args.bridge))
+            if not args.confirm:
+                lines += ["  Nothing was published.",
+                          f"  If the owner asked for it: {CMD} deploy --confirm"]
+                print("\n".join(lines))
+                return 0
+            lines += keep_private(args.bridge)
+            out = run(bridge_cmd(args.bridge, "deploy", "dist"), ROOT, "the deploy",
+                      f"{BRIDGE} status")
+            lines += ["  " + line for line in out.strip().splitlines()]
+            lines.append(f"\nNext: {BRIDGE} status")
             print("\n".join(lines))
             return 0
 
