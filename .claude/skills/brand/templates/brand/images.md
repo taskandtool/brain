@@ -6,8 +6,6 @@ status: current
 sources: []
 ---
 
-# Images
-
 The business's best real photographs, copied into `images/` (a website's
 are in `static/images/`), each shown in its row (`![what it shows](images/<file>)`,
 relative to this note), looked at once and described here, so later

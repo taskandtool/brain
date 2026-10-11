@@ -325,8 +325,8 @@ def plugin_count():
 
 def home_page():
     """The home page: the way in. Every row has a page from the first start,
-    since each folder ships with a file (brain/SCHEMA.md, and a README.md in
-    brand/, public/ and raw/), so neither a fresh brain nor the dev server's
+    since each folder ships with a file (brain/SCHEMA.md, and an _index.md in
+    brand/, public/ and raw/, each the folder's page), so neither a fresh brain nor the dev server's
     page written once at its start ever links to nothing."""
     title = business_name() or DEFAULT_TITLE
     return "\n".join([

@@ -6,8 +6,6 @@ status: current
 sources: []
 ---
 
-# Voice
-
 How this business sounds, stated so that anyone (the AI included) can write
 in it and be checked against it. Every writing task reads it first: web
 pages, ads, posts, emails. Fill it from the owner's own words: what they

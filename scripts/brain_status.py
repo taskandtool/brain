@@ -50,11 +50,9 @@ def raw_files():
     for dirpath, dirnames, filenames in os.walk(os.path.join(ROOT, "raw")):
         dirnames[:] = [d for d in dirnames if d not in SKIP_DIRS and not d.startswith((".", "_"))]
         for name in filenames:
-            if name.startswith((".", "_")):        # _sites.json, _latest.json, dotfiles
+            if name.startswith((".", "_")):        # _sites.json, _latest.json, _index.md, dotfiles
                 continue
             full = os.path.join(dirpath, name)
-            if full == os.path.join(ROOT, "raw", "README.md"):   # ships with the app, not material
-                continue
             out[os.path.relpath(full, ROOT).replace(os.sep, "/")] = sha(full)
     return out
 

@@ -61,7 +61,7 @@ class FilesystemTests(unittest.TestCase):
         for path, body in ((self.PAGE, "hello"), ("raw/site/acme.com/images/x.png", "png"),
                            ("raw/site/acme.com/shots/index/01.png", "png"), ("raw/site/acme.com/_index/inventory.md", "t"),
                            ("raw/site/acme.com/_cache/pages/index.json", "{}"), ("raw/site/_sites.json", "{}"),
-                           ("raw/README.md", "the page the app ships for raw/")):
+                           ("raw/_index.md", "the page the app ships for raw/")):
             with open(path, "w") as f:
                 f.write(body)
 

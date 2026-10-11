@@ -1,4 +1,6 @@
-# Brain schema
+---
+title: Brain schema
+---
 
 This file is the brain's rulebook: what kinds of notes exist, how a note is
 shaped, where things go, and how facts are cited and retired. The AI reads it
@@ -26,7 +28,7 @@ legal/                    terms and privacy, verbatim
 brain/
   SCHEMA.md                 this file
   overview.md               the business on one page: what it is, for whom, how it works
-  index.md                  every note, one line each, grouped by folder
+  index.md                  titled Notes, the folder's page: every note, one line each, grouped by folder
   log.md                    append-only: each distill pass and lint, what changed, open questions
   sources/                  one page per ingested source unit (see below)
   sops/                     internal how-we-work; never in public/

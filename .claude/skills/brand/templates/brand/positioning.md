@@ -6,8 +6,6 @@ status: current
 sources: []
 ---
 
-# Positioning
-
 What the business does, for whom, and what makes it different, in its own
 words. Lines marked *to fill* are placeholders, not decisions.
 
