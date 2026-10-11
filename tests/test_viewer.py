@@ -307,9 +307,10 @@ class InstallTests(AppTest):
                 names = list(json.load(f)["plugins"])
             for name in names:
                 self.write(os.path.join("share/quartz/.quartz/plugins", name, "package.json"), "{}")
-            # safe-text not linked yet
-            self.assertEqual(vw.plugins_missing(), ["safe-text"])
-            os.symlink(os.path.join(vw.VIEWER, "safe-text"), os.path.join(plugins, "safe-text"))
+            # the local plugins not linked yet
+            self.assertEqual(vw.plugins_missing(), list(vw.LOCAL_PLUGINS))
+            for name in vw.LOCAL_PLUGINS:
+                os.symlink(os.path.join(vw.VIEWER, name), os.path.join(plugins, name))
             self.assertEqual(vw.plugins_missing(), [])
             os.unlink(os.path.join(plugins, names[0], "package.json"))
             self.assertEqual(vw.plugins_missing(), [names[0]])

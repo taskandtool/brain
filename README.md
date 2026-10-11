@@ -26,9 +26,9 @@ machine.
 scripts/brain_status.py  what in raw/ is not yet distilled, and marking what is (tests in tests/)
 scripts/viewer.py  the viewer: installs Quartz, serves dev, builds dist/ for production, checks links
 scripts/cli.py    the argument and error helper both scripts share
-tests/            the scripts' and safe-text's unit tests
-viewer/           Quartz's config and pinned plugins, and safe-text, the plugin that shows HTML in
-                  crawled pages as text
+tests/            the scripts' and the viewer plugins' unit tests
+viewer/           Quartz's config and pinned plugins, and two of its own: safe-text, which shows
+                  HTML in crawled pages as text, and swatches, which shows a hex colour's colour
 package.json      npm run dev / build / deploy, the viewer's commands (no dependencies of its own)
 .taskandtool/setup.sh  installs tt-crawl's latest (github.com/taskandtool/crawler) and the browsers
                   it drives, then registers the `web` service, which installs Quartz on its first start
@@ -100,6 +100,9 @@ they are cited.
   control. The viewer never serves the crawler's HTML, scripts, data or raw
   SVGs, and the `safe-text` plugin shows any HTML in markdown as text and
   drops links with a script scheme.
+- **Colours shown:** a hex colour written as code, `` `#4e3223` ``, shows
+  its colour beside it (the `swatches` plugin), so the brand's colours can
+  be checked by eye.
 - **Checked:** `python3 scripts/viewer.py check` lists links that point
   nowhere and citations written as bare paths, each with the link to write.
 
@@ -164,7 +167,7 @@ Removing the app leaves the files. They are the owner's.
 
 - **Unit tests, no dependencies:**
   `python3 tests/test_brain_status.py`, `python3 tests/test_viewer.py` and
-  `node --test tests/safe_text.test.mjs`.
+  `node --test tests/safe_text.test.mjs tests/swatches.test.mjs`.
   The crawler's own tests live in its repo (github.com/taskandtool/crawler).
 - **Try the skills:** clone it as above and drive Claude Code in the clone.
 - **On the platform:** Task & Tool's own repo keeps a working clone under

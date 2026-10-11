@@ -72,9 +72,10 @@ Rules:
 - **Cite or don't write.** Every fact traces to a `raw/` path. A fact with no
   raw file is not knowledge yet: if the owner said it in chat, first write it to
   `raw/transcripts/YYYY-MM-DD-chat.md` (their words, dated), then cite that.
-- **Links are relative to the note.** In the body a citation and a picture are
-  markdown links to the file from where the note sits, so each opens in the
-  viewer; frontmatter `sources:` keep plain paths from the app root.
+- **Links are relative to the note.** In the body a citation is a markdown
+  link and a picture is shown (`![what it shows](path)`), each to the file
+  from where the note sits; frontmatter `sources:` keep plain paths from the
+  app root.
 - **Never infer this business's facts from elsewhere.** General knowledge and
   `raw/external/` describe the world and competitors, never the owner. A note
   about a competitor says so in its title and cites `raw/external/…`.

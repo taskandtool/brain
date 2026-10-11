@@ -51,6 +51,8 @@ DEV_CONTENT = os.path.join(os.path.dirname(QUARTZ_DIR), "content")
 BUILD_CONTENT = os.path.join(os.path.dirname(QUARTZ_DIR), "content-build")
 FOLDERS = ("brain", "brand", "public", "legal", "raw")
 NOTE_FOLDERS = ("brain", "brand", "public", "legal")
+# The local plugins, beside the config: shown as text / a colour beside its hex.
+LOCAL_PLUGINS = ("safe-text", "swatches")
 DEFAULT_TITLE = "Company Brain"
 MAX_ASSET = 25 * 1024 * 1024      # Cloudflare's limit on one static file
 MAX_FILES = 20_000                # and on the files in one deploy
@@ -122,10 +124,11 @@ def pinned_lock():
 
 
 def lock_text():
-    """Our pinned plugins plus the local safe-text plugin, as Quartz's lock."""
+    """Our pinned plugins plus the local ones, as Quartz's lock."""
     lock = pinned_lock()
-    path = os.path.join(VIEWER, "safe-text")
-    lock["plugins"]["safe-text"] = {"source": path, "resolved": path, "commit": "local"}
+    for name in LOCAL_PLUGINS:
+        path = os.path.join(VIEWER, name)
+        lock["plugins"][name] = {"source": path, "resolved": path, "commit": "local"}
     return json.dumps(lock, indent=2) + "\n"
 
 
@@ -155,7 +158,7 @@ def production_host(bridge=BRIDGE):
 
 
 def config_text(base_url=None):
-    """viewer/quartz.config.yaml with the local plugin's path filled in, the
+    """viewer/quartz.config.yaml with the local plugins' paths filled in, the
     business's name as the title while the title is the default, and
     `base_url` (production's host, for a build) as the address link previews
     name."""
@@ -163,7 +166,8 @@ def config_text(base_url=None):
         text = f.read()
     if base_url:
         text = re.sub(r"^(\s*baseUrl:).*$", lambda m: f"{m.group(1)} {base_url}", text, count=1, flags=re.M)
-    text = text.replace("@SAFE_TEXT@", os.path.join(VIEWER, "safe-text"))
+    for name in LOCAL_PLUGINS:
+        text = text.replace(f"@{name.upper().replace('-', '_')}@", os.path.join(VIEWER, name))
     text = text.replace('"@LEFT_OUT@"', json.dumps(LEFT_OUT))
     name = business_name()
     if name:
@@ -249,9 +253,9 @@ def plugins_missing():
     names = list(pinned_lock()["plugins"])
     plugins = os.path.join(QUARTZ_DIR, ".quartz", "plugins")
     missing = [n for n in names if not os.path.isfile(os.path.join(plugins, n, "package.json"))]
-    link = os.path.join(plugins, "safe-text")
-    if os.path.realpath(link) != os.path.realpath(os.path.join(VIEWER, "safe-text")):
-        missing.append("safe-text")
+    for name in LOCAL_PLUGINS:
+        if os.path.realpath(os.path.join(plugins, name)) != os.path.realpath(os.path.join(VIEWER, name)):
+            missing.append(name)
     return missing
 
 
@@ -294,12 +298,13 @@ def _install():
             have = f.read().strip()
     except OSError:
         have = None
-    # The local plugin is a link to this app; one left by another app's
+    # A local plugin is a link to this app; one left by another app's
     # folder (a removed checkout) points nowhere, and Quartz stops on it.
-    link = os.path.join(QUARTZ_DIR, ".quartz", "plugins", "safe-text")
-    if os.path.islink(link) and os.path.realpath(link) != os.path.realpath(os.path.join(VIEWER, "safe-text")):
-        os.unlink(link)
-        have = None
+    for name in LOCAL_PLUGINS:
+        link = os.path.join(QUARTZ_DIR, ".quartz", "plugins", name)
+        if os.path.islink(link) and os.path.realpath(link) != os.path.realpath(os.path.join(VIEWER, name)):
+            os.unlink(link)
+            have = None
     if have != want or plugins_missing():
         run(["npx", "quartz", "plugin", "install"], QUARTZ_DIR, "installing Quartz's plugins")
         missing = plugins_missing()
@@ -313,7 +318,7 @@ def _install():
 
 
 def plugin_count():
-    return len(pinned_lock()["plugins"]) + 1          # safe-text is the one more
+    return len(pinned_lock()["plugins"]) + len(LOCAL_PLUGINS)
 
 
 # ---------------------------------------------------------------- staging

@@ -6,7 +6,7 @@ it. Every value is read from real material and cited, or left to fill.
 
 ## Colours
 
-Six-digit hex, each with its role and where it is used today: the primary
+Six-digit hex written as code (`#4e3223`), each with its role and where it is used today: the primary
 (the one action colour), a dark, a light, a neutral for secondary text, and
 any others. From a crawl, `raw/site/<host>/_index/styles.json` has the
 computed colours by role; check them against the screenshots in `shots/`,
@@ -23,7 +23,8 @@ site.
 
 Copy the files into `brand/logo/`, svg preferred, with a dark and a light
 version when both exist. From a crawl, `_index/media.json` marks the logo
-candidates. If there is no usable file, say so; do not draw one.
+candidates. Show each in `visual-identity.md` (`![logo](logo/logo.svg)`). If there is no
+usable file, say so; do not draw one.
 
 ## Photos and imagery
 
@@ -32,7 +33,8 @@ business's best real photographs, copied from `raw/`. Pick for quality and
 range: the work, the place, the people, the product. Leave out stock,
 icons, theme art and anything blurry or tiny.
 
-`brand/images.md` has one line per file: what it shows, who is in it, the
+`brand/images.md` has one line per file: the picture itself
+(`![what it shows](images/<file>)`, relative to the note), what it shows, who is in it, the
 focal point, and whether the owner (and the customer, when it is their home
 or face) agreed it may be used in advertising. Ask for the permissions in
 one message.

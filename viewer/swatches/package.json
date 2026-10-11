@@ -1,0 +1,27 @@
+{
+  "name": "swatches",
+  "version": "1.0.0",
+  "description": "Shows a hex colour written as code, `#4e3223`, with its colour beside it.",
+  "type": "module",
+  "private": true,
+  "license": "MIT",
+  "exports": {
+    ".": "./index.js",
+    "./package.json": "./package.json"
+  },
+  "main": "./index.js",
+  "scripts": {
+    "build": "node -e \"\""
+  },
+  "quartz": {
+    "name": "swatches",
+    "displayName": "Swatches",
+    "category": "transformer",
+    "version": "1.0.0",
+    "quartzVersion": ">=5.0.0",
+    "dependencies": [],
+    "defaultOrder": 2,
+    "defaultEnabled": true,
+    "defaultOptions": {}
+  }
+}

@@ -10,7 +10,7 @@ sources: []
 
 The brand's own colours, type, logo and photography, stated precisely
 enough to build from: a website's design tokens, a creative's image brief.
-Colours as 6-digit hex; fonts by family name. Every value is read from the
+Colours as 6-digit hex in code (`#4e3223`); fonts by family name. Every value is read from the
 real site or the owner's material and cited.
 
 ## Colours
@@ -30,7 +30,7 @@ real site or the owner's material and cited.
 
 ## Logo
 
-- Files in `logo/` (svg preferred): to fill
+- Files in `logo/` (svg preferred), each shown (`![logo](logo/logo.svg)`): to fill
 - Clear space, minimum size, dark and light versions: to fill
 
 ## Imagery
