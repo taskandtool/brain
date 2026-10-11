@@ -29,7 +29,9 @@ brain/
   SCHEMA.md                 this file
   overview.md               the business on one page: what it is, for whom, how it works
   index.md                  titled Notes, the folder's page: every note, one line each, grouped by folder
-  log.md                    append-only: each distill pass and lint, what changed, open questions
+  log.md                    append-only, newest last: one entry per distill pass or lint, headed
+                            `## [YYYY-MM-DD] distill | <unit>` or `## [YYYY-MM-DD] lint`, then what
+                            changed and the open questions
   sources/                  one page per ingested source unit (see below)
   sops/                     internal how-we-work; never in public/
   <topic>.md                everything else the business knows: history, people, decisions, answers
@@ -38,7 +40,9 @@ brain/
 `brand/` and `public/` sit at the root because every app in the project
 reads them the same way; `brain/` is what only the brain holds, and links
 to them rather than repeating them. A note's **type** is frontmatter, not a
-directory.
+directory. A folder made under `brain/` (`sources/`, `sops/`) gets an
+`_index.md` when it is made, with a `title:` and one line on what it holds:
+it is the folder's page in the viewer.
 
 ## A note
 
@@ -83,8 +87,9 @@ Rules:
   about a competitor says so in its title and cites `raw/external/…`.
 - **Retire, don't erase.** When a newer source contradicts a fact, mark the old
   note `status: superseded`, add `superseded_by:` pointing at the newer note or
-  source, and record it in `log.md`. History stays; the index lists only current
-  notes. Notes in `brand/` and `public/` instead keep the replaced value on a
+  source, open its body with `> **Superseded** by [the newer note](path).`, and
+  record it in `log.md`. History stays; the index lists only current notes.
+  Notes in `brand/` and `public/` instead keep the replaced value on a
   `superseded:` line, as the `brand` skill says.
 - **Conflicts go to the owner.** Two current sources that disagree get both
   facts in the note, marked "conflict", and a question in the next reply. The

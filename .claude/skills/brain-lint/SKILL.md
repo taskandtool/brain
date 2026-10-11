@@ -15,8 +15,9 @@ If the owner has said they don't want the weekly pass, create the empty file
 - Read `brain/SCHEMA.md`; it defines what "correct" means here.
 - `python3 scripts/brain_status.py status`: if it lists pending raw files
   (exit 1), distill first with the `brain` skill, then lint.
-- Read the last lint entry in `brain/log.md`. If nothing in `raw/`, `brain/`,
-  `brand/` or `public/` changed since, say so in one line and stop. Don't re-lint a brain that
+- Read the last lint entry in `brain/log.md` (`grep "^## \[" brain/log.md | tail -5`
+  finds it). If nothing in `raw/`, `brain/`, `brand/` or `public/` changed
+  since, say so in one line and stop. Don't re-lint a brain that
   hasn't moved; it costs the owner tokens for nothing.
 
 ## The checks
@@ -53,7 +54,8 @@ Read `index.md`, `overview.md`, then every current note in `brain/`,
 
 ## Then
 
-- Append a lint entry to `brain/log.md`: what was checked (including which
-  five facts were audited), what changed, what needs the owner.
+- Append a lint entry to `brain/log.md`, headed as SCHEMA.md says: what was
+  checked (including which five facts were audited), what changed, what
+  needs the owner.
 - Tell the owner the short version. Ask the questions that only they can
   answer, one message, grouped.

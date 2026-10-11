@@ -35,6 +35,10 @@ class AppTest(unittest.TestCase):
             f.write(text)
         return full
 
+    def read(self, path):
+        with open(os.path.join(self.root, path)) as f:
+            return f.read()
+
 
 class CheckTests(AppTest):
     def test_a_bare_citation_names_the_link_to_write_from_where_the_note_sits(self):
@@ -127,9 +131,12 @@ class StagingTests(AppTest):
 
     def test_every_home_page_link_has_a_page_on_a_fresh_brain(self):
         # Against the repository as it ships: a folder with no file in it has
-        # no page in Quartz, so each linked folder must ship one.
+        # no page in Quartz, so each linked folder must ship one. The log is
+        # the one page stage() writes instead.
         shipped = os.path.realpath(os.path.join(SCRIPTS, ".."))
         for target in re.findall(r"\]\(([^)]+)\)", vw.home_page()):
+            if target == "brain/log":
+                continue
             folder = os.path.join(shipped, target)
             files = [n for n in os.listdir(folder) if n.endswith(".md")] if os.path.isdir(folder) else []
             self.assertTrue(files, f"{target} ships no page")
@@ -150,6 +157,20 @@ class StagingTests(AppTest):
         self.assertEqual(sorted(os.listdir(content)), ["brain", "brand", "index.md", "legal", "public", "raw"])
         self.assertTrue(os.path.isdir(os.path.join(self.root, "raw")))
         self.assertEqual(os.path.realpath(os.path.join(content, "brain")), os.path.join(self.root, "brain"))
+        self.assertIn("title: What changed", self.read("brain/log.md"))
+
+    def test_stage_never_replaces_a_log_the_brain_has(self):
+        self.write("brain/log.md", "---\ntitle: Log\n---\n\n## [2026-10-10] distill | website\n")
+        content = os.path.join(self.root, "content")
+        saved, vw.QUARTZ_DIR = vw.QUARTZ_DIR, os.path.join(self.root, "quartz")
+        os.makedirs(vw.QUARTZ_DIR)
+        self.write("viewer/quartz.config.yaml", "x")
+        saved_viewer, vw.VIEWER = vw.VIEWER, os.path.join(self.root, "viewer")
+        try:
+            vw.stage(content)
+        finally:
+            vw.QUARTZ_DIR, vw.VIEWER = saved, saved_viewer
+        self.assertEqual(self.read("brain/log.md"), "---\ntitle: Log\n---\n\n## [2026-10-10] distill | website\n")
 
     def test_the_title_is_the_business_name_until_the_owner_sets_another(self):
         self.write("viewer/quartz.config.yaml", "configuration:\n  pageTitle: Company Brain\nsource: \"@SAFE_TEXT@\"\n")

@@ -57,6 +57,7 @@ brain/               regenerable: AI-written, cross-linked, cited notes
   SCHEMA.md          the rulebook, shipped with this repo and co-edited with the owner
   overview.md        the business on one page
   index.md           the map; log.md records each distill pass and lint, newest last
+                     (the viewer starts it, and its home page links it as What changed)
   sources/           one page per source unit: the citation hub
   sops/              internal how-we-work; a note's type is frontmatter
   .ingested.json     brain_status.py's manifest: raw path → sha256 when it was marked distilled
@@ -83,8 +84,8 @@ report. No model is involved: a crawl costs the machine's time.
 
 [Quartz](https://quartz.jzhao.xyz) renders `brain/`, `brand/`, `public/`,
 `legal/` and `raw/` as one site: full-text search, a folder explorer,
-backlinks, a graph, and a properties panel showing each note's type, status
-and sources. Notes link with plain relative markdown links, so a citation
+backlinks, a graph, and a properties panel showing each note's type and
+status. Notes link with plain relative markdown links, so a citation
 opens the crawled page or document it came from, and pictures show where
 they are cited.
 

@@ -138,12 +138,6 @@
       "resolved": "https://github.com/quartz-community/table-of-contents.git",
       "commit": "70b12d85cb873ce42d95111ffb4d8092644c1763",
       "installedAt": "2026-03-12T19:33:43.169Z"
-    },
-    "tag-page": {
-      "source": "github:quartz-community/tag-page",
-      "resolved": "https://github.com/quartz-community/tag-page.git",
-      "commit": "dd0cd223c433722b3eb3ff7c93eec8eec49f76b5",
-      "installedAt": "2026-03-11T18:22:54.300Z"
     }
   }
 }

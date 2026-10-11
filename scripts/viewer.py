@@ -326,8 +326,9 @@ def plugin_count():
 def home_page():
     """The home page: the way in. Every row has a page from the first start,
     since each folder ships with a file (brain/SCHEMA.md, and an _index.md in
-    brand/, public/ and raw/, each the folder's page), so neither a fresh brain nor the dev server's
-    page written once at its start ever links to nothing."""
+    brand/, public/ and raw/, each the folder's page) and stage() writes the
+    log when it is missing, so neither a fresh brain nor the dev server's page
+    written once at its start ever links to nothing."""
     title = business_name() or DEFAULT_TITLE
     return "\n".join([
         "---", f"title: {json.dumps(title)}", "---", "",
@@ -335,6 +336,7 @@ def home_page():
         "- [Brand](brand/): look, voice, logo and photos",
         "- [Published facts](public/): details, services, hours, team and reviews",
         "- [Raw material](raw/): the site as crawled, documents and transcripts",
+        "- [What changed](brain/log): each pass that added to the brain or checked it, newest last",
     ]) + "\n"
 
 
@@ -352,6 +354,12 @@ def stage(content, base_url=None):
         source = os.path.join(ROOT, folder)
         os.makedirs(source, exist_ok=True)
         os.symlink(source, os.path.join(content, folder))
+    # Started here, not shipped: a pull of a shipped one would replace the
+    # owner's, since git overwrites an ignored file.
+    log = os.path.join(ROOT, "brain", "log.md")
+    if not os.path.exists(log):
+        with open(log, "w") as f:
+            f.write("---\ntitle: What changed\n---\n\nEach distill pass and lint, newest last.\n")
     with open(os.path.join(content, "index.md"), "w") as f:
         f.write(home_page())
     write_if_changed(os.path.join(QUARTZ_DIR, "quartz.config.yaml"), config_text(base_url))
