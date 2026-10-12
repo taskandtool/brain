@@ -13,6 +13,10 @@ computed colours by role; check them against the screenshots in `shots/`,
 since a site's CSS often carries colours it never shows. From a logo or
 photos alone, sample the logo's colours and say that is the source.
 
+A colour given a text or link role names its contrast on the ground it sits
+on (`#b05e27` on white, 4.7:1) and reaches 4.5:1; a lighter one is a fill or
+an accent, never text.
+
 ## Type
 
 The display and body families, their weights, and where they load from
@@ -22,8 +26,8 @@ site.
 ## Logo
 
 Copy the files into `brand/logo/`, svg preferred, with a dark and a light
-version when both exist. From a crawl, `_index/media.json` marks the logo
-candidates. Show each in `visual-identity.md` (`![logo](logo/logo.svg)`). If there is no
+version when both exist. From a crawl, `_index/business-card.json` names
+the logo. Show each in `visual-identity.md` (`![logo](logo/logo.svg)`). If there is no
 usable file, say so; do not draw one.
 
 ## Photos and imagery
@@ -31,7 +35,10 @@ usable file, say so; do not draw one.
 `brand/images/` holds a small curated set (about 10 to 30) of the
 business's best real photographs, copied from `raw/`. Pick for quality and
 range: the work, the place, the people, the product. Leave out stock,
-icons, theme art and anything blurry or tiny.
+icons, theme art and anything blurry or tiny. From a crawl,
+`_index/business-card.json` lists the photographs 800px wide or more, and
+`tt-crawl sheet --from raw/site/<host>` shows them numbered: describe each
+from that one look.
 
 `brand/images.md` has one line per file: the picture itself
 (`![what it shows](images/<file>)`, relative to the note), what it shows, who is in it, the
