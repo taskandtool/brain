@@ -121,7 +121,7 @@ machine clones this repository's main branch into the app and runs
 `.taskandtool/setup.sh`, which installs the crawler from its main branch too. Nothing is sent into your chat: the manifest's
 suggestions are what an empty chat offers. On machine replacement the clone
 and the setup happen again, and your own files come back from the backup (the
-knowledge folders are kept out of git) — they are yours from the moment they land.
+knowledge folders are kept out of git). They are yours from the moment they land.
 
 **Anywhere else.** Clone it and start working in it:
 
@@ -154,7 +154,7 @@ Nothing is vendored; `setup.sh` installs them on the machine.
 ## What it is for, and what it is not
 
 The brain holds what a business knows: what it does, its brand, its
-offerings, its SOPs. It has no database — files are the whole model, the AI
+offerings, its SOPs. It has no database: files are the whole model, the AI
 is the query engine, and the viewer only reads them. It needs no connectors
 to work.
 

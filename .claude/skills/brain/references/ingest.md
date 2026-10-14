@@ -21,7 +21,6 @@ It reads up to 1,000 pages (`--max-pages`); `--resume` carries on an
 interrupted crawl. Each command prints what it read and wrote, then
 `Next:`. For other jobs, print the recipe instead of guessing flags, for
 example `tt-crawl playbook survey` for a site past 1,000 pages.
-`structured/business.json` is the best seed for `public/business.md`.
 
 What to do with what it reports:
 

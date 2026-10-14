@@ -1,8 +1,7 @@
 # Company Brain
 
 This app is the business's knowledge: raw source material, and cited notes
-distilled from it. The brain *is* the working context: yours, and the brand
-record other apps can mirror from Settings. The viewer serves it as a website.
+distilled from it. The viewer serves it as a website.
 
 ## The shape
 
@@ -78,10 +77,3 @@ serves); never restart it. A build started meanwhile waits for it.
 The viewer's look (colours, fonts, which panels show) is `viewer/quartz.config.yaml`;
 take the colours and fonts from `brand/visual-identity.md` when the owner
 asks.
-
-## Everything here is the owner's
-
-The files, the skills, and this file are all in the app's repository and
-yours to change on their behalf. `.taskandtool/setup.sh` installs the
-machine-level tools (tt-crawl and the browsers it drives) and registers the
-viewer's `web` service, and is safe to re-run.

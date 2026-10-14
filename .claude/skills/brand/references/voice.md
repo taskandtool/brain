@@ -1,9 +1,8 @@
 # The voice
 
 `brand/voice.md` is the file every writing task reads first: website pages,
-ads, posts, emails. A voice guide built on assertions drifts; one built on
-the owner's own sentences holds. So every line quotes its evidence, and a
-line with no sample stays "to fill".
+ads, posts, emails. Every line quotes the owner's own sentence as evidence
+(a guide built on assertions drifts); a line with no sample stays "to fill".
 
 ## What to collect
 
@@ -37,5 +36,3 @@ lexicon: they are how buyers describe the problem.
 - **Tone by surface**: what changes and what never changes on a web page,
   an ad, a social post, an email.
 - **Sources**: the raw files the samples came from.
-
-The shape is in `templates/brand/voice.md` beside the SKILL.md.

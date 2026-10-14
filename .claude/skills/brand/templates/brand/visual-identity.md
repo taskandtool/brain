@@ -23,7 +23,7 @@ real site or the owner's material and cited.
 
 ## Type
 
-- **Display (headings):** to fill — family, weights, where it is licensed from (Google Fonts, a file, a system font)
+- **Display (headings):** to fill: family, weights, where it is licensed from (Google Fonts, a file, a system font)
 - **Body (reading):** to fill
 
 ## Logo

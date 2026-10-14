@@ -108,7 +108,5 @@ numbers appear.
 
 ## Updating
 
-- Change the note, bump `updated`, add the new source.
-- Keep the replaced value on a line: `superseded: "Mo-Fr 08:00-16:00" ([contact](../raw/site/example.com/pages/contact.md), 2026-01-10)`.
-- Two current sources disagree: keep both in the body, marked **conflict**,
-  and tell the owner. Resolve it when they answer, citing their answer.
+- Change the note, bump `updated`, add the new source. The superseded line
+  and conflicts: the SKILL.md's "Newer replaces older".

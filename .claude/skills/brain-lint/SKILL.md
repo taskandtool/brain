@@ -5,10 +5,8 @@ description: "Runs the brain's health pass over brain/, brand/ and public/: audi
 
 # Brain: lint
 
-Ingest keeps the brain growing; lint keeps it true. Run it when the weekly
-`weekly-brain-lint` job opens its chat with you, or whenever the owner asks.
-If the owner has said they don't want the weekly pass, create the empty file
-`brain/.lint-off` and say so; the job's chat then ends in one line.
+If the owner has said they don't want the weekly pass, create the empty file `brain/.lint-off`
+and say so; the job's chat then ends in one line.
 
 ## First, is there anything to do?
 
@@ -27,7 +25,7 @@ Read `index.md`, `overview.md`, then every current note in `brain/`,
 
 1. **Citation audit (the hallucination check).** Pick five facts at random
    from different notes and trace each to its cited `raw/` file: is the fact
-   actually there, as stated? A fact with no citation, a citation that doesn't
+   there, as stated? A fact with no citation, a citation that doesn't
    contain it, or a number that drifted is the top finding. Fix from raw or
    remove the fact, and say which in the log.
 2. **Contradictions:** two current notes (or a note and a newer raw source)

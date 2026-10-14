@@ -16,7 +16,7 @@ cd "$(dirname "$0")/.."
 CRAWLER_REF="${CRAWLER_REF:-main}"
 CRAWLER="git+https://github.com/taskandtool/crawler@$CRAWLER_REF"
 
-echo "== tt-crawl $CRAWLER_REF (site reader) + python tools"
+echo "== tt-crawl $CRAWLER_REF (site reader)"
 # The crawler's main, every run: the first install brings its dependencies;
 # the second replaces its own code even when its version number did not move.
 python3 -m pip install --quiet --upgrade "ttcrawl @ $CRAWLER" 2>&1 | tail -2 || true

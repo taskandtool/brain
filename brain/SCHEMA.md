@@ -4,10 +4,9 @@ title: Brain schema
 
 This file is the brain's rulebook: what kinds of notes exist, how a note is
 shaped, where things go, and how facts are cited and retired. The AI reads it
-before every ingest and lint and follows it over the skills' defaults. It is
-yours to edit — when the owner wants notes shaped differently, change it here
-and say so in `log.md`. It ships with this app; once you edit it, it is
-yours.
+before every ingest and lint and follows it over the skills' defaults. It
+ships with this app and is yours to edit: when the owner wants notes shaped
+differently, change it here and say so in `log.md`.
 
 ## Layout
 
@@ -15,7 +14,7 @@ yours.
 raw/                      immutable sources; the AI reads, never edits
   site/<host>/              the owner's own site, crawled: pages/ (one .md per page), images/,
                             structured/, docs/, and _index/ (facts, reviews, media, inventory)
-  external/<host>/          other people's sites, pulled on request — NOT the owner's facts
+  external/<host>/          other people's sites, pulled on request, never the owner's facts
   docs/                     uploaded documents → markdown, date-prefixed
   transcripts/              calls, meetings, videos, and facts the owner stated in chat
   social/<platform>/<handle>/  the business's own social profiles and posts
