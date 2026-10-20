@@ -5,8 +5,9 @@ description: "Runs the brain's health pass over brain/, brand/ and public/: audi
 
 # Brain: lint
 
-If the owner has said they don't want the weekly pass, create the empty file `brain/.lint-off`
-and say so; the job's chat then ends in one line.
+If the owner does not want the weekly pass, remove its job:
+`python3 ~/tools/taskandtool.py list-jobs` for its id, then
+`python3 ~/tools/taskandtool.py unschedule-job <id>`.
 
 ## First, is there anything to do?
 
@@ -15,8 +16,8 @@ and say so; the job's chat then ends in one line.
   (exit 1), distill first with the `brain` skill, then lint.
 - Read the last lint entry in `brain/log.md` (`grep "^## \[" brain/log.md | tail -5`
   finds it). If nothing in `raw/`, `brain/`, `brand/` or `public/` changed
-  since, say so in one line and stop. Don't re-lint a brain that
-  hasn't moved; it costs the owner tokens for nothing.
+  since, say so in one line and stop: a pass over a brain that has not
+  moved costs the owner tokens for nothing.
 
 ## The checks
 
@@ -47,8 +48,7 @@ Read `index.md`, `overview.md`, then every current note in `brain/`,
    split, duplicates by meaning, source units with no `sources/` page, an
    `overview.md` that no longer matches the notes. Fix to the schema.
 10. **Prune:** notes that only restate a raw page. Merge and remove the
-    redundant note (update links and the index). **Never delete anything in
-    `raw/`.**
+    redundant note (update links and the index).
 
 ## Then
 

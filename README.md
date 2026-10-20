@@ -68,7 +68,7 @@ is the query engine: it greps the filesystem, there is no index. The loop:
 **ingest** into raw, **distill** as soon as raw lands (mark what each turn distilled; the first crawl in
 passes, everything after in small deltas), **lint** on a schedule (a citation
 audit first, then contradictions, superseded claims, leakage from external
-sources, orphans, schema drift, pruning; `brain/.lint-off` opts out). Against the known failure of this pattern,
+sources, orphans, schema drift, pruning; removing its scheduled job turns it off). Against the known failure of this pattern,
 hallucination contamination: no fact without a `raw/` citation, chat-stated
 facts are written to raw first, external material never becomes an owner
 fact, and superseded facts are retired with a pointer rather than erased.

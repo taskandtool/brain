@@ -12,7 +12,7 @@ python3 ~/tools/taskandtool.py list-jobs
 Each week a new chat runs the `brain-lint` skill:
 
 ```bash
-python3 ~/tools/taskandtool.py schedule-job weekly-brain-lint --when "0 6 * * 1" --team-only --prompt "Weekly brain lint: run the brain-lint skill. If brain/.lint-off exists, or nothing in raw/, brain/, brand/ or public/ changed since the last lint entry in brain/log.md, say so in one line and stop."
+python3 ~/tools/taskandtool.py schedule-job weekly-brain-lint --when "0 6 * * 1" --team-only --prompt "Weekly brain lint: run the brain-lint skill. If nothing in raw/, brain/, brand/ or public/ changed since the last lint entry in brain/log.md, say so in one line and stop."
 ```
 
 Tell the owner what it is for, and that the app's Jobs tab is where they

@@ -57,8 +57,8 @@ its source. Dev is the `web` service (`npm run dev`); every note edit shows
 there on refresh. The answer to "show me the brain" is its address, which
 `python3 ~/tools/taskandtool.py status` prints. After changing the viewer's
 config, `python3 ~/tools/taskandtool.py restart`. Production is `npm run
-deploy` (the `deploy` skill); before each deploy, run `check` and fix what
-it names. Who can see production is the platform's setting, not this app's:
+deploy` (the `deploy` skill); before each deploy, run
+`python3 scripts/viewer.py check` and fix what it names. Who can see production is the platform's setting, not this app's:
 the whole site, SOPs and `raw/` included, goes to whoever it is published
 to. Say so when the owner asks about making it public.
 
