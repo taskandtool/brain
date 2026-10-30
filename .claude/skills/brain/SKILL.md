@@ -31,7 +31,11 @@ description: "Builds and keeps the company brain: the owner's site, documents, t
    `overview.md` if the big picture moved, `index.md`, and one `log.md`
    entry per pass, headed as SCHEMA.md says (notes created, updated or
    retired; open conflicts and questions).
-5. **Mark it:** `python3 scripts/brain_status.py mark <path> …` with the
+5. **Check the words:** `node .claude/skills/tropes/tropes.mjs --scan
+   <the notes you wrote>`; every app that reads `brain/` and `public/` copies
+   their wording, so rewrite each line it flags (sources' own words in
+   quotation marks or a blockquote are left alone).
+6. **Mark it:** `python3 scripts/brain_status.py mark <path> …` with the
    unit's path as status printed it, or a section's files
    (`raw/site/<host>/pages/services-*.md`).
 

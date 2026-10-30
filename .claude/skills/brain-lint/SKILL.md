@@ -47,7 +47,9 @@ Read `index.md`, `overview.md`, then every current note in `brain/`,
 9. **Schema drift:** notes missing frontmatter, oversized notes that should
    split, duplicates by meaning, source units with no `sources/` page, an
    `overview.md` that no longer matches the notes. Fix to the schema.
-10. **Prune:** notes that only restate a raw page. Merge and remove the
+10. **Tells of AI-written text:** `node .claude/skills/tropes/tropes.mjs --scan
+    brain public`. Rewrite each line it flags.
+11. **Prune:** notes that only restate a raw page. Merge and remove the
     redundant note (update links and the index).
 
 ## Then

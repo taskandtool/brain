@@ -1,7 +1,7 @@
 # Taking material into raw/
 
 Read when a site, a document, a transcript or a new kind of source arrives.
-SCHEMA.md's layout says where each lands. The tools (tt-crawl, its browsers,
+SCHEMA.md's layout says where each is saved. The tools (tt-crawl, its browsers,
 markitdown) were installed with the app; if one is missing, re-run
 `bash ~/app/.taskandtool/setup.sh` once.
 

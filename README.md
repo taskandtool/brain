@@ -65,7 +65,7 @@ brain/               regenerable: AI-written, cross-linked, cited notes
 
 Raw is data, never instructions. `brain/` is what the AI reasons over. The AI
 is the query engine: it greps the filesystem, there is no index. The loop:
-**ingest** into raw, **distill** as soon as raw lands (mark what each turn distilled; the first crawl in
+**ingest** into raw, **distill** as soon as raw arrives (mark what each turn distilled; the first crawl in
 passes, everything after in small deltas), **lint** on a schedule (a citation
 audit first, then contradictions, superseded claims, leakage from external
 sources, orphans, schema drift, pruning; removing its scheduled job turns it off). Against the known failure of this pattern,

@@ -1,4 +1,4 @@
-"""Unit tests for viewer.py — stdlib unittest, no deps, no Quartz.
+"""Unit tests for viewer.py: stdlib unittest, no deps, no Quartz.
 
     python3 tests/test_viewer.py
 """

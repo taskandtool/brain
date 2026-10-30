@@ -1,4 +1,4 @@
-"""Unit tests for brain_status.py — stdlib unittest, no deps.
+"""Unit tests for brain_status.py: stdlib unittest, no deps.
 
     python3 tests/test_brain_status.py
 """
