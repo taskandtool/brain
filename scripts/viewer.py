@@ -35,7 +35,7 @@ import sys
 import time
 from urllib.parse import unquote, urlparse
 
-from cli import MAX_LISTED, ROOT, Misuse, Parser, fail
+from common import MAX_LISTED, ROOT, Misuse, Parser, fail
 
 CMD = "python3 scripts/viewer.py"
 VIEWER = os.path.join(ROOT, "viewer")

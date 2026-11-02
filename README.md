@@ -25,7 +25,7 @@ machine.
   brain-lint/      the periodic health pass: citation audit, contradictions, superseded claims, leakage
 scripts/brain_status.py  what in raw/ is not yet distilled, and marking what is (tests in tests/)
 scripts/viewer.py  the viewer: installs Quartz, serves dev, builds dist/ for production, checks links
-scripts/cli.py    the argument and error helper both scripts share
+scripts/common.py the argument and error helper both scripts share
 tests/            the scripts' and the viewer plugins' unit tests
 viewer/           Quartz's config and pinned plugins, and two of its own: safe-text, which shows
                   HTML in crawled pages as text, and swatches, which shows a hex colour's colour

@@ -5,7 +5,7 @@ import json
 import os
 import sys
 
-# the app root: this file is <root>/scripts/cli.py
+# the app root: this file is <root>/scripts/common.py
 ROOT = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
 MAX_LISTED = 15                   # findings a command lists before "--all for the rest"
 

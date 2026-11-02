@@ -22,6 +22,7 @@ echo "== tt-crawl $CRAWLER_REF (site reader)"
 python3 -m pip install --quiet --upgrade "ttcrawl @ $CRAWLER" 2>&1 | tail -2 || true
 python3 -m pip install --quiet --force-reinstall --no-deps "ttcrawl @ $CRAWLER" 2>&1 | tail -2 || true
 python3 -m ttcrawl --version || echo "tt-crawl did not install; site capture is unavailable until it does"
+python3 -c "import PIL" 2>/dev/null || python3 -m pip install --quiet pillow 2>&1 | tail -1 || echo "== warning: Pillow did not install; the brand skill's web_photos.py needs it"
 
 # tt-crawl on the PATH, then the browsers it drives: Chrome reads pages and
 # takes screenshots, Obscura is the small fallback. Done here so a first

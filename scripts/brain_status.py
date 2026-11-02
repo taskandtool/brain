@@ -23,7 +23,7 @@ import json
 import os
 import sys
 
-from cli import MAX_LISTED, ROOT, Misuse, Parser, fail
+from common import MAX_LISTED, ROOT, Misuse, Parser, fail
 
 CMD = "python3 scripts/brain_status.py"
 # Pictures are looked at, not distilled one file at a time (visual-identity.md

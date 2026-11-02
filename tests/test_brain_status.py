@@ -176,7 +176,7 @@ class CommandTests(unittest.TestCase):
             os.makedirs(os.path.join(app, "scripts"))
             os.makedirs(os.path.join(app, "raw", "docs"))
             os.makedirs(os.path.join(app, "elsewhere"))
-            for name in ("brain_status.py", "cli.py"):
+            for name in ("brain_status.py", "common.py"):
                 with open(os.path.join(SCRIPTS, name)) as src, \
                         open(os.path.join(app, "scripts", name), "w") as dst:
                     dst.write(src.read())

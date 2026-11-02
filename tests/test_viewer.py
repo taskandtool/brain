@@ -223,7 +223,7 @@ class CommandTests(unittest.TestCase):
     def test_check_exits_1_while_anything_needs_fixing(self):
         with tempfile.TemporaryDirectory() as app:
             os.makedirs(os.path.join(app, "scripts"))
-            for name in ("viewer.py", "cli.py"):
+            for name in ("viewer.py", "common.py"):
                 with open(os.path.join(SCRIPTS, name)) as src, \
                         open(os.path.join(app, "scripts", name), "w") as dst:
                     dst.write(src.read())
