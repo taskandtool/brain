@@ -30,7 +30,7 @@ tests/            the scripts' and the viewer plugins' unit tests
 viewer/           Quartz's config and pinned plugins, and two of its own: safe-text, which shows
                   HTML in crawled pages as text, and swatches, which shows a hex colour's colour
 package.json      npm run dev / build / deploy, the viewer's commands (no dependencies of its own)
-.taskandtool/setup.sh  installs tt-crawl's latest (github.com/taskandtool/crawler) and the browsers
+.taskandtool/after-setup.sh  installs tt-crawl's latest (github.com/taskandtool/crawler) and the browsers
                   it drives, then registers the `web` service, which installs Quartz on its first start
 brain/SCHEMA.md   the note rulebook, shipped here and edited in place by the owner
 AGENTS.md         what the AI reads first; CLAUDE.md imports it
@@ -41,7 +41,7 @@ starter-app.json  the manifest Task & Tool reads: what the app needs, what "read
 Each `<skill>/SKILL.md` is a skill the harness loads on demand.
 `scripts/brain_status.py` and `scripts/viewer.py` are plain Python (standard
 library; the crawler's and Quartz's real dependencies are installed by
-`.taskandtool/setup.sh`).
+`.taskandtool/after-setup.sh` and the `web` service).
 
 ## The shape: raw → distilled
 
@@ -118,7 +118,7 @@ production's address in its link previews. It needs Node 22.
 
 **On Task & Tool.** Pick the Company Brain when you create an app. The
 machine clones this repository's main branch into the app and runs
-`.taskandtool/setup.sh`, which installs the crawler from its main branch too. Nothing is sent into your chat: the manifest's
+`.taskandtool/setup.sh`, then `after-setup.sh`, which installs the crawler from its main branch. Nothing is sent into your chat: the manifest's
 suggestions are what an empty chat offers. On machine replacement the clone
 and the setup happen again, and your own files come back from the backup (the
 knowledge folders are kept out of git). They are yours from the moment they land.
@@ -129,9 +129,10 @@ knowledge folders are kept out of git). They are yours from the moment they land
 git clone https://github.com/taskandtool/brain my-brain
 cd my-brain
 bash .taskandtool/setup.sh
+bash .taskandtool/after-setup.sh
 ```
 
-`.taskandtool/setup.sh` installs the crawler (tt-crawl) with pip and the two
+`.taskandtool/after-setup.sh` installs the crawler (tt-crawl) with pip and the two
 browsers it drives, Chrome and Obscura. Then open Claude Code in that
 directory and ask it to build the brain from your website; `npm run dev`
 installs Quartz the first time and serves the viewer on port 3000.
@@ -149,7 +150,7 @@ installs Quartz the first time and serves the viewer on port 3000.
 - [Quartz](https://github.com/jackyzha0/quartz), MIT, the viewer, at a
   pinned tag, with its community plugins (MIT) pinned by commit.
 
-Nothing is vendored; `setup.sh` installs them on the machine.
+Nothing is vendored; `after-setup.sh` installs them on the machine.
 
 ## What it is for, and what it is not
 
