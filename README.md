@@ -1,5 +1,7 @@
 # Company Brain
 
+[![Deploy on Task & Tool](https://taskandtool.com/images/deploy-button.svg)](https://taskandtool.com/accounts/register?starter_app=brain)
+
 A Task & Tool **Starter App**: the business's knowledge, raw and distilled.
 It takes in the owner's website, documents, transcripts, and facts stated in
 chat, and turns them into cited, cross-linked notes that an AI reasons over.
