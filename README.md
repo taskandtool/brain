@@ -6,6 +6,8 @@ Your team can search them and open the page or document behind each fact.
 
 [![Deploy on Task & Tool](https://taskandtool.com/images/deploy-button.svg)](https://taskandtool.com/accounts/register?starter_app=brain)
 
+![The map of Northline Gardens' Company Brain with Prices lit, and the Prices note](https://taskandtool.com/images/starter-apps/brain.webp)
+
 It's made to run on Task & Tool. There, each app has its own computer for
 your AI agent. The agent reads your website, documents and call transcripts
 on that computer and writes what it finds as short notes. It follows the
@@ -17,6 +19,8 @@ team reads them as a website built with Quartz.
 Click the button above, or pick Company Brain when you create an app on
 [Task & Tool](https://taskandtool.com/starter-apps/brain). Then ask in the
 chat: "Read my website into the brain" and paste your website's address.
+
+See it in use on the [Company Brain page](https://taskandtool.com/starter-apps/brain).
 
 ## Features
 
@@ -45,6 +49,8 @@ If two sources disagree, the agent keeps both values, marks the conflict and
 asks you which is right. When a newer source changes a fact, the agent marks
 the old note out of date and links it to the new one. The agent marks facts
 it took from other sites as theirs.
+
+<img src="https://taskandtool.com/images/marketing/northline-gardens-brain-prices.webp" width="360" alt="Northline Gardens' Prices note: lawn care from $45 a visit and hedge trimming from $120. Each price links to its source">
 
 ### The agent checks the notes every week
 
@@ -80,6 +86,8 @@ When you ask, the agent publishes the site to production on your own domain.
 If you make it public, anyone can read all the notes, including your
 procedures and the raw sources. The agent can also match the site's colors
 and fonts to your brand.
+
+![A search for deposit opens the Deposits note: a $50 deposit holds a spring planting date, refunded up to 48 hours before the visit](https://taskandtool.com/images/marketing/northline-gardens-brain-search.webp)
 
 ### Your brand and facts in the folders your other apps use
 
