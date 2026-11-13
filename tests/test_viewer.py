@@ -398,7 +398,7 @@ class ProductionTests(AppTest):
 
     def test_the_build_says_when_production_is_not_known(self):
         unknown = vw.build_report(3, 5, [], None)
-        self.assertIn("production's address is not known here", unknown[1])
+        self.assertIn("no production address yet", unknown[1])
         self.assertEqual(vw.build_report(3, 5, [], "acme-brain.taskandtool.app"),
                          ["viewer build: 3 pages and 2 other files in dist/"])
 

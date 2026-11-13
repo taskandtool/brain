@@ -50,7 +50,7 @@
     {
       "id": "read-site-documents",
       "label": "Read the documents on my site",
-      "prompt": "Read the documents my website links to, like price lists and brochures.",
+      "prompt": "Read the documents linked from my website, like price lists and brochures.",
       "when": [
         {
           "path": "raw/site/_sites.json",
@@ -66,8 +66,8 @@
     },
     {
       "id": "what-does-the-brain-know",
-      "label": "What does the brain know?",
-      "prompt": "What does the brain know so far, and what's missing?"
+      "label": "What's in the brain?",
+      "prompt": "What's in the brain so far, and what's missing?"
     },
     {
       "id": "deploy-the-brain",

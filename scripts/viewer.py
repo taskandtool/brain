@@ -332,11 +332,11 @@ def home_page():
     title = business_name() or DEFAULT_TITLE
     return "\n".join([
         "---", f"title: {json.dumps(title)}", "---", "",
-        "- [Notes](brain/): everything the brain knows, cited; the overview first",
+        "- [Notes](brain/): everything in the brain, with sources; start with the overview",
         "- [Brand](brand/): look, voice, logo and photos",
         "- [Published facts](public/): details, services, hours, team and reviews",
         "- [Raw material](raw/): the site as crawled, documents and transcripts",
-        "- [What changed](brain/log): each pass that added to the brain or checked it, newest last",
+        "- [What changed](brain/log): each time the AI added to the brain or checked it, newest last",
     ]) + "\n"
 
 
@@ -359,7 +359,7 @@ def stage(content, base_url=None):
     log = os.path.join(ROOT, "brain", "log.md")
     if not os.path.exists(log):
         with open(log, "w") as f:
-            f.write("---\ntitle: What changed\n---\n\nEach distill pass and lint, newest last.\n")
+            f.write("---\ntitle: What changed\n---\n\nEach time the AI added to the brain or checked it, newest last.\n")
     with open(os.path.join(content, "index.md"), "w") as f:
         f.write(home_page())
     write_if_changed(os.path.join(QUARTZ_DIR, "quartz.config.yaml"), config_text(base_url))
@@ -522,8 +522,8 @@ def build_report(pages, kept, dropped, host):
     """The build's summary lines: the first is `viewer build: …`."""
     lines = [f"viewer build: {pages} pages and {kept - pages} other files in dist/"]
     if not host:
-        lines.append("  production's address is not known here, so link previews name localhost; "
-                     f"{BRIDGE} status shows it once there is one")
+        lines.append("  no production address yet. Link previews have localhost as their address "
+                     "until you build again after the first deploy")
     for path, size in dropped:
         lines.append(f"  left out, over Cloudflare's 25 MiB a file: {path} ({size_mb(size)})")
     if kept > MAX_FILES:
