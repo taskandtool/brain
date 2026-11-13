@@ -6,7 +6,7 @@ Your team can search them and open the page or document behind each fact.
 
 [![Deploy on Task & Tool](https://taskandtool.com/images/deploy-button.svg)](https://taskandtool.com/accounts/register?starter_app=brain)
 
-![The map of Northline Gardens' Company Brain with Prices lit, and the Prices note](https://taskandtool.com/images/starter-apps/brain.webp)
+![The map of Northline Gardens' Company Brain beside its Prices note](https://taskandtool.com/images/starter-apps/brain.webp)
 
 It's made to run on Task & Tool. There, each app has its own computer for
 your AI agent. The agent reads your website, documents and call transcripts
@@ -20,17 +20,18 @@ Click the button above, or pick Company Brain when you create an app on
 [Task & Tool](https://taskandtool.com/starter-apps/brain). Then ask in the
 chat: "Read my website into the brain" and paste your website's address.
 
-See it in use on the [Company Brain page](https://taskandtool.com/starter-apps/brain).
+See it in use on the [Company Brain
+page](https://taskandtool.com/starter-apps/brain).
 
 ## Features
 
 ### Start from your website and its documents
 
-The agent opens each page in a real browser and keeps its words as they are.
-It reads up to 1,000 pages and tells you if your site has more. It also
-fetches the price lists, brochures and menus your pages link to. If your
-site runs on WordPress, the agent can import every page and post through the
-site's API. It imports them with their dates.
+The agent opens each page in a real browser and saves its text. It reads up
+to 1,000 pages and tells you if your site has more. It also fetches the
+price lists, brochures and menus your pages link to. If your site runs on
+WordPress, the agent can import every page and post through the site's API.
+It imports them with their dates.
 
 ### You can add documents, transcripts and facts in chat
 
@@ -41,7 +42,7 @@ say "remember that we're closed Mondays now", the agent saves your words
 with the date before it writes the note. The agent can also read your Google
 listing and reviews through a Google connection.
 
-### Each fact has a source you can open
+### Every fact is linked to its source
 
 The agent writes a fact only when it can cite a source file. A note fits on
 one screen and covers one topic: a service, a policy, a person, a procedure.
@@ -62,7 +63,7 @@ Otherwise it runs these checks:
 |---|---|
 | Citations | Whether five facts picked at random say what their sources say |
 | Contradictions | Two notes, or a note and a newer source, that disagree on hours, prices, phone numbers or policies |
-| Stale facts | Facts a newer source replaced. The agent marks them superseded. |
+| Stale facts | Facts a newer source replaced. The agent marks them out of date. |
 | Outside facts | Anything from another site or general knowledge written up as yours |
 | Gaps | Notes nothing links to, and topics many notes mention that have no note |
 | Links | Links that point nowhere and sources written as bare paths |
@@ -74,7 +75,7 @@ Where a newer source has the answer, the agent fixes the note. Otherwise it
 asks you. It puts all its questions in one message. You can see or remove
 the job on the app's Jobs tab.
 
-### Your team gets a private site to search
+### A private site for your team
 
 The agent serves the notes as a website at the app's team address. Your team
 can search the notes, browse by folder, follow backlinks and see a graph of
@@ -83,13 +84,13 @@ fact came from. At the top of a note you see its type, its status and when
 it was last updated.
 
 When you ask, the agent publishes the site to production on your own domain.
-If you make it public, anyone can read all the notes, including your
+If you make it public, anyone can read all the notes. That includes your
 procedures and the raw sources. The agent can also match the site's colors
 and fonts to your brand.
 
 ![A search for deposit opens the Deposits note: a $50 deposit holds a spring planting date, refunded up to 48 hours before the visit](https://taskandtool.com/images/marketing/northline-gardens-brain-search.webp)
 
-### Your brand and facts in the folders your other apps use
+### Your brand and business facts
 
 The agent fills two folders. `brand/` has your look, voice, audience, logo
 and best photos. `public/` has your business details, services, prices,
@@ -103,7 +104,7 @@ one it used. When an answer takes several notes to put together, the agent
 saves it as a new note. You can also ask what's in the brain so far and
 what's missing.
 
-### Keep the brain current with your site
+### Rereading your site on a schedule
 
 Tell the agent you want the brain kept current with your site. It asks how
 often your site changes and schedules a crawl to match. For most small
