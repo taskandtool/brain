@@ -16,8 +16,8 @@ If the owner does not want the weekly pass, remove its job:
   (exit 1), distill first with the `brain` skill, then lint.
 - Read the last lint entry in `brain/log.md` (`grep "^## \[" brain/log.md | tail -5`
   finds it). If nothing in `raw/`, `brain/`, `brand/` or `public/` changed
-  since, say so in one line and stop: a pass over a brain that has not
-  moved costs the owner tokens for nothing.
+  since, say so in one line and stop: a pass with nothing new still costs
+  the owner tokens.
 
 ## The checks
 

@@ -20,10 +20,10 @@ see or remove it.
 
 ## Re-crawling the site
 
-Only when the owner wants it. Ask how often the site changes; for
-most small businesses that is a few times a year, so never a daily job. The
-crawler needs no AI, so it runs as a command job; what it changes in `raw/`
-waits for the next chat, where `brain_status.py status` finds it. Use the
+Only when the owner wants it. Ask how often the site changes. For most
+small businesses that is a few times a year; don't schedule it daily. The
+crawler needs no AI: schedule it as a command job. The next chat's
+`brain_status.py status` lists what it changed in `raw/`. Use the
 first crawl's `pages` command, with `python3 -m ttcrawl` in place of `tt-crawl`:
 
 ```bash

@@ -42,8 +42,8 @@ Which skill to read, by what the owner asks:
 
 - "set up my brain", a link to their site, an upload, pasted notes, a
   transcript, a fact stated in chat ("remember that…", "we're closed
-  Mondays now"), "keep it up to date": `brain`. It hands look, voice and
-  published facts to `brand`.
+  Mondays now"), "keep it up to date": `brain`. Look, voice and published
+  facts go to `brand`.
 - the look, voice, logo, services, prices, reviews: `brand`
 - "check the brain", contradictions, the weekly pass: `brain-lint`
 - "show me the brain", "publish it", "make it look like our brand": the

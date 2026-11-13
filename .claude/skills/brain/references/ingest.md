@@ -2,7 +2,7 @@
 
 Read when a site, a document, a transcript or a new kind of source arrives.
 SCHEMA.md's layout says where each is saved. The tools (tt-crawl, its browsers,
-markitdown) arrive just after the app; if one is missing, `pgrep -f
+markitdown) are installed just after the app; if one is missing, `pgrep -f
 '[a]fter-setup.sh'` prints a process while they are still installing. If it prints
 nothing, run `bash ~/app/.taskandtool/after-setup.sh` once.
 

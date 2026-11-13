@@ -36,7 +36,7 @@ brain/
   <topic>.md                everything else the business knows: history, people, decisions, answers
 ```
 
-`brand/` and `public/` sit at the root because every app in the project
+`brand/` and `public/` are at the root because every app in the project
 reads them the same way; `brain/` is what only the brain holds, and links
 to them rather than repeating them. A note's **type** is frontmatter, not a
 directory. A folder made under `brain/` (`sources/`, `sops/`) gets an
