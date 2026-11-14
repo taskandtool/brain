@@ -17,8 +17,8 @@ description: "Builds and keeps the company brain: the owner's site, documents, t
 3. **Distill one unit at a time, in passes.** A first crawl is hundreds of
    pages: take it by section (services, about, FAQ), a pass each. Later
    units are usually one pass.
-   - **Fold, don't dump.** Add each fact where it belongs, merge what
-     sources say, dedupe by meaning. Start a new note only when the topic
+   - **Add to the notes you have.** Put each fact where it belongs, merge
+     what sources say, and dedupe by meaning. Start a new note only when the topic
      has no home (grep first).
    - **A changed file** means facts may have moved: compare, update, and
      retire what is no longer true.
@@ -26,15 +26,14 @@ description: "Builds and keeps the company brain: the owner's site, documents, t
      team, reviews) go to `brand/` and `public/` with the `brand` skill, in
      the same pass. `brain/` links to them rather than repeating them.
    - **Pictures** in `brain/` notes are shown by relative path with a
-     one-line alt text, never copied; only `brand/images` holds copies.
+     one-line alt text. Copies go only in `brand/images`.
 4. **Keep the hubs current:** the unit's page in `brain/sources/`,
    `overview.md` if the big picture moved, `index.md`, and one `log.md`
    entry per pass, headed as SCHEMA.md says (notes created, updated or
    retired; open conflicts and questions).
 5. **Check the words:** `node .claude/skills/tropes/tropes.mjs --scan
-   <the notes you wrote>`, then rewrite each line it flags. Every app that
-   reads `brain/` and `public/` copies their wording. Sources' own words in
-   quotation marks or a blockquote stay as they are.
+   <the notes you wrote>`, then rewrite each line it flags. The project's
+   other apps reuse the wording in `brain/` and `public/` as it is. Don't rewrite a source's own words inside quotation marks or a blockquote.
 6. **Mark it:** `python3 scripts/brain_status.py mark <path> …` with the
    unit's path as status printed it, or a section's files
    (`raw/site/<host>/pages/services-*.md`).
@@ -48,5 +47,6 @@ owner wants the site kept current: `references/schedule.md`.
 ## Answering from the brain
 
 There is no search index: start from `index.md` and `overview.md`, then
-grep and read, and name the note you used. An answer that took real
-synthesis across notes becomes a note (`type: analysis`, cited, indexed).
+grep and read, and name the note you used. When an answer took real
+synthesis across notes, save it as a note (`type: analysis`, cited,
+indexed).

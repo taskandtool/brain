@@ -46,7 +46,7 @@ what changed.
 
 ## Uploaded documents
 
-PDF, docx, pptx and xlsx convert with markitdown into `raw/docs/`, named
+Convert PDF, docx, pptx and xlsx with markitdown into `raw/docs/`, named
 by the date the document was made if known, else today:
 
 ```bash

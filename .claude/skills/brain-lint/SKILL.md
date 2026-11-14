@@ -30,8 +30,9 @@ Read `index.md`, `overview.md`, then every current note in `brain/`,
    contain it, or a number that drifted is the top finding. Fix from raw or
    remove the fact, and say which in the log.
 2. **Contradictions:** two current notes (or a note and a newer raw source)
-   that disagree: hours, prices, phone numbers, policies. Newer raw wins when
-   the date is clear; otherwise mark both and ask the owner.
+   that disagree: hours, prices, phone numbers, policies. Keep the newer raw
+   source's fact when the dates are clear; otherwise mark both and ask the
+   owner.
 3. **Stale claims:** facts a newer source superseded. Retire them as
    SCHEMA.md says; never just delete.
 4. **Leakage:** anything from `raw/external/` or general knowledge presented
@@ -57,5 +58,5 @@ Read `index.md`, `overview.md`, then every current note in `brain/`,
 - Append a lint entry to `brain/log.md`, headed as SCHEMA.md says: what was
   checked (including which five facts were audited), what changed, what
   needs the owner.
-- Tell the owner the short version. Ask the questions that only they can
-  answer, one message, grouped.
+- Tell the owner the short version. Ask the questions only they can
+  answer, grouped in one message.
